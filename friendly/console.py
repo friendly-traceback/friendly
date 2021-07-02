@@ -31,9 +31,7 @@ please_comment = (
 
 class FriendlyConsole(ft_console.FriendlyTracebackConsole):
     # skipcq: PYL-W0622
-    def __init__(
-        self, local_vars=None, formatter="dark", background=None
-    ):  # noqa
+    def __init__(self, local_vars=None, formatter="dark", background=None):
         """This class builds upon Python's code.InteractiveConsole
         so as to provide friendly tracebacks. It keeps track
         of code fragment executed by treating each of them as
@@ -222,8 +220,6 @@ def start_console(
     helpers.update(color_schemes)
 
     console = FriendlyConsole(
-        local_vars=helpers,
-        formatter=formatter,
-        background=background,
+        local_vars=helpers, formatter=formatter, background=background
     )
     console.interact(banner=banner)

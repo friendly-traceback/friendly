@@ -36,10 +36,12 @@ __version__ = "0.3.142a"
 import inspect
 from pathlib import Path
 
-from friendly_traceback import editors_helpers
+from friendly_traceback import editors_helpers, set_stream
 from friendly_traceback import set_formatter as ft_set_formatter
 from friendly_traceback.config import session
+
 from .my_gettext import current_lang
+from friendly import rich_formatters, theme
 
 
 def run(
@@ -121,7 +123,9 @@ def run(
         return module_globals
 
 
-def set_formatter(formatter=None, **kwargs):
+def set_formatter(
+    formatter=None, color_system="auto", force_jupyter=None, background=None
+):
     """Sets the default formatter. If no argument is given, the default
     formatter is used.
 
@@ -129,8 +133,20 @@ def set_formatter(formatter=None, **kwargs):
     as well an additional argument whose value is subject to change.
     See formatters.py for details.
     """
+    # TODO: change this so that rich_add_vspace not needed in ft.
+    session.rich_add_vspace = True
+    if formatter in ["dark", "light"]:
+        session.console = theme.init_rich_console(
+            style=formatter,
+            color_system=color_system,
+            force_jupyter=force_jupyter,
+            background=background,
+        )
+        set_stream(redirect=rich_formatters.rich_writer)
+        formatter = rich_formatters.rich_markdown
+    else:
+        set_stream()
     ft_set_formatter(formatter=formatter)
-    # session.set_formatter(formatter=formatter, **kwargs)
 
 
 def start_console(  # pragma: no cover
