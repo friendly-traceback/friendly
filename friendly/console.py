@@ -7,37 +7,20 @@ used to show some "friendly" tracebacks.
 """
 import builtins
 import copy
-import os
 import platform
-import sys
-import traceback
-from code import InteractiveConsole
-import codeop  # need to import to exclude from tracebacks
 
-import friendly_traceback
-from friendly_traceback import source_cache
-import friendly
+import friendly_traceback as ft
 
-
-try:
-    from . import theme
-
-    rich_available = True
-except ImportError:
-    rich_available = False
-
+from friendly_traceback import ft_console
 from friendly_traceback.config import session
 from friendly_traceback.console_helpers import helpers, default_color_schemes
 from .my_gettext import current_lang
 
+import friendly
+from . import theme
 
-def type_friendly():
-    _ = current_lang.translate
-    return _("Type 'Friendly' for help on special functions/methods.")
-
-
-BANNER = "\nFriendly Console version {}. [Python version: {}]\n".format(
-    friendly_traceback.__version__, platform.python_version()
+BANNER = "\nfriendly-traceback: {}\nfriendly: {}\nPython: {}\n".format(
+    ft.__version__, friendly.__version__, platform.python_version()
 )
 
 please_comment = (
@@ -46,123 +29,37 @@ please_comment = (
 )
 
 
-_old_displayhook = sys.displayhook
-
-
-def _displayhook(value):
-    if value is None:
-        return
-    if str(type(value)) == "<class 'function'>" and hasattr(value, "__rich_repr__"):
-        print(f"{value.__name__}(): {value.__rich_repr__()[0]}")
-        return
-    _old_displayhook(value)
-
-
-class FriendlyConsole(InteractiveConsole):
+class FriendlyConsole(ft_console.FriendlyTracebackConsole):
     # skipcq: PYL-W0622
     def __init__(
-        self, locals=None, formatter="dark", background=None, displayhook=None
+        self, local_vars=None, formatter="dark", background=None
     ):  # noqa
         """This class builds upon Python's code.InteractiveConsole
         so as to provide friendly tracebacks. It keeps track
         of code fragment executed by treating each of them as
         an individual source file.
         """
-        _ = current_lang.translate
-        friendly_traceback.exclude_file_from_traceback(codeop.__file__)
-        self.fake_filename = "<friendly-console:%d>"
-        self.counter = 1
+        super().__init__(local_vars=local_vars)
+
         self.old_locals = {}
         self.saved_builtins = {}
         for name in dir(builtins):
             self.saved_builtins[name] = getattr(builtins, name)
         self.rich_console = False
         friendly.set_formatter(formatter, background=background)
-        if formatter in ["dark", "light"] and rich_available:
+        if formatter in ["dark", "light"]:
             self.rich_console = session.console
             if formatter == "dark":
                 self.prompt_color = "[bold bright_green]"
             else:
                 self.prompt_color = "[bold dark_violet]"
-        elif displayhook is not None:
-            sys.displayhook = displayhook
-
-        super().__init__(locals=locals)
         self.check_for_builtins_changes()
         self.check_for_annotations()
-
-    def push(self, line):
-        """Push a line to the interpreter.
-
-        The line should not have a trailing newline; it may have
-        internal newlines.  The line is appended to a buffer and the
-        interpreter's runsource() method is called with the
-        concatenated contents of the buffer as source.  If this
-        indicates that the command was executed or invalid, the buffer
-        is reset; otherwise, the command is incomplete, and the buffer
-        is left as it was after the line was appended.  The return
-        value is True if more input is required, False if the line was dealt
-        with in some way (this is the same as runsource()).
-        """
-        self.buffer.append(line)
-        source = "\n".join(self.buffer)
-
-        # Each valid code sample is saved with its own fake filename.
-        # They are numbered consecutively to help understanding
-        # the traceback history.
-        # If self.counter was not updated, it means that the previous
-        # code sample was not valid and we reuse the same file name
-        filename = self.fake_filename % self.counter
-        source_cache.cache.add(filename, source)
-
-        more = self.runsource(source, filename)
-        if not more:
-            self.resetbuffer()
-            self.counter += 1
-        return more
-
-    def runsource(self, source, filename="<input>", symbol="single"):
-        """Compile and run some source in the interpreter.
-
-        Arguments are as for compile_command().
-
-        One several things can happen:
-
-        1) The input is incorrect; compile_command() raised an
-        exception (SyntaxError or OverflowError).  A syntax traceback
-        will be printed .
-
-        2) The input is incomplete, and more input is required;
-        compile_command() returned None.  Nothing happens.
-
-        3) The input is complete; compile_command() returned a code
-        object.  The code is executed by calling self.runcode() (which
-        also handles run-time exceptions, except for SystemExit).
-
-        The return value is True in case 2, False in the other cases (unless
-        an exception is raised).  The return value can be used to
-        decide whether to use sys.ps1 or sys.ps2 to prompt the next
-        line.
-        """
-        try:
-            code = self.compile(source, filename, symbol)
-        except (OverflowError, SyntaxError, ValueError):
-            # Case 1
-            friendly_traceback.explain_traceback()
-            return False
-
-        if code is None:
-            # Case 2
-            return True
-
-        # Case 3
-        self.runcode(code)
-        return False
 
     def runcode(self, code):
         """Execute a code object.
 
-        When an exception occurs, friendly_traceback.explain_traceback() is called to
+        When an exception occurs, ft.explain_traceback() is called to
         display a traceback.  All exceptions are caught except
         SystemExit, which, unlike the case for the original version in the
         standard library, cleanly exists the program. This is done
@@ -173,20 +70,7 @@ class FriendlyConsole(InteractiveConsole):
         elsewhere in this code, and may not always be caught.  The
         caller should be prepared to deal with it.
         """
-        _ = current_lang.translate
-        try:
-            exec(code, self.locals)
-        except SystemExit:
-            os._exit(1)  # noqa -pycharm
-        except Exception:  # noqa
-            try:
-                friendly_traceback.explain_traceback()
-            except Exception:  # noqa
-                print("Friendly Internal Error")
-                print("-" * 60)
-                traceback.print_exc()
-                print("-" * 60)
-
+        super().runcode(code)
         self.check_for_builtins_changes()
         self.check_for_annotations()
         self.old_locals = copy.copy(self.locals)
@@ -297,12 +181,6 @@ class FriendlyConsole(InteractiveConsole):
     # defined in the parent class. The following are the equivalent methods
     # that can be used if an explicit call is desired for some reason.
 
-    def showsyntaxerror(self, filename=None):
-        friendly_traceback.explain_traceback()
-
-    def showtraceback(self):
-        friendly_traceback.explain_traceback()
-
     def raw_input(self, prompt=""):
         """Write a prompt and read a line.
         The returned line does not include the trailing newline.
@@ -325,20 +203,15 @@ def start_console(
     banner=None,
     color_schemes=None,
     background=None,
-    displayhook=None,
 ):
     """Starts a console; modified from code.interact"""
     # from . import config
 
     if banner is None:
-        banner = BANNER + type_friendly() + "\n"
-    if displayhook is None:
-        displayhook = _displayhook
+        banner = BANNER + ft.ft_console.type_friendly() + "\n"
 
-    if not friendly_traceback.is_installed():
-        friendly_traceback.install(include=include, lang=lang)
-
-    source_cache.idle_get_lines = None
+    if not ft.is_installed():
+        ft.install(include=include, lang=lang)
 
     if local_vars is not None:
         # Make sure we don't overwrite with our own functions
@@ -349,9 +222,8 @@ def start_console(
     helpers.update(color_schemes)
 
     console = FriendlyConsole(
-        locals=helpers,
+        local_vars=helpers,
         formatter=formatter,
         background=background,
-        displayhook=displayhook,
     )
     console.interact(banner=banner)

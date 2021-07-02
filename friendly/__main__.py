@@ -164,17 +164,17 @@ def main():
 
     if args.formatter:
         formatter = args.formatter  # noqa
-        # if formatter in ["bw", "dark", "light", "docs"]:
-        if formatter in ["bw", "docs"]:
+        # if formatter in ["repl", "dark", "light", "docs"]:
+        if formatter in ["repl", "docs"]:
             set_formatter(formatter, background=background)  # pragma: no cover
         else:
             set_formatter(import_function(args.formatter))
-            formatter = "bw"  # for the console - should not be needed
+            formatter = "repl"  # for the console - should not be needed
     else:
         # set_formatter("dark", background=background)
         # formatter = "dark"
-        set_formatter("bw", background=background)
-        formatter = "bw"
+        set_formatter("repl", background=background)
+        formatter = "repl"
 
     console_defaults = {}
     if args.source is not None:
