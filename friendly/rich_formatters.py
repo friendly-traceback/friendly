@@ -2,34 +2,7 @@
 formatters.py
 ==============
 
-Default formatters showing all or only part of the available information.
-
-A formatter is a function that takes two arguments:
-
-1. a dict (named ``info`` everywhere in friendly files) containing
-   all the information that can be shown to the user, as well as some
-   entries that are meant to be used only internally as the full
-   friendly information is obtained.
-
-2. A second argument which is meant to convey what information should be shown.
-   This second argument used to be a single integer ("verbosity level").
-   It is currently recently being replaced by a single string. However,
-   this might change as we experiment with various options prior to
-   version 1.0
-
-A formatter returns a single string. By default, this string will be
-written to stderr; however this can be changed by the calling program.
-
-This module currently contains 6 formatters:
-
-* ``repl()``: This is used to print the information in a traditional console,
-  including that found in IDLE.  The indentation of the traceback itself
-  is chosen so as to reproduce that of a normal Python traceback.
-
-* ``docs()``: this produces output with leading spaces so that it can be
-  embedded as a code-block in a file (such as .rst). It can also be used
-  to print the information in a traditional console, including that
-  found in IDLE.
+This module currently contains 4 formatters
 
 * ``jupyter()``: experimental formatter for Jupyter notebooks
 
@@ -60,7 +33,7 @@ try:  # pragma: no cover
 
     ipython_available = True
 except ImportError:
-    pass
+    display = HTML = lambda x: x
 
 RICH_HEADER = False
 
@@ -110,11 +83,11 @@ def jupyter(info, include="friendly_tb"):  # pragma: no cover
             if "source" in item or "variable" in item:
                 text = info[item]
                 text = highlight(text, PythonLexer(), HtmlFormatter())
-                display(HTML(text))  # noqa
+                display(HTML(text))
             elif "traceback" in item:
                 text = info[item]
                 text = highlight(text, PythonTracebackLexer(), HtmlFormatter())
-                display(HTML(text))  # noqa
+                display(HTML(text))
             elif item == "message":  # format like last line of traceback
                 content = info[item].split(":")
                 error_name = content[0]
@@ -128,29 +101,20 @@ def jupyter(info, include="friendly_tb"):  # pragma: no cover
                         "</span></pre></div>",
                     ]
                 )
-                display(HTML(text))  # noqa
+                display(HTML(text))
             elif item == "suggest":
                 text = html_escape(info[item])
-                display(HTML(f"<p><i>{text}<i><p>"))  # noqa
+                display(HTML(f"<p><i>{text}<i><p>"))
             else:
                 text = html_escape(info[item])
                 if "header" in item:
-                    display(HTML(f"<p><b>{text}</b></p>"))  # noqa
+                    display(HTML(f"<p><b>{text}</b></p>"))
                 else:
-                    display(HTML(f'<p style="width: 70ch">{text}</p>'))  # noqa
+                    display(HTML(f'<p style="width: 70ch">{text}</p>'))
     if not result:
-        text = ""
-        if include == "why":
-            text = _("I do not know.")
-        elif include == "hint":
-            if info["cause"]:
-                text = _("I have no suggestion to offer; try `why()`.")
-            else:
-                text = _("I have no suggestion to offer.")
-        if not text:
-            return ""
-        display(HTML(f'<p style="width: 70ch;">{text}</p>'))  # noqa
-
+        text = no_result(info, include)
+        if text:
+            display(HTML(f'<p style="width: 70ch;">{text}</p>'))
     return ""
 
 

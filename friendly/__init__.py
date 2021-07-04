@@ -133,7 +133,6 @@ def set_formatter(
     as well an additional argument whose value is subject to change.
     See formatters.py for details.
     """
-    # TODO: change this so that rich_add_vspace not needed in ft.
     session.rich_add_vspace = True
     if formatter in ["dark", "light"]:
         session.console = theme.init_rich_console(
@@ -151,7 +150,7 @@ def set_formatter(
 
 def start_console(  # pragma: no cover
     local_vars=None,
-    formatter="bw",
+    formatter="light",
     include="friendly_tb",
     lang="en",
     banner=None,
@@ -172,23 +171,3 @@ def start_console(  # pragma: no cover
         background=background,
         displayhook=displayhook,
     )
-
-
-# def _include_choices():
-#     """Prints the available choices for arguments to set_include()"""
-#     choices = [repr(key) for key in formatters.items_groups if key != "header"]
-#     return ",\n        ".join(choices)
-
-
-# def set_include(include):
-#     """Specifies the information to include in the traceback.
-
-#     The allowed values are:
-
-#         {choices}
-#     """
-#     session.set_include(include)
-
-
-# if set_include.__doc__ is not None:  # protect against -OO optimization
-#     set_include.__doc__ = set_include.__doc__.format(choices=_include_choices())

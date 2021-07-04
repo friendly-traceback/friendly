@@ -13,7 +13,7 @@ import friendly_traceback as ft
 
 from friendly_traceback import ft_console
 from friendly_traceback.config import session
-from friendly_traceback.console_helpers import helpers, default_color_schemes
+from friendly.rich_console_helpers import helpers, default_color_schemes
 from .my_gettext import current_lang
 
 import friendly
