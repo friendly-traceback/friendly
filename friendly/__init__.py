@@ -134,6 +134,7 @@ def set_formatter(
     See formatters.py for details.
     """
     session.rich_add_vspace = True
+    session.use_rich = True
     if formatter in ["dark", "light"]:
         session.console = theme.init_rich_console(
             style=formatter,
@@ -144,6 +145,7 @@ def set_formatter(
         set_stream(redirect=rich_formatters.rich_writer)
         formatter = rich_formatters.rich_markdown
     else:
+        session.use_rich = False
         set_stream()
     ft_set_formatter(formatter=formatter)
 
