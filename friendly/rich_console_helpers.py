@@ -43,12 +43,18 @@ history.__rich_repr__ = old_history.__rich_repr__  # noqa
 history.__doc__ = old_history.__doc__
 FriendlyHelpers.history = history
 
+set_formatter.help = helpers["set_formatter"].help
+set_formatter.__rich_repr__ = helpers["set_formatter"].__rich_repr__  # noqa
+FriendlyHelpers.set_formatter = set_formatter
+
 for scheme in default_color_schemes:
     setattr(FriendlyHelpers, scheme, staticmethod(default_color_schemes[scheme]))
 Friendly = FriendlyHelpers(local_helpers=default_color_schemes)
 
 helpers["Friendly"] = Friendly
 helpers["history"] = history
+helpers["light"] = light
+helpers["dark"] = dark
 
 __all__ = list(helpers.keys())
 __all__.extend(list(default_color_schemes))

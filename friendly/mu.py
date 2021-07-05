@@ -1,12 +1,12 @@
 import sys
 
 from .my_gettext import current_lang  # noqa
-from .runtime_errors import name_error
+from friendly_traceback.runtime_errors import name_error
 
 if "InteractiveShell" in repr(sys.excepthook):
     from .ipython import *  # noqa  # Will automatically install
     from friendly import set_formatter
-    from friendly.console_helpers import FriendlyHelpers, helpers
+    from friendly.rich_console_helpers import FriendlyHelpers, helpers
     import colorama
 
     colorama.deinit()
