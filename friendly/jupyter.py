@@ -9,12 +9,8 @@ old_set_formatter = set_formatter  # noqa
 def set_formatter(
     formatter=None, color_system="auto", force_jupyter=None, background=None
 ):
-    """Sets the default formatter. If no argument is given, the default
+    """Sets the default formatter. If no argument is given, a default
     formatter is used.
-
-    A custom formatter must accept ``info`` as a required arguments
-    as well an additional argument whose value is subject to change.
-    See formatters.py for details.
     """
     session.rich_add_vspace = True
     session.use_rich = True
@@ -36,4 +32,10 @@ Friendly.set_formatter = set_formatter  # noqa
 
 __all__ = list(helpers.keys())
 
+# While the 'light' and 'dark' formatters produce better output
+# when the corresponding jupyter theme is selected by the user,
+# we have no way to determine the theme used.
+# The jupyter formatter uses IPython custom methods so that the
+# colours used automatically adjust based on the jupyter theme,
+# and is thus always a suitable, if not ideal choice.
 set_formatter("jupyter")  # noqa

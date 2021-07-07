@@ -126,12 +126,8 @@ def run(
 def set_formatter(
     formatter=None, color_system="auto", force_jupyter=None, background=None
 ):
-    """Sets the default formatter. If no argument is given, the default
+    """Sets the default formatter. If no argument is given, a default
     formatter is used.
-
-    A custom formatter must accept ``info`` as a required arguments
-    as well an additional argument whose value is subject to change.
-    See formatters.py for details.
     """
     session.rich_add_vspace = True
     session.use_rich = True
@@ -156,7 +152,6 @@ def start_console(  # pragma: no cover
     include="friendly_tb",
     lang="en",
     banner=None,
-    color_schemes=None,
     background=None,
     displayhook=None,
 ):
@@ -169,7 +164,6 @@ def start_console(  # pragma: no cover
         include=include,
         lang=lang,
         banner=banner,
-        color_schemes=color_schemes,
         background=background,
         displayhook=displayhook,
     )

@@ -1,4 +1,11 @@
+"""In this module, we modify the basic console helpers for friendly-traceback
+so as to add custom ones for Rich-based formatters."""
+
 from friendly_traceback.console_helpers import *  # noqa
+
+old_set_formatter = set_formatter  # noqa
+old_history = history  # noqa
+
 from friendly_traceback.console_helpers import FriendlyHelpers, helpers
 from friendly_traceback.utils import add_rich_repr
 from friendly_traceback.config import session
@@ -8,28 +15,14 @@ from friendly import set_formatter
 
 _ = current_lang.translate
 
+# =============================================
+# Modifying existing console helpers
+# =============================================
 
-def dark():  # pragma: no cover
-    """Synonym of set_formatter('dark') designed to be used
-    within iPython/Jupyter programming environments or at a terminal.
-    """
-    set_formatter("dark")
-
-
-def light():  # pragma: no cover
-    """Synonym of set_formatter('light') designed to be used
-    within iPython/Jupyter programming environments or at a terminal.
-    """
-    set_formatter("light")
-
-
-dark.help = lambda: _("Sets a colour scheme designed for a black background.")
-light.help = lambda: _("Sets a colour scheme designed for a white background.")
-
-default_color_schemes = {"dark": dark, "light": light}
-add_rich_repr(default_color_schemes)
-
-old_history = history  # noqa
+set_formatter.help = old_set_formatter.help  # noqa
+set_formatter.__rich_repr__ = old_set_formatter.__rich_repr__  # noqa
+FriendlyHelpers.set_formatter = set_formatter
+helpers["set_formatter"] = set_formatter
 
 
 def history():
@@ -42,19 +35,46 @@ history.help = old_history.help  # noqa
 history.__rich_repr__ = old_history.__rich_repr__  # noqa
 history.__doc__ = old_history.__doc__
 FriendlyHelpers.history = history
+helpers["history"] = history
 
-set_formatter.help = helpers["set_formatter"].help
-set_formatter.__rich_repr__ = helpers["set_formatter"].__rich_repr__  # noqa
-FriendlyHelpers.set_formatter = set_formatter
+# =================================
+# Additional rich-specific helpers
+# =================================
 
-for scheme in default_color_schemes:
-    setattr(FriendlyHelpers, scheme, staticmethod(default_color_schemes[scheme]))
-Friendly = FriendlyHelpers(local_helpers=default_color_schemes)
+
+def dark():
+    """Synonym of set_formatter('dark') designed to be used
+    within iPython/Jupyter programming environments.
+    """
+    set_formatter("dark")
+
+
+def light():
+    """Synonym of set_formatter('light') designed to be used
+    within iPython/Jupyter programming environments.
+    """
+    set_formatter("light")
+
+
+def set_width(width=80):
+    """Sets the width in a iPython/Jupyter session using 'light' or 'dark' mode"""
+    if session.use_rich:
+        session.console._width = width
+    else:
+        print(_("set_width() is only available using 'light' or 'dark' mode."))
+
+
+dark.help = lambda: _("Sets a colour scheme designed for a black background.")
+light.help = lambda: _("Sets a colour scheme designed for a white background.")
+set_width.help = lambda: "Sets the output width in 'light' or 'dark' mode."
+
+local_helpers = {"dark": dark, "light": light, "set_width": set_width}
+add_rich_repr(local_helpers)
+
+for helper in local_helpers:
+    setattr(FriendlyHelpers, helper, staticmethod(local_helpers[helper]))
+Friendly = FriendlyHelpers(local_helpers=local_helpers)
 
 helpers["Friendly"] = Friendly
-helpers["history"] = history
-helpers["light"] = light
-helpers["dark"] = dark
-
+helpers.update(local_helpers)
 __all__ = list(helpers.keys())
-__all__.extend(list(default_color_schemes))

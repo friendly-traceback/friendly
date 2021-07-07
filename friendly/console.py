@@ -13,7 +13,7 @@ import friendly_traceback as ft
 
 from friendly_traceback import ft_console
 from friendly_traceback.config import session
-from friendly.rich_console_helpers import helpers, default_color_schemes
+from friendly.rich_console_helpers import helpers
 from .my_gettext import current_lang
 
 import friendly
@@ -201,7 +201,6 @@ def start_console(
     include="friendly_tb",
     lang="en",
     banner=None,
-    color_schemes=None,
     background=None,
     displayhook=None,
 ):
@@ -217,10 +216,6 @@ def start_console(
     if local_vars is not None:
         # Make sure we don't overwrite with our own functions
         helpers.update(local_vars)
-
-    if color_schemes is None:
-        color_schemes = default_color_schemes
-    helpers.update(color_schemes)
 
     console = FriendlyConsole(
         local_vars=helpers,
