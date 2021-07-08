@@ -13,6 +13,7 @@ from friendly_traceback import (
     install,
     exclude_file_from_traceback,
     explain_traceback,
+    __version__,
 )  # noqa
 from friendly.rich_console_helpers import *  # noqa
 from friendly.rich_console_helpers import FriendlyHelpers, helpers  # noqa
@@ -40,3 +41,5 @@ install(include="friendly_tb")
 # By default, we assume a terminal with a dark background.
 set_formatter("dark")  # noqa
 __all__ = list(helpers.keys())
+
+print(f"friendly_traceback {__version__}. Type 'Friendly' for information.")

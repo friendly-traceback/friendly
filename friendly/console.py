@@ -25,7 +25,8 @@ BANNER = "\nfriendly-traceback: {}\nfriendly: {}\nPython: {}\n".format(
 
 please_comment = (
     "   Do you find these warnings useful?\n"
-    "   Comment at https://github.com/aroberge/friendly/issues/112"
+    "   Comment at https://github.com/friendly-traceback/friendly-traceback/issues/7.\n\n"
+    "   You can use www('warnings') to go to that url."
 )
 
 
