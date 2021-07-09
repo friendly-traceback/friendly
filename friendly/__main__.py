@@ -18,8 +18,7 @@ from pathlib import Path
 
 from friendly_traceback import explain_traceback, exclude_file_from_traceback, install
 from friendly_traceback import __version__
-from friendly_traceback import debug_helper, session
-
+from friendly_traceback import debug_helper
 
 from friendly import console
 from friendly import set_formatter
@@ -137,7 +136,7 @@ parser.add_argument(
 parser.add_argument(
     "-n",
     "--numbered_prompt",
-    help="""Specifies if the console prompt must be of the form [number].""",
+    help="""Specifies that the console prompt must be of the form [number].""",
     action="store_true",
 )
 
@@ -167,9 +166,6 @@ def main():
         background = args.background
     else:
         background = None
-
-    if args.numbered_prompt:
-        session.numbered_prompt = True
 
     if args.formatter:
         formatter = args.formatter  # noqa
@@ -205,6 +201,7 @@ def main():
                 formatter=formatter,
                 background=background,
                 lang=args.lang,
+                numbered_prompt=args.numbered_prompt,
             )
 
     else:  # pragma: no cover
@@ -213,6 +210,7 @@ def main():
             formatter=formatter,
             background=background,
             lang=args.lang,
+            numbered_prompt=args.numbered_prompt,
         )
 
 

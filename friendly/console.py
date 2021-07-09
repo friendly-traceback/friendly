@@ -8,7 +8,6 @@ used to show some "friendly" tracebacks.
 import builtins
 import copy
 import platform
-import sys
 
 import friendly_traceback as ft
 
@@ -34,14 +33,23 @@ please_comment = (
 class FriendlyConsole(ft_console.FriendlyTracebackConsole):
     # skipcq: PYL-W0622
     def __init__(
-        self, local_vars=None, formatter="dark", background=None, displayhook=None
+        self,
+        local_vars=None,
+        formatter="dark",
+        background=None,
+        displayhook=None,
+        numbered_prompt=False,
     ):
         """This class builds upon Python's code.InteractiveConsole
         so as to provide friendly tracebacks. It keeps track
         of code fragment executed by treating each of them as
         an individual source file.
         """
-        super().__init__(local_vars=local_vars, displayhook=displayhook)
+        super().__init__(
+            local_vars=local_vars,
+            displayhook=displayhook,
+            numbered_prompt=numbered_prompt,
+        )
 
         self.old_locals = {}
         self.saved_builtins = {}
@@ -53,8 +61,6 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
             self.rich_console = session.console
         self.check_for_builtins_changes()
         self.check_for_annotations()
-        if session.numbered_prompt and session.use_rich:
-            sys.ps1 = f"[{self.counter}] "
 
     def runcode(self, code):
         """Execute a code object.
@@ -191,9 +197,6 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         """
         if self.rich_console:
             self.rich_console.print(prompt, style="operators", end="")
-            if session.numbered_prompt:
-                sys.ps1 = f"\n[{self.counter+1}] "
-                sys.ps2 = "..." + " " * len(str(self.counter))
             return input()
         return input(prompt)
 
@@ -206,6 +209,7 @@ def start_console(
     banner=None,
     background=None,
     displayhook=None,
+    numbered_prompt=False,
 ):
     """Starts a console; modified from code.interact"""
     # from . import config
@@ -225,5 +229,6 @@ def start_console(
         formatter=formatter,
         background=background,
         displayhook=displayhook,
+        numbered_prompt=numbered_prompt,
     )
     console.interact(banner=banner)

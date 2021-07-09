@@ -29,7 +29,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.3.148"
+__version__ = "0.3.149"
 
 
 # ===========================================
@@ -58,6 +58,7 @@ def run(
     formatter="bw",
     redirect=None,
     background=None,
+    numbered_prompt=False,
 ):
     """Given a filename (relative or absolute path) ending with the ".py"
     extension, this function uses the
@@ -123,6 +124,7 @@ def run(
             banner="",
             include=include,
             background=background,
+            numbered_prompt=numbered_prompt,
         )
     else:
         return module_globals
@@ -159,6 +161,7 @@ def start_console(  # pragma: no cover
     banner=None,
     background=None,
     displayhook=None,
+    numbered_prompt=False,
 ):
     """Starts a Friendly console."""
     from . import console
@@ -171,4 +174,5 @@ def start_console(  # pragma: no cover
         banner=banner,
         background=background,
         displayhook=displayhook,
+        numbered_prompt=numbered_prompt,
     )
