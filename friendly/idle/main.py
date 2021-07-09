@@ -139,16 +139,26 @@ def install(lang="en"):
         start_console(lang=lang, displayhook=_displayhook)
 
 
-def start_console(lang="en", displayhook=None):
+def start_console(lang="en", displayhook=None, numbered_prompt=False):
     """Starts a Friendly console with a custom formatter for IDLE"""
     sys.stderr = sys.stdout.shell  # noqa
     friendly_traceback.set_stream(idle_writer)
     friendly_traceback.start_console(
-        formatter=idle_formatter.idle_formatter, lang=lang, displayhook=displayhook
+        formatter=idle_formatter.idle_formatter,
+        lang=lang,
+        displayhook=displayhook,
+        numbered_prompt=numbered_prompt,
     )
 
 
-def run(filename, lang=None, include="friendly_tb", args=None, console=True):
+def run(
+    filename,
+    lang=None,
+    include="friendly_tb",
+    args=None,
+    console=True,
+    numbered_prompt=False,
+):
     """This function executes the code found in a Python file.
 
     ``filename`` should be either an absolute path or, it should be the name of a
@@ -210,6 +220,7 @@ def run(filename, lang=None, include="friendly_tb", args=None, console=True):
         args=args,
         console=console,
         formatter=idle_formatter.idle_formatter,
+        numbered_prompt=numbered_prompt,
     )
 
 
