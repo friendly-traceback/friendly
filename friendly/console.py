@@ -8,6 +8,7 @@ used to show some "friendly" tracebacks.
 import builtins
 import copy
 import platform
+import sys
 
 import friendly_traceback as ft
 
@@ -50,12 +51,10 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         friendly.set_formatter(formatter, background=background)
         if formatter in ["dark", "light"]:
             self.rich_console = session.console
-            if formatter == "dark":
-                self.prompt_color = "[bold bright_green]"
-            else:
-                self.prompt_color = "[bold dark_violet]"
         self.check_for_builtins_changes()
         self.check_for_annotations()
+        if session.numbered_prompt and session.use_rich:
+            sys.ps1 = f"[{self.counter}] "
 
     def runcode(self, code):
         """Execute a code object.
@@ -192,6 +191,9 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         """
         if self.rich_console:
             self.rich_console.print(prompt, style="operators", end="")
+            if session.numbered_prompt:
+                sys.ps1 = f"\n[{self.counter+1}] "
+                sys.ps2 = "..." + " " * len(str(self.counter))
             return input()
         return input(prompt)
 

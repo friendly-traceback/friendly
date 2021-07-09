@@ -59,7 +59,7 @@ def light():
 def set_width(width=80):
     """Sets the width in a iPython/Jupyter session using 'light' or 'dark' mode"""
     if session.use_rich:
-        session.console._width = width
+        session.console.width = width
     else:
         print(_("set_width() is only available using 'light' or 'dark' mode."))
 
