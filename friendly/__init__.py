@@ -19,6 +19,7 @@ or newer.
 If you find that some additional functionality would be useful to
 have as part of the public API, please let us know.
 """
+import os
 import sys
 
 valid_version = sys.version_info.major >= 3 and sys.version_info.minor >= 6
@@ -39,9 +40,13 @@ from pathlib import Path
 from friendly_traceback import editors_helpers, set_stream
 from friendly_traceback import set_formatter as ft_set_formatter
 from friendly_traceback.config import session
+from friendly_traceback import exclude_directory_from_traceback
 
 from .my_gettext import current_lang
 from friendly import rich_formatters, theme
+
+
+exclude_directory_from_traceback(os.path.dirname(__file__))
 
 
 def run(

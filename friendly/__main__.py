@@ -25,7 +25,6 @@ from friendly import console
 from friendly import set_formatter
 from .my_gettext import current_lang
 
-
 # TODO: add friendly-traceback AND friendly version
 
 versions = "Friendly version {}. [Python version: {}]\n".format(
