@@ -58,7 +58,7 @@ def run(
     formatter="bw",
     redirect=None,
     background=None,
-    numbered_prompt=False,
+    ipython_prompt=False,
 ):
     """Given a filename (relative or absolute path) ending with the ".py"
     extension, this function uses the
@@ -124,7 +124,7 @@ def run(
             banner="",
             include=include,
             background=background,
-            numbered_prompt=numbered_prompt,
+            ipython_prompt=ipython_prompt,
         )
     else:
         return module_globals
@@ -161,7 +161,7 @@ def start_console(  # pragma: no cover
     banner=None,
     background=None,
     displayhook=None,
-    numbered_prompt=False,
+    ipython_prompt=False,
 ):
     """Starts a Friendly console."""
     from . import console
@@ -174,5 +174,5 @@ def start_console(  # pragma: no cover
         banner=banner,
         background=background,
         displayhook=displayhook,
-        numbered_prompt=numbered_prompt,
+        ipython_prompt=ipython_prompt,
     )

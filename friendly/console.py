@@ -38,7 +38,7 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         formatter="dark",
         background=None,
         displayhook=None,
-        numbered_prompt=False,
+        ipython_prompt=False,
     ):
         """This class builds upon Python's code.InteractiveConsole
         so as to provide friendly tracebacks. It keeps track
@@ -48,7 +48,7 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         super().__init__(
             local_vars=local_vars,
             displayhook=displayhook,
-            numbered_prompt=numbered_prompt,
+            ipython_prompt=ipython_prompt,
         )
 
         self.old_locals = {}
@@ -209,7 +209,7 @@ def start_console(
     banner=None,
     background=None,
     displayhook=None,
-    numbered_prompt=False,
+    ipython_prompt=False,
 ):
     """Starts a console; modified from code.interact"""
     # from . import config
@@ -229,6 +229,6 @@ def start_console(
         formatter=formatter,
         background=background,
         displayhook=displayhook,
-        numbered_prompt=numbered_prompt,
+        ipython_prompt=ipython_prompt,
     )
     console.interact(banner=banner)
