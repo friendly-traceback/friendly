@@ -17,6 +17,7 @@ from friendly_traceback import (
 )  # noqa
 from friendly.rich_console_helpers import *  # noqa
 from friendly.rich_console_helpers import FriendlyHelpers, helpers  # noqa
+from friendly import __version__ as version
 
 try:
     from IPython.utils import py3compat  # noqa
@@ -42,4 +43,6 @@ install(include="friendly_tb")
 set_formatter("dark")  # noqa
 __all__ = list(helpers.keys())
 
-print(f"friendly_traceback {__version__}. Type 'Friendly' for information.")
+print(
+    f"friendly_traceback {__version__}; friendly {version}.\nType 'Friendly' for information."
+)
