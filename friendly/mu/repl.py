@@ -67,7 +67,7 @@ def set_width(width=80):
 
 set_width.help = old_set_width.help  # noqa
 set_width.__rich_repr__ = old_set_width.__rich_repr__  # noqa
-FriendlyHelpers.set_width = set_width
+setattr(FriendlyHelpers, "set_width", set_width)
 helpers["set_width"] = set_width
 
 

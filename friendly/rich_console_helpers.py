@@ -34,7 +34,6 @@ def history():
 history.help = old_history.help  # noqa
 history.__rich_repr__ = old_history.__rich_repr__  # noqa
 history.__doc__ = old_history.__doc__
-FriendlyHelpers.history = history
 helpers["history"] = history
 
 # =================================
@@ -58,9 +57,9 @@ def light():
 
 def set_width(width=80):
     """Sets the width in a iPython/Jupyter session using 'light' or 'dark' mode"""
-    if session.use_rich:
+    try:
         session.console.width = width
-    else:
+    except Exception:
         print(_("set_width() is only available using 'light' or 'dark' mode."))
 
 
@@ -74,6 +73,7 @@ add_rich_repr(local_helpers)
 for helper in local_helpers:
     setattr(FriendlyHelpers, helper, staticmethod(local_helpers[helper]))
 Friendly = FriendlyHelpers(local_helpers=local_helpers)
+setattr(Friendly, "history", history)
 
 helpers["Friendly"] = Friendly
 helpers.update(local_helpers)

@@ -17,17 +17,17 @@ from importlib import import_module
 from pathlib import Path
 
 from friendly_traceback import explain_traceback, exclude_file_from_traceback, install
-from friendly_traceback import __version__
+from friendly_traceback import __version__ as ft_version
 from friendly_traceback import debug_helper
 
-from friendly import console
+from friendly import console, __version__
 from friendly import set_formatter
 from .my_gettext import current_lang
 
 # TODO: add friendly-traceback AND friendly version
 
-versions = "Friendly version {}. [Python version: {}]\n".format(
-    __version__, platform.python_version()
+versions = "\nfriendly-traceback: {}\nfriendly: {}\nPython: {}\n".format(
+    ft_version, __version__, platform.python_version()
 )
 
 
@@ -120,10 +120,8 @@ parser.add_argument(
     """,
 )
 
-
 parser.add_argument("--debug", help="""For developer use.""", action="store_true")
 parser.add_argument("--no_debug", help="""For developer use.""", action="store_true")
-
 
 parser.add_argument(
     "--include",
@@ -134,8 +132,8 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--ipython_prompt",
-    help="""Specifies that the console prompt must be of the form [number].""",
+    "--normal_prompt",
+    help="""Specifies that the console prompt must be a regular python prompt.""",
     action="store_true",
 )
 
@@ -161,20 +159,15 @@ def main():
 
     install(lang=args.lang, include=include)
 
-    if args.background:  # pragma: no cover
-        background = args.background
-    else:
-        background = None
-
     if args.formatter:
         formatter = args.formatter  # noqa
         if formatter in ["repl", "dark", "light", "docs"]:
-            set_formatter(formatter, background=background)  # pragma: no cover
+            set_formatter(formatter, background=args.background)  # pragma: no cover
         else:
             set_formatter(import_function(args.formatter))
             formatter = "dark"  # for the console - should not be needed
     else:
-        set_formatter("dark", background=background)
+        set_formatter("dark", background=args.background)
         formatter = "dark"
 
     console_defaults = {}
@@ -198,18 +191,18 @@ def main():
             console.start_console(
                 local_vars=console_defaults,
                 formatter=formatter,
-                background=background,
+                background=args.background,
                 lang=args.lang,
-                ipython_prompt=args.ipython_prompt,
+                ipython_prompt=not args.normal_prompt,
             )
 
     else:  # pragma: no cover
         console.start_console(
             local_vars=console_defaults,
             formatter=formatter,
-            background=background,
+            background=args.background,
             lang=args.lang,
-            ipython_prompt=args.ipython_prompt,
+            ipython_prompt=not args.normal_prompt,
         )
 
 
