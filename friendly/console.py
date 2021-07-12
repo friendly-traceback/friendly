@@ -196,7 +196,7 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         implementation.
         """
         if self.rich_console:
-            self.rich_console.print(prompt, style="operators", end="")
+            self.rich_console.print(prompt, style="code", end="")
             return input()
         return input(prompt)
 

@@ -7,6 +7,7 @@ from pygments import styles
 from . import amical
 from . import brunante
 from . import friendly_rich
+from . import patch_tb_lexer  # noqa will automatically Monkeypatch
 
 CURRENT_THEME = "brunante"
 
@@ -52,7 +53,6 @@ def init_rich_console(
             brunante.BrunanteStyle.background_color = background
     CURRENT_THEME = theme
 
-    console = friendly_rich.init_console(
+    return friendly_rich.init_console(
         style=style, theme=theme, color_system=color_system, force_jupyter=force_jupyter
     )
-    return console

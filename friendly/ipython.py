@@ -15,6 +15,8 @@ from friendly_traceback import (
     explain_traceback,
     __version__,
 )  # noqa
+from friendly_traceback.config import session
+
 from friendly.rich_console_helpers import *  # noqa
 from friendly.rich_console_helpers import FriendlyHelpers, helpers  # noqa
 from friendly import __version__ as version
@@ -29,6 +31,7 @@ except Exception:  # noqa
 
 colorama.deinit()
 colorama.init(convert=False, strip=False)
+session.ipython_prompt = True
 
 
 shell.InteractiveShell.showtraceback = lambda self, *args, **kwargs: explain_traceback()
