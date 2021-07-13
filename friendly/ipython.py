@@ -1,5 +1,6 @@
 """Experimental module to automatically install Friendly
 as a replacement for the standard traceback in IPython."""
+import inspect
 
 try:
     from IPython.core import interactiveshell as shell  # noqa
@@ -15,6 +16,7 @@ from friendly_traceback import (
     explain_traceback,
     __version__,
 )  # noqa
+
 from friendly_traceback.config import session
 
 from friendly.rich_console_helpers import *  # noqa
@@ -28,6 +30,16 @@ try:
 except Exception:  # noqa
     pass
 
+# The following is used to extract the contents of code blocks
+# so as to shorten name of code block "files" for SyntaxError
+# cases - since SyntaxErrors do not generate frames.
+frames = inspect.getouterframes(inspect.currentframe())
+session.ipython_frame = None
+for frame_info in frames:
+    frame = frame_info.frame
+    if "In" in frame.f_locals or "In" in frame.f_globals:
+        session.ipython_frame = frame
+        break
 
 colorama.deinit()
 colorama.init(convert=False, strip=False)

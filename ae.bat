@@ -3,7 +3,7 @@ REM Default is Python 3.9
 
 if "%1"=="3.6" goto py_36
 if "%1"=="3.7" goto py_37
-if "%1"=="3.8" goto py_37
+if "%1"=="3.8" goto py_38
 if "%1"=="3.9" goto py_39
 if "%1"=="3.10" goto py_310
 if "%1"=="ipython" goto ipython

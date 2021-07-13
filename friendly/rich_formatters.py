@@ -202,6 +202,12 @@ def _markdown(info, include, rich=False, documentation=False):  # pragma: no cov
                 content[0] = "`" + content[0] + "`"
                 content = ":".join(content)
 
+            if "header" in item and "[" in content:
+                content = content.replace("[", "`[").replace("]", "]`")
+
+            if item == "parsing_error" and "[" in content:
+                content = content.replace("[", "`[").replace("]", "]`")
+
             prefix, suffix = markdown_items[item]
             if documentation and prefix.startswith("#"):
                 prefix = "##" + prefix
