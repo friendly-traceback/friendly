@@ -94,7 +94,7 @@ class AmicalStyle(Style):
     styles = {
         Text: my_style["text"],  # class:  ''
         Whitespace: "",  # class: 'w'
-        Error: my_style["Exception"],  # class: 'err'
+        Error: "bg:#cc0000 #ffffff",  # class: 'err'
         Other: my_style["string"],  # class 'x'
         #
         Comment: my_style["comments"],  # class: 'c'
