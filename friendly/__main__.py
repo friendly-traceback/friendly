@@ -107,7 +107,7 @@ parser.add_argument(
     or a custom formatter function, as a dotted path. By default, the console
     will use dark if it is available.
 
-    For example: --formatter friendly.formatters.markdown is
+    For example: --formatter friendly.rich_formatters.markdown is
     equivalent to --formatter markdown
     """,
 )
