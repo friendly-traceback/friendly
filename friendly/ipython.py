@@ -33,13 +33,17 @@ except Exception:  # noqa
 # The following is used to extract the contents of code blocks
 # so as to shorten name of code block "files" for SyntaxError
 # cases - since SyntaxErrors do not generate frames.
-frames = inspect.getouterframes(inspect.currentframe())
+# Note that this may fail with older Jupyter/iPython versions versions
 session.ipython_frame = None
-for frame_info in frames:
-    frame = frame_info.frame
-    if "In" in frame.f_locals or "In" in frame.f_globals:
-        session.ipython_frame = frame
-        break
+try:
+    frames = inspect.getouterframes(inspect.currentframe())
+    for frame_info in frames:
+        frame = frame_info.frame
+        if "In" in frame.f_locals or "In" in frame.f_globals:
+            session.ipython_frame = frame
+            break
+except Exception:  # noqa
+    pass
 
 colorama.deinit()
 colorama.init(convert=False, strip=False)
