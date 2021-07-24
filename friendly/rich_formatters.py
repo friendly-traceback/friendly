@@ -35,7 +35,52 @@ try:  # pragma: no cover
 except ImportError:
     display = HTML = lambda x: x
 
-RICH_HEADER = False
+RICH_HEADER = False  # not a constant
+COUNT = 0  # not a constant
+
+
+def experiment():
+    """Work in progress to experiment creating interactive tracebacks
+    in Jupyter notebooks"""
+    global COUNT
+    COUNT += 1
+
+    if COUNT == 1:
+        css = HtmlFormatter().get_style_defs(".highlight")
+        display(HTML(f"<style>{css}</style>"))  # noqa
+
+    header = """<div class='highlight'>
+         <pre id='friendly-message{count}'><span class='ne'>{error_name}</span>:{rest}</pre>
+    """.format(
+        error_name="NameError", rest=" name 'why' is not defined", count=COUNT
+    )
+    explain = "Some explanation here."
+    content = """<script> function toggle{count}(){{
+     var content = document.getElementById('friendly-tb-content{count}');
+     var btn = document.getElementById('friendly-tb-btn-show{count}');
+     var header = document.getElementById('friendly-message{count}')
+        if (content.style.display === 'none') {{
+            content.style.display = 'block';
+            btn.textContent = "{show_only}";
+            header.style.display = 'none';
+        }} else {{
+            content.style.display = 'none';
+            btn.textContent = "{more}";
+            header.style.display = 'block';
+       }}
+    }}
+     </script>
+     {header}
+     <div id='friendly-tb-content{count}' style='display:none'>{explain}</div>
+     <button id='friendly-tb-btn-show{count}' onclick='toggle{count}()'>{more}</button>
+    """.format(
+        header=header,
+        explain=explain,
+        count=COUNT,
+        more="More",
+        show_only="Show message only",
+    )
+    display(HTML(content))
 
 
 def rich_writer(text):  # pragma: no cover
