@@ -1,7 +1,5 @@
 """Experimental module to automatically install Friendly
 as a replacement for the standard traceback in IPython."""
-import inspect
-
 try:
     from IPython.core import interactiveshell as shell  # noqa
     from IPython.core import compilerop  # noqa
@@ -27,21 +25,6 @@ try:
     from IPython.utils import py3compat  # noqa
 
     exclude_file_from_traceback(py3compat.__file__)
-except Exception:  # noqa
-    pass
-
-# The following is used to extract the contents of code blocks
-# so as to shorten name of code block "files" for SyntaxError
-# cases - since SyntaxErrors do not generate frames.
-# Note that this may fail with older Jupyter/iPython versions versions
-session.ipython_frame = None
-try:
-    frames = inspect.getouterframes(inspect.currentframe())
-    for frame_info in frames:
-        frame = frame_info.frame
-        if "In" in frame.f_locals or "In" in frame.f_globals:
-            session.ipython_frame = frame
-            break
 except Exception:  # noqa
     pass
 
