@@ -147,6 +147,9 @@ def set_formatter(
         )
         set_stream(redirect=rich_formatters.rich_writer)
         formatter = rich_formatters.rich_markdown
+    elif formatter == "experimental":
+        formatter = rich_formatters.experimental
+        set_stream()
     else:
         session.use_rich = False
         set_stream()

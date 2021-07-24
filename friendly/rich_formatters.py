@@ -39,22 +39,47 @@ RICH_HEADER = False  # not a constant
 COUNT = 0  # not a constant
 
 
-def experiment():
+def experimental(info, include="irrelevant"):  # noqa
     """Work in progress to experiment creating interactive tracebacks
     in Jupyter notebooks"""
     global COUNT
     COUNT += 1
+    _ = current_lang.translate
 
     if COUNT == 1:
         css = HtmlFormatter().get_style_defs(".highlight")
         display(HTML(f"<style>{css}</style>"))  # noqa
+        # css = HtmlFormatter(style="brunante").get_style_defs(".highlight")
+        # display(HTML(f"<style>{css}</style>"))  # noqa
+    error_name, message = info["message"].split(":", maxsplit=1)
 
     header = """<div class='highlight'>
-         <pre id='friendly-message{count}'><span class='ne'>{error_name}</span>:{rest}</pre>
+         <pre id='friendly-message{count}'><span class='ne'>{error_name}</span>:{message}</pre>
     """.format(
-        error_name="NameError", rest=" name 'why' is not defined", count=COUNT
+        error_name=error_name, message=message, count=COUNT
     )
-    explain = "Some explanation here."
+    where_items = [
+        "parsing_error",
+        "parsing_error_source",
+        "last_call_header",
+        "last_call_source",
+        "last_call_variables",
+        "exception_raised_header",
+        "exception_raised_source",
+        "exception_raised_variables",
+    ]
+    what = experimental_inner_content(info, items=["generic"], name="what", count=COUNT)
+    where = experimental_inner_content(
+        info, items=where_items, name="where", count=COUNT
+    )
+    why = experimental_inner_content(info, items=["cause"], name="why", count=COUNT)
+    friendly_tb = info["shortened_traceback"]
+    friendly_tb = highlight(friendly_tb, PythonTracebackLexer(), HtmlFormatter())
+    if "suggest" in info:
+        hint = html_escape(info["suggest"])
+        hint = f"<p><i>{hint}</i></p>"
+    else:
+        hint = ""
     content = """<script> function toggle{count}(){{
      var content = document.getElementById('friendly-tb-content{count}');
      var btn = document.getElementById('friendly-tb-btn-show{count}');
@@ -71,16 +96,89 @@ def experiment():
     }}
      </script>
      {header}
-     <div id='friendly-tb-content{count}' style='display:none'>{explain}</div>
+     <div id='friendly-tb-content{count}' style='display:none'>
+     {friendly_tb}
+     {hint}
+     {what}
+     {where}
+     {why}
+     </div>
      <button id='friendly-tb-btn-show{count}' onclick='toggle{count}()'>{more}</button>
     """.format(
         header=header,
-        explain=explain,
+        what=what,
+        where=where,
+        why=why,
+        friendly_tb=friendly_tb,
+        hint=hint,
         count=COUNT,
-        more="More",
-        show_only="Show message only",
+        more=_("More ..."),
+        show_only=_("Show message only"),
     )
     display(HTML(content))
+    return ""
+
+
+def experimental_inner_content(info, items=[], name=None, count=-1):
+    _ = current_lang.translate
+    result = []
+    for item in items:
+        if item in info:
+            if "source" in item or "variable" in item:
+                text = info[item]
+                text = highlight(text, PythonLexer(), HtmlFormatter())
+                result.append(text)
+            elif "traceback" in item:
+                text = info[item]
+                text = highlight(text, PythonTracebackLexer(), HtmlFormatter())
+                result.append(text)
+            elif item == "message":  # format like last line of traceback
+                content = info[item].split(":")
+                error_name = content[0]
+                message = ":".join(content[1:]) if len(content) > 1 else ""
+                text = "".join(
+                    [
+                        '<div class="highlight"><pre><span class="gr">',
+                        error_name,
+                        '</span>: <span class="n">',
+                        message,
+                        "</span></pre></div>",
+                    ]
+                )
+                result.append(text)
+            else:
+                text = html_escape(info[item])
+                if "header" in item:
+                    result.append(f"<p><b>{text}</b></p>")
+                else:
+                    result.append(f'<p style="width: 70ch">{text}</p>')
+    if not result and items == ["cause"]:
+        text = no_result(info, "why")
+        if text:
+            result.append(f'<p style="width: 70ch;">{text}</p>')
+    if not result:
+        return ""
+    text = "\n".join(result)
+    content = """<script> function toggle_{name}{count}(){{
+     var content = document.getElementById('friendly-tb-{name}-content{count}');
+     var btn = document.getElementById('friendly-tb-btn-show-{name}{count}');
+        if (content.style.display === 'none') {{
+            content.style.display = 'block';
+            btn.textContent = "{hide} {name}()";
+        }} else {{
+            content.style.display = 'none';
+            btn.textContent = "{name}()";
+       }}
+    }}
+     </script>
+     <button id='friendly-tb-btn-show-{name}{count}' onclick='toggle_{name}{count}()'>{name}()</button>
+     <div id='friendly-tb-{name}-content{count}' style='display:none'>
+     {text}
+     </div>
+    """.format(
+        name=name, count=count, text=text, hide=_("Hide")
+    )
+    return content
 
 
 def rich_writer(text):  # pragma: no cover
@@ -149,7 +247,7 @@ def jupyter(info, include="friendly_tb"):  # pragma: no cover
                 display(HTML(text))
             elif item == "suggest":
                 text = html_escape(info[item])
-                display(HTML(f"<p><i>{text}<i><p>"))
+                display(HTML(f"<p><i>{text}</i></p>"))
             else:
                 text = html_escape(info[item])
                 if "header" in item:
