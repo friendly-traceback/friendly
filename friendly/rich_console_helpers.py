@@ -5,6 +5,7 @@ from friendly_traceback.console_helpers import *  # noqa
 
 old_set_formatter = set_formatter  # noqa
 old_history = history  # noqa
+old_set_lang = set_lang  # noqa
 
 from friendly_traceback.console_helpers import FriendlyHelpers, helpers
 from friendly_traceback.utils import add_rich_repr
@@ -36,6 +37,18 @@ history.__rich_repr__ = old_history.__rich_repr__  # noqa
 history.__doc__ = old_history.__doc__
 helpers["history"] = history
 
+
+def set_lang(lang):
+    old_set_lang(lang)
+    current_lang.install(lang)
+
+
+set_lang.help = old_set_lang.help  # noqa
+set_lang.__rich_repr__ = old_set_lang.__rich_repr__  # noqa
+set_lang.__doc__ = old_set_lang.__doc__
+helpers["set_lang"] = set_lang
+
+
 # =================================
 # Additional rich-specific helpers
 # =================================
@@ -65,7 +78,7 @@ def set_width(width=80):
 
 dark.help = lambda: _("Sets a colour scheme designed for a black background.")
 light.help = lambda: _("Sets a colour scheme designed for a white background.")
-set_width.help = lambda: "Sets the output width in 'light' or 'dark' mode."
+set_width.help = lambda: _("Sets the output width in some modes.")
 
 local_helpers = {"dark": dark, "light": light, "set_width": set_width}
 add_rich_repr(local_helpers)

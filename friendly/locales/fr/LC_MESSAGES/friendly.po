@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-07-24 07:37-0300\n"
+"POT-Creation-Date: 2021-07-25 07:21-0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: André Roberge <andre.roberge@gmail.com>\n"
 "Language-Team: \n"
@@ -105,27 +105,31 @@ msgstr ""
 msgid "Internal error for Friendly.\n"
 msgstr "Exception soulevée par Friendly.\n"
 
-#: rich_console_helpers.py:63
+#: rich_console_helpers.py:76
 msgid "set_width() is only available using 'light' or 'dark' mode."
 msgstr "set_width() est uniquement disponible en mode \"light\" ou \"dark\"."
 
-#: rich_console_helpers.py:66
+#: rich_console_helpers.py:79
 msgid "Sets a colour scheme designed for a black background."
 msgstr "Définit un schéma de couleurs conçu pour un fond noir."
 
-#: rich_console_helpers.py:67
+#: rich_console_helpers.py:80
 msgid "Sets a colour scheme designed for a white background."
 msgstr "Définit un schéma de couleurs conçu pour un fond blanc."
 
-#: rich_formatters.py:110
+#: rich_console_helpers.py:81
+msgid "Sets the output width in some modes."
+msgstr "Définit la largeur du texte dans certains modes."
+
+#: rich_formatters.py:115
 msgid "More ..."
 msgstr "Plus ..."
 
-#: rich_formatters.py:111
+#: rich_formatters.py:116
 msgid "Show message only"
 msgstr "Afficher uniquement le message"
 
-#: rich_formatters.py:177
+#: rich_formatters.py:179
 msgid "Hide"
 msgstr "Cacher"
 
