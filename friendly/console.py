@@ -216,6 +216,8 @@ def start_console(
     if banner is None:
         banner = BANNER + ft.ft_console.type_friendly() + "\n"
 
+    friendly.set_lang(lang)
+
     if not ft.is_installed():
         ft.install(include=include, lang=lang)
 

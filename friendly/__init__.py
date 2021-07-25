@@ -41,6 +41,7 @@ from friendly_traceback import editors_helpers, set_stream
 from friendly_traceback import set_formatter as ft_set_formatter
 from friendly_traceback.config import session
 from friendly_traceback import exclude_directory_from_traceback
+from friendly_traceback import set_lang as ft_set_lang
 
 from .my_gettext import current_lang
 from friendly import rich_formatters, theme
@@ -112,6 +113,7 @@ def run(
             return
 
     session.install(lang=lang, include=include, redirect=redirect)
+    set_lang(lang)
     session.set_formatter(formatter)
 
     module_globals = editors_helpers.exec_code(
@@ -179,3 +181,8 @@ def start_console(  # pragma: no cover
         displayhook=displayhook,
         ipython_prompt=ipython_prompt,
     )
+
+
+def set_lang(lang):
+    ft_set_lang(lang)
+    current_lang.install(lang)
