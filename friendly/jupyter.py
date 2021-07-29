@@ -12,7 +12,7 @@ def set_formatter(
     """Sets the default formatter. If no argument is given, a default
     formatter is used.
     """
-    session.rich_add_vspace = True
+    session.rich_add_vspace = False
     session.use_rich = True
     if formatter == "jupyter":
         set_formatter(rich_formatters.jupyter)

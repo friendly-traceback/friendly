@@ -25,6 +25,7 @@ from pygments import highlight  # noqa
 from pygments.lexers import PythonLexer, PythonTracebackLexer  # noqa
 from pygments.formatters import HtmlFormatter  # noqa
 
+from rich import jupyter as rich_jupyter
 
 ipython_available = False
 try:  # pragma: no cover
@@ -39,126 +40,67 @@ RICH_HEADER = False  # not a constant
 COUNT = 0  # not a constant
 
 
-def experimental(info, include="irrelevant"):  # noqa
+def jupyter_interactive(info, include="friendly_tb"):  # noqa
     """Work in progress to experiment creating interactive tracebacks
     in Jupyter notebooks"""
     global COUNT
+    if include != "friendly_tb":
+        text = _markdown(info, include=include, rich=True)
+        rich_writer(text)
+        return
     COUNT += 1
     _ = current_lang.translate
-
-    if COUNT == 1:
-        css = HtmlFormatter().get_style_defs(".highlight")
-        display(HTML(f"<style>{css}</style>"))  # noqa
-        # css = HtmlFormatter(style="brunante").get_style_defs(".highlight")
-        # display(HTML(f"<style>{css}</style>"))  # noqa
-    error_name, message = info["message"].split(":", maxsplit=1)
-
-    header = """<div class='highlight'>
-         <pre id='friendly-message{count}'><span class='ne'>{error_name}</span>:{message}</pre>
-    """.format(
-        error_name=error_name, message=message, count=COUNT
-    )
-    where_items = [
-        "parsing_error",
-        "parsing_error_source",
-        "last_call_header",
-        "last_call_source",
-        "last_call_variables",
-        "exception_raised_header",
-        "exception_raised_source",
-        "exception_raised_variables",
-    ]
-    what = experimental_inner_content(info, items=["generic"], name="what", count=COUNT)
-    where = experimental_inner_content(
-        info, items=where_items, name="where", count=COUNT
-    )
-    why = experimental_inner_content(info, items=["cause"], name="why", count=COUNT)
-    friendly_tb = info["shortened_traceback"]
-    friendly_tb = highlight(friendly_tb, PythonTracebackLexer(), HtmlFormatter())
-    if "suggest" in info:
-        hint = html_escape(info["suggest"])
-        hint = f"<p><i>{hint}</i></p>"
-    else:
-        hint = ""
-    content = """<script> function toggle{count}(){{
-     var content = document.getElementById('friendly-tb-content{count}');
-     var btn = document.getElementById('friendly-tb-btn-show{count}');
-     var header = document.getElementById('friendly-message{count}')
-        if (content.style.display === 'none') {{
-            content.style.display = 'block';
-            btn.textContent = "{show_only}";
-            header.style.display = 'none';
-        }} else {{
-            content.style.display = 'none';
-            btn.textContent = "{more}";
-            header.style.display = 'block';
-       }}
-    }}
-     </script>
-     {header}
-     <div id='friendly-tb-content{count}' style='display:none'>
-     {friendly_tb}
-     {hint}
-     {what}
-     {where}
-     {why}
-     </div>
-     <button id='friendly-tb-btn-show{count}' onclick='toggle{count}()'>{more}</button>
-    """.format(
-        header=header,
-        what=what,
-        where=where,
-        why=why,
-        friendly_tb=friendly_tb,
-        hint=hint,
-        count=COUNT,
-        more=_("More ..."),
-        show_only=_("Show message only"),
-    )
-    display(HTML(content))
+    session.rich_add_vspace = False
+    add_message(info, count=COUNT)
+    add_control(count=COUNT)
+    add_friendly_tb(info, count=COUNT)
+    add_interactive_item(info, "what", count=COUNT)
+    add_interactive_item(info, "why", count=COUNT)
+    add_interactive_item(info, "where", count=COUNT)
     return ""
 
 
-def experimental_inner_content(info, items=[], name=None, count=-1):
+def add_message(info, count=-1):
+    old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
+    rich_jupyter.JUPYTER_HTML_FORMAT = (
+        "<div id='friendly-message{count}'>".format(count=COUNT)
+        + old_jupyter_html_format
+        + "</div>"
+    )
+    text = _markdown(info, include="message", rich=True)
+    rich_writer(text)
+    rich_jupyter.JUPYTER_HTML_FORMAT = old_jupyter_html_format
+
+
+def add_friendly_tb(info, count=-1):
+    old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
+    name = "friendly_tb"
+    rich_jupyter.JUPYTER_HTML_FORMAT = (
+        "<div id='friendly-tb-{name}-content{count}' style='display:none'>".format(
+            name=name, count=count
+        )
+        + old_jupyter_html_format
+        + "</div>"
+    )
+    text = _markdown(info, include="friendly_tb", rich=True)
+    rich_writer(text)
+    rich_jupyter.JUPYTER_HTML_FORMAT = old_jupyter_html_format
+
+
+def add_interactive_item(info, name, count=-1):
     _ = current_lang.translate
-    result = []
-    for item in items:
-        if item in info:
-            if "source" in item or "variable" in item:
-                text = info[item]
-                text = highlight(text, PythonLexer(), HtmlFormatter())
-                result.append(text)
-            elif "traceback" in item:
-                text = info[item]
-                text = highlight(text, PythonTracebackLexer(), HtmlFormatter())
-                result.append(text)
-            elif item == "message":  # format like last line of traceback
-                content = info[item].split(":")
-                error_name = content[0]
-                message = ":".join(content[1:]) if len(content) > 1 else ""
-                text = "".join(
-                    [
-                        '<div class="highlight"><pre><span class="gr">',
-                        error_name,
-                        '</span>: <span class="n">',
-                        message,
-                        "</span></pre></div>",
-                    ]
-                )
-                result.append(text)
-            else:
-                text = html_escape(info[item])
-                if "header" in item:
-                    result.append(f"<p><b>{text}</b></p>")
-                else:
-                    result.append(f'<p style="width: 70ch">{text}</p>')
-    if not result and items == ["cause"]:
-        text = no_result(info, "why")
-        if text:
-            result.append(f'<p style="width: 70ch;">{text}</p>')
-    if not result:
-        return ""
-    text = "\n".join(result)
+    old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
+
+    rich_jupyter.JUPYTER_HTML_FORMAT = (
+        "<div id='friendly-tb-{name}-content{count}' style='display:none'>".format(
+            name=name, count=count
+        )
+        + old_jupyter_html_format
+        + "</div>"
+    )
+    text = _markdown(info, include=name, rich=True)
+    rich_writer(text)
+
     content = """<script> function toggle_{name}{count}(){{
      var content = document.getElementById('friendly-tb-{name}-content{count}');
      var btn = document.getElementById('friendly-tb-btn-show-{name}{count}');
@@ -171,20 +113,66 @@ def experimental_inner_content(info, items=[], name=None, count=-1):
        }}
     }}
      </script>
-     <button id='friendly-tb-btn-show-{name}{count}' onclick='toggle_{name}{count}()'>{name}()</button>
-     <div id='friendly-tb-{name}-content{count}' style='display:none'>
-     {text}
-     </div>
+     <button id='friendly-tb-btn-show-{name}{count}' onclick='toggle_{name}{count}()' style='display:none'>
+     {name}()
+     </button>
     """.format(
-        name=name, count=count, text=text, hide=_("Hide")
+        name=name, count=count, hide=_("Hide")
     )
-    return content
+    display(HTML(content))
+
+    rich_jupyter.JUPYTER_HTML_FORMAT = old_jupyter_html_format
+
+
+def add_control(count=-1):
+    _ = current_lang.translate
+    content = """
+        <button id='friendly-tb-btn-show{count}' onclick='friendly_toggle_more{count}()'>
+        {more}
+        </button>
+        <script> function friendly_toggle_more{count}(){{
+        var btn = document.getElementById('friendly-tb-btn-show{count}');
+        var btn_what = document.getElementById('friendly-tb-btn-show-what{count}');
+        var btn_where = document.getElementById('friendly-tb-btn-show-where{count}');
+        var btn_why = document.getElementById('friendly-tb-btn-show-why{count}');
+        var message = document.getElementById('friendly-message{count}');
+        var friendly_tb_content = document.getElementById('friendly-tb-friendly_tb-content{count}');
+        var what_content = document.getElementById('friendly-tb-what-content{count}');
+        var why_content = document.getElementById('friendly-tb-why-content{count}');
+        var where_content = document.getElementById('friendly-tb-where-content{count}');
+
+        if (btn_what.style.display == 'none'){{
+            message.style.display = 'none';
+            btn_what.style.display = 'block';
+            btn_why.style.display = 'block';
+            btn_where.style.display = 'block';
+            friendly_tb_content.style.display = 'block';
+            btn.textContent = "{only}";
+        }} else {{
+            btn_what.style.display = 'none';
+            btn_what.textContent = 'what()';
+            btn_why.style.display = 'none';
+            btn_why.textContent = 'why()';
+            btn_where.style.display = 'none';
+            btn_where.textContent = 'where()';
+            what_content.style.display = 'none';
+            why_content.style.display = 'none';
+            where_content.style.display = 'none';
+            friendly_tb_content.style.display = 'none';
+            message.style.display = 'block';
+            btn.textContent = "{more}";
+        }}
+        }};
+        </script>
+        """.format(
+        count=count, more=_("More ..."), only=_("Show message only")
+    )
+    display(HTML(content))
 
 
 def rich_writer(text):  # pragma: no cover
     """Default writer"""
     global RICH_HEADER
-
     if session.rich_add_vspace:
         session.console.print()
     md = theme.friendly_rich.Markdown(
