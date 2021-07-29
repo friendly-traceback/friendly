@@ -30,12 +30,33 @@ set_formatter.__rich_repr__ = old_set_formatter.__rich_repr__
 helpers["set_formatter"] = set_formatter
 Friendly.set_formatter = set_formatter  # noqa
 
+old_light = light  # noqa
+old_dark = dark  # noqa
+
+
+def light():
+    set_formatter("interactive")
+
+
+def dark():
+    set_formatter("interactive-dark")
+
+
+light.help = old_light.help  # noqa
+light.__rich_repr__ = old_light.__rich_repr__  # noqa
+light.__doc__ = old_light.__doc__
+Friendly.light = light  # noqa
+helpers["light"] = light
+
+dark.help = old_dark.help  # noqa
+dark.__rich_repr__ = old_dark.__rich_repr__  # noqa
+dark.__doc__ = old_dark.__doc__
+Friendly.dark = dark  # noqa
+helpers["dark"] = dark
+
+
 __all__ = list(helpers.keys())
 
-# While the 'light' and 'dark' formatters produce better output
-# when the corresponding jupyter theme is selected by the user,
-# we have no way to determine the theme used.
-# The jupyter formatter uses IPython custom methods so that the
-# colours used automatically adjust based on the jupyter theme,
-# and is thus always a suitable, if not ideal choice.
-set_formatter("jupyter")  # noqa
+# Use the new interactive light formatter by default.
+
+light()  # noqa

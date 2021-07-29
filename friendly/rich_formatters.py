@@ -63,7 +63,7 @@ def jupyter_interactive(info, include="friendly_tb"):  # noqa
 def add_message(info, count=-1):
     old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
     rich_jupyter.JUPYTER_HTML_FORMAT = (
-        "<div id='friendly-message{count}'>".format(count=COUNT)
+        "<div id='friendly-message{count}'>".format(count=count)
         + old_jupyter_html_format
         + "</div>"
     )
@@ -91,16 +91,6 @@ def add_interactive_item(info, name, count=-1):
     _ = current_lang.translate
     old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
 
-    rich_jupyter.JUPYTER_HTML_FORMAT = (
-        "<div id='friendly-tb-{name}-content{count}' style='display:none'>".format(
-            name=name, count=count
-        )
-        + old_jupyter_html_format
-        + "</div>"
-    )
-    text = _markdown(info, include=name, rich=True)
-    rich_writer(text)
-
     content = """<script> function toggle_{name}{count}(){{
      var content = document.getElementById('friendly-tb-{name}-content{count}');
      var btn = document.getElementById('friendly-tb-btn-show-{name}{count}');
@@ -113,13 +103,23 @@ def add_interactive_item(info, name, count=-1):
        }}
     }}
      </script>
-     <button id='friendly-tb-btn-show-{name}{count}' onclick='toggle_{name}{count}()' style='display:none'>
+     <button id='friendly-tb-btn-show-{name}{count}' onclick='toggle_{name}{count}()' style='display:none {btn_style}'>
      {name}()
      </button>
     """.format(
-        name=name, count=count, hide=_("Hide")
+        name=name, count=count, hide=_("Hide"), btn_style=session.jupyter_button_style
     )
     display(HTML(content))
+
+    rich_jupyter.JUPYTER_HTML_FORMAT = (
+        "<div id='friendly-tb-{name}-content{count}' style='display:none'>".format(
+            name=name, count=count
+        )
+        + old_jupyter_html_format
+        + "</div>"
+    )
+    text = _markdown(info, include=name, rich=True)
+    rich_writer(text)
 
     rich_jupyter.JUPYTER_HTML_FORMAT = old_jupyter_html_format
 
@@ -127,7 +127,7 @@ def add_interactive_item(info, name, count=-1):
 def add_control(count=-1):
     _ = current_lang.translate
     content = """
-        <button id='friendly-tb-btn-show{count}' onclick='friendly_toggle_more{count}()'>
+        <button id='friendly-tb-btn-show{count}' onclick='friendly_toggle_more{count}()' style='{btn_style}'>
         {more}
         </button>
         <script> function friendly_toggle_more{count}(){{
@@ -165,7 +165,10 @@ def add_control(count=-1):
         }};
         </script>
         """.format(
-        count=count, more=_("More ..."), only=_("Show message only")
+        count=count,
+        more=_("More ..."),
+        only=_("Show message only"),
+        btn_style=session.jupyter_button_style,
     )
     display(HTML(content))
 
