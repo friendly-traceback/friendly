@@ -2,9 +2,13 @@
 formatters.py
 ==============
 
-This module currently contains 4 formatters
+This module currently contains the following formatters
 
-* ``jupyter()``: experimental formatter for Jupyter notebooks
+* ``jupyter_interactive()``: formatter for jupyter notebooks that uses
+    buttons to show and hide parts of the information instead of
+    having to type them as functions to be executed.
+
+* ``jupyter()``: basic formatter for Jupyter notebooks
 
 * ``markdown()``: This produces an output formatted with markdown syntax.
 
@@ -41,8 +45,9 @@ COUNT = 0  # not a constant
 
 
 def jupyter_interactive(info, include="friendly_tb"):  # noqa
-    """Work in progress to experiment creating interactive tracebacks
-    in Jupyter notebooks"""
+    """This implements a formatter that inserts buttons in a jupyter notebook
+    allowing to selectively show what/why/where, instead of
+    showing the friendly_tb by default."""
     global COUNT
     if include != "friendly_tb":
         text = _markdown(info, include=include, rich=True)
@@ -61,6 +66,8 @@ def jupyter_interactive(info, include="friendly_tb"):  # noqa
 
 
 def add_message(info, count=-1):
+    """Shows the error message. By default, this is the only item shown
+    other than a button to reveal"""
     old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
     rich_jupyter.JUPYTER_HTML_FORMAT = (
         "<div id='friendly-message{count}'>".format(count=count)
@@ -73,6 +80,7 @@ def add_message(info, count=-1):
 
 
 def add_friendly_tb(info, count=-1):
+    """Adds the friendly_tb, hiddent by default"""
     old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
     name = "friendly_tb"
     rich_jupyter.JUPYTER_HTML_FORMAT = (
@@ -88,10 +96,12 @@ def add_friendly_tb(info, count=-1):
 
 
 def add_interactive_item(info, name, count=-1):
+    """Adds interactive items (what/why/where) with buttons to toggle
+    their visibility."""
     _ = current_lang.translate
     old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
 
-    content = """<script> function toggle_{name}{count}(){{
+    content = """<script type="text/Javascript"> function toggle_{name}{count}(){{
      var content = document.getElementById('friendly-tb-{name}-content{count}');
      var btn = document.getElementById('friendly-tb-btn-show-{name}{count}');
         if (content.style.display === 'none') {{
@@ -125,12 +135,13 @@ def add_interactive_item(info, name, count=-1):
 
 
 def add_control(count=-1):
+    """Adds a single button to control the visibility of all other elements."""
     _ = current_lang.translate
     content = """
         <button id='friendly-tb-btn-show{count}' onclick='friendly_toggle_more{count}()' style='{btn_style}'>
         {more}
         </button>
-        <script> function friendly_toggle_more{count}(){{
+        <script type="text/Javascript"> function friendly_toggle_more{count}(){{
         var btn = document.getElementById('friendly-tb-btn-show{count}');
         var btn_what = document.getElementById('friendly-tb-btn-show-what{count}');
         var btn_where = document.getElementById('friendly-tb-btn-show-where{count}');
@@ -205,7 +216,13 @@ def html_escape(text):  # pragma: no cover
 # and trying to import it from there uninstalls everything: it is as though
 # it starts a new iPython subprocess.
 def jupyter(info, include="friendly_tb"):  # pragma: no cover
-    """Jupyter formatter using pygments and html format."""
+    """Jupyter formatter using pygments and html format.
+
+    This can be used as a jupyter theme agnostic formatter as it
+    works equally well with a light or dark theme.
+    However, some of the information shown may be less than optimal
+    when it comes to visibility/contrast.
+    """
     _ = current_lang.translate
     css = HtmlFormatter().get_style_defs(".highlight")
     display(HTML(f"<style>{css}</style>"))  # noqa
