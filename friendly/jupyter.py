@@ -1,7 +1,19 @@
+from rich import jupyter as rich_jupyter
+
 from friendly_traceback import session  # noqa
 from .ipython import *  # noqa
 from .ipython import helpers
 from friendly import rich_formatters
+
+
+# For Jupyter output, Rich specifies a set of fonts starting with Menlo and
+# ending with monospace as last resort whereas Jupyter notebooks just
+# specify monospace. To make font-size more consistent, we remove the
+# font-specification from Rich.
+rich_jupyter.JUPYTER_HTML_FORMAT = (
+    "<pre style='white-space:pre;overflow-x:auto;line-height:normal'>{code}</pre>"
+)
+
 
 old_set_formatter = set_formatter  # noqa
 
