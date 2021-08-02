@@ -41,6 +41,7 @@ except ImportError:
     display = HTML = lambda x: x
 
 RICH_HEADER = False  # not a constant
+WIDE_OUTPUT = False  # not a constant
 COUNT = 0  # not a constant
 
 
@@ -186,7 +187,7 @@ def add_control(count=-1):
 
 def rich_writer(text):  # pragma: no cover
     """Default writer"""
-    global RICH_HEADER
+    global RICH_HEADER, WIDE_OUTPUT
     if session.rich_add_vspace:
         session.console.print()
     md = theme.friendly_rich.Markdown(
@@ -197,6 +198,9 @@ def rich_writer(text):  # pragma: no cover
         md = theme.friendly_rich.Panel(md, title=title)
         RICH_HEADER = False
     session.console.print(md)
+    if WIDE_OUTPUT:
+        session.console.width = session.rich_width
+        WIDE_OUTPUT = False
 
 
 def html_escape(text):  # pragma: no cover
@@ -312,9 +316,16 @@ def rich_markdown(info, include="friendly_tb"):  # pragma: no cover
 
 def _markdown(info, include, rich=False, documentation=False):  # pragma: no cover
     """Traceback formatted with with markdown syntax."""
-    global RICH_HEADER
-    RICH_HEADER = False
-
+    global RICH_HEADER, WIDE_OUTPUT
+    if (
+        rich
+        and session.is_jupyter
+        and session.rich_tb_width is not None
+        and session.rich_tb_width != session.rich_width
+        and include in ["friendly_tb", "python_tb", "debug_tb", "where", "explain"]
+    ):
+        session.console.width = session.rich_tb_width
+        WIDE_OUTPUT = True
     markdown_items = {
         "header": ("# ", ""),
         "message": ("", ""),

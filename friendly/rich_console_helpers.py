@@ -73,7 +73,15 @@ def set_width(width=80):
     try:
         session.console.width = width
     except Exception:
-        print(_("set_width() is only available using 'light' or 'dark' mode."))
+        print(_("set_width() has no effect with this formatter."))
+        return
+    session.rich_width = width
+    if session.is_jupyter:
+        if (
+            session.rich_tb_width is not None
+            and session.rich_width > session.rich_tb_width
+        ):
+            session.rich_tb_width = width
 
 
 dark.help = lambda: _("Sets a colour scheme designed for a black background.")
