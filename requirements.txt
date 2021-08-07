@@ -2,3 +2,4 @@ rich >= 10.3
 colorama
 pygments
 friendly-traceback >= 0.4.4
+friendly_styles

@@ -96,6 +96,6 @@ __all__ = list(helpers.keys())
 # Use the new interactive light formatter by default.
 
 light()  # noqa
-set_tb_width(120)  # noqa
+set_tb_width(100)  # noqa
 set_width(70)  # noqa
 session.is_jupyter = True

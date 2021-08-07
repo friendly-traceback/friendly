@@ -81,7 +81,7 @@ def add_message(info, count=-1):
 
 
 def add_friendly_tb(info, count=-1):
-    """Adds the friendly_tb, hiddent by default"""
+    """Adds the friendly_tb, hidden by default"""
     old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
     name = "friendly_tb"
     rich_jupyter.JUPYTER_HTML_FORMAT = (

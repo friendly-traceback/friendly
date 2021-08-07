@@ -11,12 +11,14 @@ from rich.panel import Panel  # noqa
 from rich.syntax import Syntax  # noqa
 from rich.text import Text  # noqa
 from rich.theme import Theme  # noqa
-from . import amical
-from . import brunante
 
+from pygments import styles
 
-dark_background_theme = Theme(brunante.my_style)
-light_background_theme = Theme(amical.my_style)
+friendly_light = styles.get_style_by_name("friendly_light")
+friendly_dark = styles.get_style_by_name("friendly_dark")
+
+dark_background_theme = Theme(friendly_dark.friendly_style)
+light_background_theme = Theme(friendly_light.friendly_style)
 
 
 def init_console(

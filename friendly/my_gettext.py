@@ -82,7 +82,7 @@ current_lang = LangState()  # noqa
 
 def please_report():
     _ = current_lang.translate
-    debug_helper.log("New case to consider.")
+    debug_helper.log("Friendly; please_report: New case to consider.")
     return _(
         "Please report this example to "
         "https://github.com/aroberge/friendly/issues.\n"
