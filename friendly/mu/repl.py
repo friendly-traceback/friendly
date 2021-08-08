@@ -6,13 +6,12 @@ import colorama  # noqa
 from friendly_traceback import set_stream
 from friendly_traceback import set_formatter as ft_set_formatter
 from friendly_traceback.config import session  # noqa
-from friendly_traceback.utils import add_rich_repr  # noqa
+from friendly_traceback.functions_help import add_help_attribute, short_description
 
 from ..my_gettext import current_lang  # noqa
 from friendly.ipython import *  # noqa  # Will automatically install
 
 old_set_width = set_width  # noqa
-from friendly import set_formatter as old_set_formatter
 from friendly.rich_console_helpers import FriendlyHelpers, helpers
 
 
@@ -23,9 +22,6 @@ colorama.deinit()  # reset needed on Windows
 colorama.init(convert=False, strip=False)
 
 _ = current_lang.translate
-
-del helpers["dark"]
-del helpers["light"]
 
 
 def set_formatter(formatter=None, background=None):
@@ -51,12 +47,6 @@ def set_formatter(formatter=None, background=None):
     ft_set_formatter(formatter=formatter)
 
 
-set_formatter.help = old_set_formatter.help  # noqa
-set_formatter.__rich_repr__ = old_set_formatter.__rich_repr__  # noqa
-FriendlyHelpers.set_formatter = set_formatter
-helpers["set_formatter"] = set_formatter
-
-
 def set_width(width=80):
     """Sets the width in a iPython/Jupyter session using 'light' or 'dark' mode"""
     if session.use_rich:
@@ -65,10 +55,16 @@ def set_width(width=80):
         print(_("set_width() is only available using 'day', 'night' or 'black' mode."))
 
 
-set_width.help = old_set_width.help  # noqa
-set_width.__rich_repr__ = old_set_width.__rich_repr__  # noqa
+setattr(FriendlyHelpers, "set_formatter", set_formatter)
 setattr(FriendlyHelpers, "set_width", set_width)
+helpers["set_formatter"] = set_formatter
 helpers["set_width"] = set_width
+
+add_help_attribute({"set_formatter": set_formatter, "set_width": set_width})
+
+# ========= Replacing theme-based formatters
+del helpers["dark"]
+del helpers["light"]
 
 
 def day():
@@ -91,13 +87,16 @@ def bw():
     set_formatter("repl", background="#000000")
 
 
-day.help = lambda: _("Colour scheme designed for Mu's day theme.")
-night.help = lambda: _("Colour scheme designed for Mu's night theme.")
-black.help = lambda: _("Colourful scheme designed for Mu's high contrast theme.")
-bw.help = lambda: _("Black and white scheme designed for Mu's high contrast theme.")
-
+short_description["day"] = lambda: _("Colour scheme designed for Mu's day theme.")
+short_description["night"] = lambda: _("Colour scheme designed for Mu's night theme.")
+short_description["black"] = lambda: _(
+    "Colourful scheme designed for Mu's high contrast theme."
+)
+short_description["bw"] = lambda: _(
+    "Black and white scheme designed for Mu's high contrast theme."
+)
 local_helpers = {"day": day, "night": night, "black": black, "bw": bw}
-add_rich_repr(local_helpers)
+add_help_attribute(local_helpers)
 
 for helper in local_helpers:
     setattr(FriendlyHelpers, helper, staticmethod(local_helpers[helper]))

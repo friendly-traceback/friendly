@@ -1,11 +1,16 @@
 from rich import jupyter as rich_jupyter
 
 from friendly_traceback import session  # noqa
+from friendly_traceback.functions_help import (
+    add_help_attribute,
+    short_description,
+)  # noqa
 from .ipython import *  # noqa
 from .ipython import helpers
 from friendly import rich_formatters
 from friendly.my_gettext import current_lang
 
+_ = current_lang.translate
 
 # For Jupyter output, Rich specifies a set of fonts starting with Menlo and
 # ending with monospace as last resort whereas Jupyter notebooks just
@@ -14,9 +19,9 @@ from friendly.my_gettext import current_lang
 rich_jupyter.JUPYTER_HTML_FORMAT = (
     "<pre style='white-space:pre;overflow-x:auto;line-height:normal'>{code}</pre>"
 )
-
-
 old_set_formatter = set_formatter  # noqa
+old_light = light  # noqa
+old_dark = dark  # noqa
 
 
 def set_formatter(
@@ -38,13 +43,8 @@ def set_formatter(
         )
 
 
-set_formatter.help = old_set_formatter.help
-set_formatter.__rich_repr__ = old_set_formatter.__rich_repr__
 helpers["set_formatter"] = set_formatter
 Friendly.set_formatter = set_formatter  # noqa
-
-old_light = light  # noqa
-old_dark = dark  # noqa
 
 
 def light():
@@ -55,14 +55,10 @@ def dark():
     set_formatter("interactive-dark")
 
 
-light.help = old_light.help  # noqa
-light.__rich_repr__ = old_light.__rich_repr__  # noqa
 light.__doc__ = old_light.__doc__
 Friendly.light = light  # noqa
 helpers["light"] = light
 
-dark.help = old_dark.help  # noqa
-dark.__rich_repr__ = old_dark.__rich_repr__  # noqa
 dark.__doc__ = old_dark.__doc__
 Friendly.dark = dark  # noqa
 helpers["dark"] = dark
@@ -75,7 +71,6 @@ def set_tb_width(width=None):
     The width of traceback is never less than the width of
     the other output from rich.
     """
-    _ = current_lang.translate
     if width is None:
         return
     try:
@@ -87,6 +82,18 @@ def set_tb_width(width=None):
     if session.rich_width is None or session.rich_width > session.rich_tb_width:
         session.rich_width = width
 
+
+# TODO: need to redefine Friendly so as to include set_tb_width
+short_description["set_tb_width"] = lambda: _("Sets the width of the traceback.")
+
+add_help_attribute(
+    {
+        "light": light,
+        "dark": dark,
+        "set_formatter": set_formatter,
+        "set_tb_width": set_tb_width,
+    }
+)
 
 setattr(Friendly, "set_tb_width", set_tb_width)  # noqa
 helpers["set_tb_width"] = set_tb_width

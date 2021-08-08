@@ -3,27 +3,19 @@ so as to add custom ones for Rich-based formatters."""
 
 from friendly_traceback.console_helpers import *  # noqa
 
-old_set_formatter = set_formatter  # noqa
 old_history = history  # noqa
 old_set_lang = set_lang  # noqa
 
 from friendly_traceback.console_helpers import FriendlyHelpers, helpers
-from friendly_traceback.utils import add_rich_repr
+from friendly_traceback.functions_help import add_help_attribute, short_description
 from friendly_traceback.config import session
 
 from friendly.my_gettext import current_lang
+
+# The following is different from the one imported above from friendly_traceback
 from friendly import set_formatter
 
 _ = current_lang.translate
-
-# =============================================
-# Modifying existing console helpers
-# =============================================
-
-set_formatter.help = old_set_formatter.help  # noqa
-set_formatter.__rich_repr__ = old_set_formatter.__rich_repr__  # noqa
-FriendlyHelpers.set_formatter = set_formatter
-helpers["set_formatter"] = set_formatter
 
 
 def history():
@@ -32,22 +24,19 @@ def history():
     session.rich_add_vspace = True
 
 
-history.help = old_history.help  # noqa
-history.__rich_repr__ = old_history.__rich_repr__  # noqa
-history.__doc__ = old_history.__doc__
-helpers["history"] = history
-
-
 def set_lang(lang):
     old_set_lang(lang)
     current_lang.install(lang)
 
 
-set_lang.help = old_set_lang.help  # noqa
-set_lang.__rich_repr__ = old_set_lang.__rich_repr__  # noqa
+history.__doc__ = old_history.__doc__
 set_lang.__doc__ = old_set_lang.__doc__
+helpers["history"] = history
+helpers["set_formatter"] = set_formatter
 helpers["set_lang"] = set_lang
-
+add_help_attribute(
+    {"set_formatter": set_formatter, "history": history, "set_lang": set_lang}
+)
 
 # =================================
 # Additional rich-specific helpers
@@ -72,7 +61,7 @@ def set_width(width=80):
     """Sets the width in a iPython/Jupyter session using 'light' or 'dark' mode"""
     try:
         session.console.width = width
-    except Exception:
+    except Exception:  # noqa
         print(_("set_width() has no effect with this formatter."))
         return
     session.rich_width = width
@@ -84,17 +73,23 @@ def set_width(width=80):
             session.rich_tb_width = width
 
 
-dark.help = lambda: _("Sets a colour scheme designed for a black background.")
-light.help = lambda: _("Sets a colour scheme designed for a white background.")
-set_width.help = lambda: _("Sets the output width in some modes.")
-
+short_description["dark"] = lambda: _(
+    "Sets a colour scheme designed for a black background."
+)
+short_description["light"] = lambda: _(
+    "Sets a colour scheme designed for a white background."
+)
+short_description["set_width"] = lambda: _("Sets the output width in some modes.")
 local_helpers = {"dark": dark, "light": light, "set_width": set_width}
-add_rich_repr(local_helpers)
+add_help_attribute(local_helpers)
 
 for helper in local_helpers:
     setattr(FriendlyHelpers, helper, staticmethod(local_helpers[helper]))
 Friendly = FriendlyHelpers(local_helpers=local_helpers)
+
 setattr(Friendly, "history", history)
+setattr(Friendly, "set_formatter", set_formatter)
+setattr(Friendly, "set_lang", set_lang)
 
 helpers["Friendly"] = Friendly
 helpers.update(local_helpers)
