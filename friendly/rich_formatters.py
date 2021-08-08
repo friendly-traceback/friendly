@@ -21,8 +21,9 @@ This module currently contains the following formatters
     in colour in a console using Rich (https://github.com/willmcgugan/rich).
 """
 from .my_gettext import current_lang
-from friendly_traceback.base_formatters import no_result, select_items, repl
+from friendly_traceback.base_formatters import no_result, repl, select_items
 from friendly_traceback.config import session
+from friendly_traceback.typing import InclusionChoice, Info
 from friendly import theme
 
 from pygments import highlight  # noqa
@@ -45,7 +46,7 @@ WIDE_OUTPUT = False  # not a constant
 COUNT = 0  # not a constant
 
 
-def jupyter_interactive(info, include="friendly_tb"):  # noqa
+def jupyter_interactive(info: Info, include: InclusionChoice = "friendly_tb") -> str:  # noqa
     """This implements a formatter that inserts buttons in a jupyter notebook
     allowing to selectively show what/why/where, instead of
     showing the friendly_tb by default."""
@@ -66,7 +67,7 @@ def jupyter_interactive(info, include="friendly_tb"):  # noqa
     return ""
 
 
-def add_message(info, count=-1):
+def add_message(info: Info, count: int = -1) -> None:
     """Shows the error message. By default, this is the only item shown
     other than a button to reveal"""
     old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
@@ -80,7 +81,7 @@ def add_message(info, count=-1):
     rich_jupyter.JUPYTER_HTML_FORMAT = old_jupyter_html_format
 
 
-def add_friendly_tb(info, count=-1):
+def add_friendly_tb(info: Info, count: int = -1) -> None:
     """Adds the friendly_tb, hidden by default"""
     old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
     name = "friendly_tb"
@@ -96,7 +97,7 @@ def add_friendly_tb(info, count=-1):
     rich_jupyter.JUPYTER_HTML_FORMAT = old_jupyter_html_format
 
 
-def add_interactive_item(info, name, count=-1):
+def add_interactive_item(info: Info, name: InclusionChoice, count: int = -1) -> None:
     """Adds interactive items (what/why/where) with buttons to toggle
     their visibility."""
     _ = current_lang.translate
@@ -135,7 +136,7 @@ def add_interactive_item(info, name, count=-1):
     rich_jupyter.JUPYTER_HTML_FORMAT = old_jupyter_html_format
 
 
-def add_control(count=-1):
+def add_control(count: int = -1) -> None:
     """Adds a single button to control the visibility of all other elements."""
     _ = current_lang.translate
     content = """
@@ -185,7 +186,7 @@ def add_control(count=-1):
     display(HTML(content))
 
 
-def rich_writer(text):  # pragma: no cover
+def rich_writer(text: str) -> None:  # pragma: no cover
     """Default writer"""
     global RICH_HEADER, WIDE_OUTPUT
     if session.rich_add_vspace:
@@ -203,7 +204,7 @@ def rich_writer(text):  # pragma: no cover
         WIDE_OUTPUT = False
 
 
-def html_escape(text):  # pragma: no cover
+def html_escape(text: str) -> str:  # pragma: no cover
     text = (
         text.replace("&", "&amp;")
         .replace("<", "&lt;")
@@ -219,7 +220,7 @@ def html_escape(text):  # pragma: no cover
 # For some reason, moving this to friendly.ipython
 # and trying to import it from there uninstalls everything: it is as though
 # it starts a new iPython subprocess.
-def jupyter(info, include="friendly_tb"):  # pragma: no cover
+def jupyter(info: Info, include: InclusionChoice = "friendly_tb") -> str:  # pragma: no cover
     """Jupyter formatter using pygments and html format.
 
     This can be used as a jupyter theme agnostic formatter as it
@@ -277,7 +278,9 @@ if not ipython_available:
     jupyter = repl  # noqa
 
 
-def markdown(info, include="friendly_tb"):  # pragma: no cover
+def markdown(
+    info: Info, include: InclusionChoice = "friendly_tb"
+) -> str:  # pragma: no cover
     """Traceback formatted with markdown syntax.
 
     Some minor changes of the traceback info content are done,
@@ -287,7 +290,9 @@ def markdown(info, include="friendly_tb"):  # pragma: no cover
     return _markdown(info, include)
 
 
-def markdown_docs(info, include="explain"):  # pragma: no cover
+def markdown_docs(
+    info: Info, include: InclusionChoice = "explain"
+) -> str:  # pragma: no cover
     """Traceback formatted with markdown syntax, where each
     header is shifted down by 2 (h1 -> h3, etc.) so that they
     can be inserted in a document, without creating artificial
@@ -300,7 +305,9 @@ def markdown_docs(info, include="explain"):  # pragma: no cover
     return _markdown(info, include, documentation=True)
 
 
-def rich_markdown(info, include="friendly_tb"):  # pragma: no cover
+def rich_markdown(
+    info: Info, include: InclusionChoice = "friendly_tb"
+) -> str:  # pragma: no cover
     """Traceback formatted with with markdown syntax suitable for
     printing in color in the console using Rich.
 
@@ -314,7 +321,12 @@ def rich_markdown(info, include="friendly_tb"):  # pragma: no cover
     return _markdown(info, include, rich=True)
 
 
-def _markdown(info, include, rich=False, documentation=False):  # pragma: no cover
+def _markdown(
+    info: Info,
+    include: InclusionChoice,
+    rich: bool = False,
+    documentation: bool = False,
+) -> str:  # pragma: no cover
     """Traceback formatted with with markdown syntax."""
     global RICH_HEADER, WIDE_OUTPUT
     if (
