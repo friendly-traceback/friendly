@@ -51,8 +51,8 @@ def set_width(width=80):
 
 
 add_help_attribute({"set_formatter": set_formatter, "set_width": set_width})
-Friendly.add_helper("set_formatter", set_formatter)
-Friendly.add_helper("set_width", set_width)
+Friendly.add_helper(set_formatter)
+Friendly.add_helper(set_width)
 helpers["set_formatter"] = set_formatter
 helpers["set_width"] = set_width
 
@@ -96,7 +96,7 @@ local_helpers = {"day": day, "night": night, "black": black, "bw": bw}
 add_help_attribute(local_helpers)
 
 for helper in local_helpers:
-    Friendly.add_helper(helper, local_helpers[helper])
+    Friendly.add_helper(local_helpers[helper])
 helpers.update(local_helpers)
 __all__ = list(helpers.keys())
 day()

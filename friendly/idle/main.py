@@ -37,8 +37,8 @@ def set_formatter(formatter="idle"):
 set_lang.__doc__ = Friendly.set_lang.__doc__
 
 add_help_attribute({"set_formatter": set_formatter, "set_lang": set_lang})
-Friendly.add_helper("set_formatter", set_formatter)
-Friendly.add_helper("set_lang", set_lang)
+Friendly.add_helper(set_formatter)
+Friendly.add_helper(set_lang)
 _old_displayhook = sys.displayhook
 
 

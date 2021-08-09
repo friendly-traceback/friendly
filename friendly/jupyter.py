@@ -86,7 +86,7 @@ def set_tb_width(width=None):
 short_description["set_tb_width"] = lambda: _("Sets the width of the traceback.")
 add_help_attribute({"set_tb_width": set_tb_width})
 
-Friendly.add_helper("set_tb_width", set_tb_width)
+Friendly.add_helper(set_tb_width)
 helpers["set_tb_width"] = set_tb_width
 
 __all__ = list(helpers.keys())
