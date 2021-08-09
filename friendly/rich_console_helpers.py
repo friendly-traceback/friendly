@@ -1,21 +1,19 @@
 """In this module, we modify the basic console helpers for friendly-traceback
 so as to add custom ones for Rich-based formatters."""
 
-from friendly_traceback.console_helpers import *  # noqa
-
-old_history = history  # noqa
-old_set_lang = set_lang  # noqa
-
-from friendly_traceback.console_helpers import FriendlyHelpers, helpers
+from friendly_traceback.console_helpers import *  # noqa; include Friendly below
+from friendly_traceback.console_helpers import Friendly, helpers
 from friendly_traceback.functions_help import add_help_attribute, short_description
 from friendly_traceback.config import session
 
 from friendly.my_gettext import current_lang
 
-# The following is different from the one imported above from friendly_traceback
+# The following is different from the one imported via the import * above
 from friendly import set_formatter
 
 _ = current_lang.translate
+old_history = history  # noqa
+old_set_lang = set_lang  # noqa
 
 
 def history():
@@ -38,6 +36,9 @@ add_help_attribute(
     {"set_formatter": set_formatter, "history": history, "set_lang": set_lang}
 )
 
+Friendly.add_helper("history", history)
+Friendly.add_helper("set_formatter", set_formatter)
+Friendly.add_helper("set_lang", set_lang)
 # =================================
 # Additional rich-specific helpers
 # =================================
@@ -82,15 +83,8 @@ short_description["light"] = lambda: _(
 short_description["set_width"] = lambda: _("Sets the output width in some modes.")
 local_helpers = {"dark": dark, "light": light, "set_width": set_width}
 add_help_attribute(local_helpers)
-
 for helper in local_helpers:
-    setattr(FriendlyHelpers, helper, staticmethod(local_helpers[helper]))
-Friendly = FriendlyHelpers(local_helpers=local_helpers)
+    Friendly.add_helper(helper, local_helpers[helper])
 
-setattr(Friendly, "history", history)
-setattr(Friendly, "set_formatter", set_formatter)
-setattr(Friendly, "set_lang", set_lang)
-
-helpers["Friendly"] = Friendly
 helpers.update(local_helpers)
 __all__ = list(helpers.keys())

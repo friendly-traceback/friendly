@@ -6,7 +6,7 @@ from friendly_traceback.functions_help import (
     short_description,
 )  # noqa
 from .ipython import *  # noqa
-from .ipython import helpers
+from .ipython import helpers, Friendly
 from friendly import rich_formatters
 from friendly.my_gettext import current_lang
 
@@ -75,7 +75,7 @@ def set_tb_width(width=None):
         return
     try:
         session.console.width = width
-    except Exception:
+    except Exception:  # noqa
         print(_("set_width() has no effect with this formatter."))
         return
     session.rich_tb_width = width
@@ -83,19 +83,10 @@ def set_tb_width(width=None):
         session.rich_width = width
 
 
-# TODO: need to redefine Friendly so as to include set_tb_width
 short_description["set_tb_width"] = lambda: _("Sets the width of the traceback.")
+add_help_attribute({"set_tb_width": set_tb_width})
 
-add_help_attribute(
-    {
-        "light": light,
-        "dark": dark,
-        "set_formatter": set_formatter,
-        "set_tb_width": set_tb_width,
-    }
-)
-
-setattr(Friendly, "set_tb_width", set_tb_width)  # noqa
+Friendly.add_helper("set_tb_width", set_tb_width)
 helpers["set_tb_width"] = set_tb_width
 
 __all__ = list(helpers.keys())

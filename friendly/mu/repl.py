@@ -10,17 +10,12 @@ from friendly_traceback.functions_help import add_help_attribute, short_descript
 
 from ..my_gettext import current_lang  # noqa
 from friendly.ipython import *  # noqa  # Will automatically install
-
-old_set_width = set_width  # noqa
-from friendly.rich_console_helpers import FriendlyHelpers, helpers
-
-
+from friendly.rich_console_helpers import Friendly, helpers
 from friendly import theme
 from friendly import rich_formatters
 
 colorama.deinit()  # reset needed on Windows
 colorama.init(convert=False, strip=False)
-
 _ = current_lang.translate
 
 
@@ -55,16 +50,18 @@ def set_width(width=80):
         print(_("set_width() is only available using 'day', 'night' or 'black' mode."))
 
 
-setattr(FriendlyHelpers, "set_formatter", set_formatter)
-setattr(FriendlyHelpers, "set_width", set_width)
+add_help_attribute({"set_formatter": set_formatter, "set_width": set_width})
+Friendly.add_helper("set_formatter", set_formatter)
+Friendly.add_helper("set_width", set_width)
 helpers["set_formatter"] = set_formatter
 helpers["set_width"] = set_width
 
-add_help_attribute({"set_formatter": set_formatter, "set_width": set_width})
 
 # ========= Replacing theme-based formatters
 del helpers["dark"]
 del helpers["light"]
+Friendly.remove_helper("dark")
+Friendly.remove_helper("light")
 
 
 def day():
@@ -99,10 +96,7 @@ local_helpers = {"day": day, "night": night, "black": black, "bw": bw}
 add_help_attribute(local_helpers)
 
 for helper in local_helpers:
-    setattr(FriendlyHelpers, helper, staticmethod(local_helpers[helper]))
-Friendly = FriendlyHelpers(local_helpers=local_helpers)
-
-helpers["Friendly"] = Friendly
+    Friendly.add_helper(helper, local_helpers[helper])
 helpers.update(local_helpers)
 __all__ = list(helpers.keys())
 day()

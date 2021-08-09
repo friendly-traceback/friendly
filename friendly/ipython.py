@@ -18,7 +18,7 @@ from friendly_traceback import (
 from friendly_traceback.config import session
 
 from friendly.rich_console_helpers import *  # noqa
-from friendly.rich_console_helpers import FriendlyHelpers, helpers  # noqa
+from friendly.rich_console_helpers import helpers
 from friendly import __version__ as version
 
 try:

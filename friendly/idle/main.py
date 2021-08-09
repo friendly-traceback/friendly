@@ -10,7 +10,8 @@ from idlelib import run as idlelib_run
 
 import friendly_traceback  # noqa
 from friendly_traceback.console_helpers import *  # noqa
-from friendly_traceback.console_helpers import helpers, FriendlyHelpers  # noqa
+from friendly_traceback.console_helpers import helpers, Friendly  # noqa
+from friendly_traceback.functions_help import add_help_attribute
 
 from ..my_gettext import current_lang
 from . import idle_formatter
@@ -19,32 +20,25 @@ from . import patch_source_cache  # noqa
 
 friendly_traceback.exclude_file_from_traceback(__file__)
 
-Friendly = FriendlyHelpers()
-Friendly.__friendly_repr__ = Friendly.__repr__
-helpers["Friendly"] = Friendly
-
-_set_formatter = set_formatter  # noqa
-_set_lang = set_lang  # noqa
-
 
 def set_lang(lang):
     current_lang.install(lang)
-    _set_lang(lang)
+    Friendly.set_lang(lang)
 
 
-set_lang.__rich_repr__ = _set_lang.__rich_repr__  # noqa
-
-
-def set_formatter(formatter=None):
+def set_formatter(formatter="idle"):
+    """Sets the formatter; the default value is 'idle'."""
     if formatter == "idle":
-        _set_formatter(idle_formatter.idle_formatter)
+        friendly_traceback.set_formatter(idle_formatter.idle_formatter)
     else:
-        _set_formatter(formatter=formatter)
+        friendly_traceback.set_formatter(formatter=formatter)
 
 
-set_formatter.__rich_repr__ = _set_formatter.__rich_repr__  # noqa
+set_lang.__doc__ = Friendly.set_lang.__doc__
 
-__all__ = list(helpers)
+add_help_attribute({"set_formatter": set_formatter, "set_lang": set_lang})
+Friendly.add_helper("set_formatter", set_formatter)
+Friendly.add_helper("set_lang", set_lang)
 _old_displayhook = sys.displayhook
 
 
@@ -222,8 +216,3 @@ def run(
         formatter=idle_formatter.idle_formatter,
         ipython_prompt=ipython_prompt,
     )
-
-
-__all__.append("install")
-__all__.append("start_console")
-__all__.append("run")
