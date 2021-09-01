@@ -29,7 +29,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.4.14"
+__version__ = "0.4.15"
 
 
 # ===========================================
@@ -37,11 +37,26 @@ __version__ = "0.4.14"
 import inspect
 from pathlib import Path
 
-from friendly_traceback import editors_helpers, set_stream
+from friendly_traceback import (
+    editors_helpers,
+    exclude_directory_from_traceback,
+    set_stream,
+)
+from friendly_traceback import explain_traceback as ft_explain_traceback
+from friendly_traceback import install as ft_install
 from friendly_traceback import set_formatter as ft_set_formatter
-from friendly_traceback.config import session
-from friendly_traceback import exclude_directory_from_traceback
 from friendly_traceback import set_lang as ft_set_lang
+from friendly_traceback.config import session
+
+# The following are not used here, and simply made available directly for convenience
+from friendly_traceback import (  # noqa
+    exclude_file_from_traceback,
+    get_include,
+    get_lang,
+    get_output,
+    get_stream,
+    set_include,
+)
 
 from .my_gettext import current_lang
 from friendly import rich_formatters, theme
@@ -50,13 +65,60 @@ from friendly import rich_formatters, theme
 exclude_directory_from_traceback(os.path.dirname(__file__))
 
 
+def install(lang="en", formatter=None, redirect=None, include="explain", _debug=None):
+    """
+    Replaces ``sys.excepthook`` by friendly's own version.
+    Intercepts, and can provide an explanation for all Python exceptions except
+    for ``SystemExist`` and ``KeyboardInterrupt``.
+
+    The optional arguments are:
+
+        lang: language to be used for translations. If not available,
+              English will be used as a default.
+
+        formatter: if desired, sets a specific formatter to use.
+
+        redirect: stream to be used to send the output.
+                  The default is sys.stderr
+
+        include: controls the amount of information displayed.
+        See set_include() for details.
+    """
+    # Note: need "explain" since there is no interaction possible with install
+    set_formatter(formatter=formatter)
+    ft_install(lang=lang, redirect=redirect, include=include, _debug=_debug)
+
+
+def explain_traceback(formatter=None, redirect=None):
+    """Replaces a standard traceback by a friendlier one, giving more
+    information about a given exception than a standard traceback.
+    Note that this excludes ``SystemExit`` and ``KeyboardInterrupt``
+    which are re-raised.
+
+    If no formatter is specified, the default one will be used.
+
+    By default, the output goes to ``sys.stderr`` or to some other stream
+    set to be the default by another API call. However, if::
+
+       redirect = some_stream
+
+    is specified, the output goes to that stream, but without changing
+    the global settings.
+
+    If the string ``"capture"`` is given as the value for ``redirect``, the
+    output is saved and can be later retrieved by ``get_output()``.
+    """
+    set_formatter(formatter=formatter)
+    ft_explain_traceback(redirect=redirect)
+
+
 def run(
     filename,
     lang=None,
     include=None,
     args=None,
     console=True,
-    formatter="bw",
+    formatter=None,
     redirect=None,
     background=None,
     ipython_prompt=True,
@@ -177,7 +239,7 @@ def set_formatter(
 
 def start_console(  # pragma: no cover
     local_vars=None,
-    formatter="light",
+    formatter=None,
     include="friendly_tb",
     lang="en",
     banner=None,
