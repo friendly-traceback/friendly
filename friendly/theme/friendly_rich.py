@@ -3,6 +3,7 @@
 All Rich-related imports and redefinitions are done here.
 
 """
+import sys
 
 from rich import pretty  # noqa
 from rich.console import Console  # noqa
@@ -14,8 +15,23 @@ from rich.theme import Theme  # noqa
 
 from pygments import styles
 
-friendly_light = styles.get_style_by_name("friendly_light")
-friendly_dark = styles.get_style_by_name("friendly_dark")
+try:
+    friendly_light = styles.get_style_by_name("friendly_light")
+    friendly_dark = styles.get_style_by_name("friendly_dark")
+except Exception:  # noqa
+    # When using the JupyterLab app for the first time
+    # the friendly styles would not be recognized by JupyterLab
+    # JupyterLab catches an ImportError and raise a custom
+    # ClassNotFound exception
+    from friendly_styles import friendly_light, friendly_dark
+
+    sys.modules["pygments.styles.friendly_light"] = friendly_light
+    styles.STYLE_MAP["friendly_light"] = "friendly_light::FriendlyLightStyle"
+    friendly_light = styles.get_style_by_name("friendly_light")
+
+    sys.modules["pygments.styles.friendly_dark"] = friendly_dark
+    styles.STYLE_MAP["friendly_dark"] = "friendly_dark::FriendlyDarkStyle"
+    friendly_dark = styles.get_style_by_name("friendly_dark")
 
 dark_background_theme = Theme(friendly_dark.friendly_style)
 light_background_theme = Theme(friendly_light.friendly_style)
