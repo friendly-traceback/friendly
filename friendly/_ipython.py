@@ -1,8 +1,9 @@
 """Experimental module to automatically install Friendly
 as a replacement for the standard traceback in IPython."""
+
 try:
     from IPython.core import interactiveshell as shell  # noqa
-    from IPython.core import compilerop  # noqa
+    from IPython.core import compilerop, magic  # noqa
 except ImportError:
     raise ValueError("IPython cannot be imported.")
 
@@ -12,6 +13,7 @@ from friendly_traceback import (
     install,
     exclude_file_from_traceback,
     explain_traceback,
+    current_lang,
 )  # noqa
 
 from friendly_traceback.config import session
@@ -30,6 +32,7 @@ except Exception:  # noqa
 colorama.deinit()
 colorama.init(convert=False, strip=False)
 session.ipython_prompt = True
+_ = current_lang.translate
 
 
 shell.InteractiveShell.showtraceback = lambda self, *args, **kwargs: explain_traceback()
@@ -39,3 +42,14 @@ shell.InteractiveShell.showsyntaxerror = (
 exclude_file_from_traceback(shell.__file__)
 exclude_file_from_traceback(compilerop.__file__)
 install(include="friendly_tb")
+
+
+@magic.register_line_cell_magic
+def pprint(_line=None, _cell=None):
+    print(
+        _(
+            "%pprint is not supported by Rich (used by friendly).\n"
+            "If you absolutely need to use %pprint, import friendly.ipython_plain\n"
+            "instead of friendly.ipython."
+        )
+    )
