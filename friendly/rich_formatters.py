@@ -46,7 +46,9 @@ WIDE_OUTPUT = False  # not a constant
 COUNT = 0  # not a constant
 
 
-def jupyter_interactive(info: Info, include: InclusionChoice = "friendly_tb") -> str:  # noqa
+def jupyter_interactive(
+    info: Info, include: InclusionChoice = "friendly_tb"
+) -> str:  # noqa
     """This implements a formatter that inserts buttons in a jupyter notebook
     allowing to selectively show what/why/where, instead of
     showing the friendly_tb by default."""
@@ -205,6 +207,8 @@ def rich_writer(text: str) -> None:  # pragma: no cover
 
 
 def html_escape(text: str) -> str:  # pragma: no cover
+    if not text:
+        return ""
     text = (
         text.replace("&", "&amp;")
         .replace("<", "&lt;")
@@ -220,7 +224,9 @@ def html_escape(text: str) -> str:  # pragma: no cover
 # For some reason, moving this to friendly.ipython
 # and trying to import it from there uninstalls everything: it is as though
 # it starts a new iPython subprocess.
-def jupyter(info: Info, include: InclusionChoice = "friendly_tb") -> str:  # pragma: no cover
+def jupyter(
+    info: Info, include: InclusionChoice = "friendly_tb"
+) -> str:  # pragma: no cover
     """Jupyter formatter using pygments and html format.
 
     This can be used as a jupyter theme agnostic formatter as it

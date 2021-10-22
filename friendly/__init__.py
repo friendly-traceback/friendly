@@ -29,7 +29,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.4.20"
+__version__ = "0.4.23"
 
 
 # ===========================================
@@ -234,6 +234,9 @@ def set_formatter(
     else:
         session.use_rich = False
         set_stream()
+        theme.disable_rich()
+        if formatter == "plain":
+            formatter = "repl"
     ft_set_formatter(formatter=formatter)
 
 

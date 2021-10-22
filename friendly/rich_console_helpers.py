@@ -58,6 +58,13 @@ def light():
     set_formatter("light")
 
 
+def plain():
+    """Synonym of set_formatter('plain').
+    Monochrome output without using Rich.
+    """
+    set_formatter("plain")
+
+
 def set_width(width=80):
     """Sets the width in a iPython/Jupyter session using 'light' or 'dark' mode"""
     try:
@@ -80,8 +87,9 @@ short_description["dark"] = lambda: _(
 short_description["light"] = lambda: _(
     "Sets a colour scheme designed for a white background."
 )
+short_description["plain"] = lambda: _("Plain formatting, with no colours added.")
 short_description["set_width"] = lambda: _("Sets the output width in some modes.")
-local_helpers = {"dark": dark, "light": light, "set_width": set_width}
+local_helpers = {"dark": dark, "light": light, "plain": plain, "set_width": set_width}
 add_help_attribute(local_helpers)
 for helper in local_helpers:
     Friendly.add_helper(local_helpers[helper])

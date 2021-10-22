@@ -1,5 +1,7 @@
 """Syntax colouring based on the availability of pygments
 """
+import sys
+
 from pygments import styles
 
 from . import friendly_rich
@@ -48,3 +50,14 @@ def init_rich_console(
     return friendly_rich.init_console(
         style=style, theme=theme, color_system=color_system, force_jupyter=force_jupyter
     )
+
+
+def disable_rich():
+    try:  # are we using IPython ?
+        # get_ipython is an IPython builtin which returns the current instance.
+        ip = get_ipython()  # noqa
+        from IPython.core.formatters import PlainTextFormatter  # noqa
+
+        ip.display_formatter.formatters["text/plain"] = PlainTextFormatter()
+    except NameError:
+        sys.displayhook = sys.__displayhook__

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-10-19 08:04-0300\n"
+"POT-Creation-Date: 2021-10-20 09:06-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,13 +17,6 @@ msgstr ""
 
 #: __init__.py:174 __main__.py:179 idle\main.py:201
 msgid "The file {filename} does not exist."
-msgstr ""
-
-#: _ipython.py:50
-msgid ""
-"%pprint is not supported by Rich (used by friendly).\n"
-"If you absolutely need to use %pprint, import friendly.ipython_plain\n"
-"instead of friendly.ipython."
 msgstr ""
 
 #: console.py:93
@@ -51,7 +44,11 @@ msgstr ""
 msgid "Not yet implemented."
 msgstr ""
 
-#: jupyter.py:79 rich_console_helpers.py:66
+#: ipython_plain.py:17
+msgid "set_formatter is not supported by ipython_plain."
+msgstr ""
+
+#: jupyter.py:79 rich_console_helpers.py:73
 msgid "set_width() has no effect with this formatter."
 msgstr ""
 
@@ -63,20 +60,20 @@ msgstr ""
 msgid "set_width() is only available using 'day', 'night' or 'black' mode."
 msgstr ""
 
-#: mu\repl.py:87
+#: mu\repl.py:89
 msgid "Colour scheme designed for Mu's day theme."
 msgstr ""
 
-#: mu\repl.py:88
+#: mu\repl.py:90
 msgid "Colour scheme designed for Mu's night theme."
 msgstr ""
 
-#: mu\repl.py:89
-msgid "Colourful scheme designed for Mu's high contrast theme."
+#: mu\repl.py:91
+msgid "Colourful scheme with black background suitable for Mu's high contrast theme."
 msgstr ""
 
-#: mu\repl.py:92
-msgid "Black and white scheme designed for Mu's high contrast theme."
+#: mu\repl.py:94
+msgid "White text on black background; suitable for Mu's high contrast theme."
 msgstr ""
 
 #: mu\runner.py:16
@@ -107,15 +104,19 @@ msgid ""
 "Internal error for Friendly.\n"
 msgstr ""
 
-#: rich_console_helpers.py:77
+#: rich_console_helpers.py:84
 msgid "Sets a colour scheme designed for a black background."
 msgstr ""
 
-#: rich_console_helpers.py:80
+#: rich_console_helpers.py:87
 msgid "Sets a colour scheme designed for a white background."
 msgstr ""
 
-#: rich_console_helpers.py:83
+#: rich_console_helpers.py:90
+msgid "Plain formatting, with no colours added."
+msgstr ""
+
+#: rich_console_helpers.py:93
 msgid "Sets the output width in some modes."
 msgstr ""
 
@@ -131,7 +132,7 @@ msgstr ""
 msgid "Show message only"
 msgstr ""
 
-#: theme\__init__.py:27
+#: theme\__init__.py:29
 msgid ""
 "Invalid color {color}.\n"
 "Colors must be of the form #dddddd."

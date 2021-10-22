@@ -3,6 +3,13 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv-friendly-3.10" />
+      <excludeFolder url="file://$MODULE_DIR$/friendly.egg-info" />
+      <excludeFolder url="file://$MODULE_DIR$/venv-friendly-3.6" />
+      <excludeFolder url="file://$MODULE_DIR$/venv-friendly-3.7" />
+      <excludeFolder url="file://$MODULE_DIR$/venv-friendly-3.8" />
+      <excludeFolder url="file://$MODULE_DIR$/venv-friendly-3.9" />
+      <excludeFolder url="file://$MODULE_DIR$/venv-friendly-3.11" />
+      <excludeFolder url="file://$MODULE_DIR$/venv-friendly-ipython" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 (friendly)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

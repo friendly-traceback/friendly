@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-10-19 08:04-0300\n"
+"POT-Creation-Date: 2021-10-20 09:06-0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: André Roberge <andre.roberge@gmail.com>\n"
 "Language-Team: \n"
@@ -18,17 +18,6 @@ msgstr ""
 #: __init__.py:174 __main__.py:179 idle\main.py:201
 msgid "The file {filename} does not exist."
 msgstr "Le fichier {filename} n'existe pas."
-
-#: _ipython.py:50
-msgid ""
-"%pprint is not supported by Rich (used by friendly).\n"
-"If you absolutely need to use %pprint, import friendly.ipython_plain\n"
-"instead of friendly.ipython."
-msgstr ""
-"%pprint n'est pas supporté par Rich (utilisé par friendly).\n"
-"Si vous avez absolument besoin d'utiliser %pprint, importez friendly."
-"ipython_plain\n"
-"au lieu de friendly.ipython."
 
 #: console.py:93
 msgid "Warning: you added a type hint to the python builtin `{name}`."
@@ -62,7 +51,11 @@ msgstr "Rien à montrer: pas d’exception enregistrée."
 msgid "Not yet implemented."
 msgstr "Pas encore disponible."
 
-#: jupyter.py:79 rich_console_helpers.py:66
+#: ipython_plain.py:17
+msgid "set_formatter is not supported by ipython_plain."
+msgstr "set_formatter n'est pas supporté par ipython_plain."
+
+#: jupyter.py:79 rich_console_helpers.py:73
 msgid "set_width() has no effect with this formatter."
 msgstr "set_width() n'a aucun effet avec ce formateur."
 
@@ -76,21 +69,22 @@ msgstr ""
 "set_width() est uniquement disponible en mode \"day\", \"night\" ou \"black"
 "\"."
 
-#: mu\repl.py:87
+#: mu\repl.py:89
 msgid "Colour scheme designed for Mu's day theme."
 msgstr "Schéma de couleurs conçu sur le thème 'jour' de Mu."
 
-#: mu\repl.py:88
+#: mu\repl.py:90
 msgid "Colour scheme designed for Mu's night theme."
 msgstr "Schéma de couleurs conçu pour le thème 'nuit' de Mu."
 
-#: mu\repl.py:89
-msgid "Colourful scheme designed for Mu's high contrast theme."
-msgstr "Schéma de couleurs conçu pour le thème à contraste élevé de Mu."
+#: mu\repl.py:91
+msgid ""
+"Colourful scheme with black background suitable for Mu's high contrast theme."
+msgstr "Un schéma coloré sur fond noir adapté au thème à fort contraste de Mu."
 
-#: mu\repl.py:92
-msgid "Black and white scheme designed for Mu's high contrast theme."
-msgstr "Schéma noir et blanc conçu pour le thème à fort contraste de Mu."
+#: mu\repl.py:94
+msgid "White text on black background; suitable for Mu's high contrast theme."
+msgstr "Texte blanc sur fond noir ; convient au thème à fort contraste de Mu."
 
 #: mu\runner.py:16
 msgid "Friendly themes are only available in Mu's REPL.\n"
@@ -124,15 +118,19 @@ msgstr ""
 msgid "Internal error for Friendly.\n"
 msgstr "Exception soulevée par Friendly.\n"
 
-#: rich_console_helpers.py:77
+#: rich_console_helpers.py:84
 msgid "Sets a colour scheme designed for a black background."
 msgstr "Définit un schéma de couleurs conçu pour un fond noir."
 
-#: rich_console_helpers.py:80
+#: rich_console_helpers.py:87
 msgid "Sets a colour scheme designed for a white background."
 msgstr "Définit un schéma de couleurs conçu pour un fond blanc."
 
-#: rich_console_helpers.py:83
+#: rich_console_helpers.py:90
+msgid "Plain formatting, with no colours added."
+msgstr "Mise en forme simple, sans ajout de couleurs."
+
+#: rich_console_helpers.py:93
 msgid "Sets the output width in some modes."
 msgstr "Définit la largeur du texte dans certains modes."
 
@@ -148,13 +146,22 @@ msgstr "Plus ..."
 msgid "Show message only"
 msgstr "Afficher uniquement le message"
 
-#: theme\__init__.py:27
+#: theme\__init__.py:29
 msgid ""
 "Invalid color {color}.\n"
 "Colors must be of the form #dddddd."
 msgstr ""
 "Couleur non valide {color}.\n"
 "Les couleurs doivent être de la forme #dddddd."
+
+#~ msgid ""
+#~ "'%pprint' is not supported by Rich (used by friendly).\n"
+#~ "If you absolutely need to use '%pprint', restart ipython\n"
+#~ "and import friendly.ipython_plain instead of friendly.ipython."
+#~ msgstr ""
+#~ "%pprint' n'est pas supporté par Rich (utilisé par friendly).\n"
+#~ "Si vous avez absolument besoin d'utiliser '%pprint', redémarrez ipython\n"
+#~ "et importez friendly.ipython_plain au lieu de friendly.ipython."
 
 #~ msgid "set_width() is only available using 'light' or 'dark' mode."
 #~ msgstr ""

@@ -122,6 +122,7 @@ def install(lang="en"):
 
     Changes introduced in Python 3.10 were back-ported to Python 3.9.5.
     """
+    print("installing in idle.main")
     sys.stderr = sys.stdout.shell  # noqa
     friendly_traceback.set_formatter(idle_formatter.idle_formatter)
     if sys.version_info >= (3, 9, 5):

@@ -60,8 +60,10 @@ helpers["set_width"] = set_width
 # ========= Replacing theme-based formatters
 del helpers["dark"]
 del helpers["light"]
+del helpers["plain"]
 Friendly.remove_helper("dark")
 Friendly.remove_helper("light")
+Friendly.remove_helper("plain")
 
 
 def day():
@@ -80,17 +82,17 @@ def black():
 
 
 def bw():
-    """Black and white."""
+    """White text on black background."""
     set_formatter("repl", background="#000000")
 
 
 short_description["day"] = lambda: _("Colour scheme designed for Mu's day theme.")
 short_description["night"] = lambda: _("Colour scheme designed for Mu's night theme.")
 short_description["black"] = lambda: _(
-    "Colourful scheme designed for Mu's high contrast theme."
+    "Colourful scheme with black background suitable for Mu's high contrast theme."
 )
 short_description["bw"] = lambda: _(
-    "Black and white scheme designed for Mu's high contrast theme."
+    "White text on black background; suitable for Mu's high contrast theme."
 )
 local_helpers = {"day": day, "night": night, "black": black, "bw": bw}
 add_help_attribute(local_helpers)

@@ -13,6 +13,9 @@ call python -m pip install friendly-traceback --upgrade
 call venv-friendly-3.10\scripts\activate
 call python -m pip install friendly-traceback --upgrade
 
+call venv-friendly-3.11\scripts\activate
+call python -m pip install friendly-traceback --upgrade
+
 call venv-friendly-ipython\scripts\activate
 call python -m pip install friendly-traceback --upgrade
 
