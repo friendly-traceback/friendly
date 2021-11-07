@@ -3,7 +3,7 @@ as a replacement for the standard traceback in IDLE."""
 
 import inspect
 from pathlib import Path
-import sys  # noqa
+import sys
 
 
 from idlelib import run as idlelib_run
@@ -12,6 +12,7 @@ import friendly_traceback  # noqa
 from friendly_traceback.console_helpers import *  # noqa
 from friendly_traceback.console_helpers import helpers, Friendly  # noqa
 from friendly_traceback.functions_help import add_help_attribute
+from friendly_traceback.config import session
 
 from ..my_gettext import current_lang
 from . import idle_formatter
@@ -217,3 +218,11 @@ def run(
         formatter=idle_formatter.idle_formatter,
         ipython_prompt=ipython_prompt,
     )
+
+
+if session.exception_before_import:
+    if session.saved_info:  # should always be True; just being careful
+        session.saved_info.pop()
+    install()
+    session.get_traceback_info(sys.last_type, sys.last_value, sys.last_traceback)
+    friendly_tb()  # noqa

@@ -1,6 +1,7 @@
 """Mu's repl uses an IPython QtConsole.
 Mu has three themes designated (in English) as 'day', 'night',
 and 'high contrast'."""
+import sys
 
 import colorama  # noqa
 from friendly_traceback import set_stream
@@ -102,3 +103,9 @@ for helper in local_helpers:
 helpers.update(local_helpers)
 __all__ = list(helpers.keys())
 day()
+
+if session.exception_before_import:
+    if session.saved_info:
+        session.saved_info.pop()
+    session.get_traceback_info(sys.last_type, sys.last_value, sys.last_traceback)
+    friendly_tb()  # noqa

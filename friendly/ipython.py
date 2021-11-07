@@ -1,5 +1,6 @@
 """Experimental module to automatically install Friendly
 as a replacement for the standard traceback in IPython."""
+import sys
 
 try:
     from IPython.core import interactiveshell as shell  # noqa
@@ -51,15 +52,7 @@ print(
 )
 
 
-@magic.register_line_magic
-def pprint(_line=None):
-    # get_ipython is an IPython builtin which returns the current instance.
-    ip = get_ipython()  # noqa
-
-    if session.use_rich:
-        set_formatter("plain")  # noqa
-        print("Friendly formatter changed to 'plain'.")
-
-    formatter = ip.display_formatter.formatters["text/plain"]
-    formatter.pprint = bool(1 - formatter.pprint)
-    print("Pretty printing has been turned", ["OFF", "ON"][formatter.pprint])
+if session.exception_before_import:
+    if session.saved_info:
+        session.saved_info.pop()
+    session.get_traceback_info(sys.last_type, sys.last_value, sys.last_traceback)
