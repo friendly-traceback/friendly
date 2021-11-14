@@ -195,7 +195,13 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         implementation.
         """
         if self.rich_console:
-            return self.rich_console.input("[operator]" + prompt)
+            if "[" in prompt:
+                prompt = f"\n[operators][[/operators]{self.counter}[operators]]: "
+            elif "...:" in prompt:
+                prompt = prompt.replace("...:", "...[operators]:[/operators]")
+            else:
+                prompt = "[operators]" + prompt
+            return self.rich_console.input(prompt)
         return input(prompt)
 
 
