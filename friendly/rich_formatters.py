@@ -23,7 +23,7 @@ This module currently contains the following formatters
 from .my_gettext import current_lang
 from friendly_traceback.base_formatters import no_result, repl, select_items
 from friendly_traceback.config import session
-from friendly_traceback.typing import InclusionChoice, Info
+from friendly_traceback.typing_info import InclusionChoice, Info
 from friendly import theme
 
 from pygments import highlight  # noqa
