@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-10-20 09:06-0300\n"
+"POT-Creation-Date: 2021-12-24 18:26-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: __init__.py:174 __main__.py:179 idle\main.py:201
+#: __init__.py:176 __main__.py:178 idle\main.py:203
 msgid "The file {filename} does not exist."
 msgstr ""
 
@@ -44,35 +44,35 @@ msgstr ""
 msgid "Not yet implemented."
 msgstr ""
 
-#: ipython_plain.py:17
-msgid "set_formatter is not supported by ipython_plain."
+#: ipython.py:56
+msgid "Type 'Friendly' for basic help."
 msgstr ""
 
-#: jupyter.py:79 rich_console_helpers.py:73
+#: jupyter.py:81 rich_console_helpers.py:70
 msgid "set_width() has no effect with this formatter."
 msgstr ""
 
-#: jupyter.py:86
+#: jupyter.py:88
 msgid "Sets the width of the traceback."
 msgstr ""
 
-#: mu\repl.py:50
+#: mu\repl.py:51
 msgid "set_width() is only available using 'day', 'night' or 'black' mode."
 msgstr ""
 
-#: mu\repl.py:89
+#: mu\repl.py:90
 msgid "Colour scheme designed for Mu's day theme."
 msgstr ""
 
-#: mu\repl.py:90
+#: mu\repl.py:91
 msgid "Colour scheme designed for Mu's night theme."
 msgstr ""
 
-#: mu\repl.py:91
+#: mu\repl.py:92
 msgid "Colourful scheme with black background suitable for Mu's high contrast theme."
 msgstr ""
 
-#: mu\repl.py:94
+#: mu\repl.py:95
 msgid "White text on black background; suitable for Mu's high contrast theme."
 msgstr ""
 
@@ -81,54 +81,31 @@ msgid ""
 "Friendly themes are only available in Mu's REPL.\n"
 msgstr ""
 
-#: my_gettext.py:86
-msgid ""
-"Please report this example to https://github.com/aroberge/friendly/issues.\n"
-"If you are using a REPL, use `www('bug')` to do so.\n"
-"\n"
-msgstr ""
-
-#: my_gettext.py:97
-msgid ""
-"No information is known about this exception.\n"
-msgstr ""
-
-#: my_gettext.py:99
-msgid ""
-"If you are using the Friendly console, use `www()` to\n"
-"do an Internet search for this particular case.\n"
-msgstr ""
-
-#: my_gettext.py:109
-msgid ""
-"Internal error for Friendly.\n"
-msgstr ""
-
-#: rich_console_helpers.py:84
+#: rich_console_helpers.py:81
 msgid "Sets a colour scheme designed for a black background."
 msgstr ""
 
-#: rich_console_helpers.py:87
+#: rich_console_helpers.py:84
 msgid "Sets a colour scheme designed for a white background."
 msgstr ""
 
-#: rich_console_helpers.py:90
+#: rich_console_helpers.py:87
 msgid "Plain formatting, with no colours added."
 msgstr ""
 
-#: rich_console_helpers.py:93
+#: rich_console_helpers.py:88
 msgid "Sets the output width in some modes."
 msgstr ""
 
-#: rich_formatters.py:122
+#: rich_formatters.py:124
 msgid "Hide"
 msgstr ""
 
-#: rich_formatters.py:182
+#: rich_formatters.py:184
 msgid "More ..."
 msgstr ""
 
-#: rich_formatters.py:183
+#: rich_formatters.py:185
 msgid "Show message only"
 msgstr ""
 

@@ -42,7 +42,7 @@ class LangState:
     def install(self, lang=None):
         """Sets the language to be used for translations"""
         if lang is None:
-            lang = "en"
+            lang = self.get_lang()
         try:
             # We first look for the exact language requested.
             _lang = gettext.translation(
