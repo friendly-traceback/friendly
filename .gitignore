@@ -128,9 +128,7 @@ dmypy.json
 .pyre/
 
 
-.idea
-.idea/friendly.iml
-*.iml
+.idea/
 
 ignore*.py
 example*.py

@@ -24,7 +24,6 @@ from friendly import console, __version__
 from friendly import set_formatter
 from .my_gettext import current_lang
 
-# TODO: add friendly-traceback AND friendly version
 
 versions = "\nfriendly-traceback: {}\nfriendly: {}\nPython: {}\n".format(
     ft_version, __version__, platform.python_version()
@@ -35,7 +34,7 @@ def import_function(dotted_path: str) -> type:
     """Import a function from a module, given its dotted path.
 
     This is a utility function currently used when a custom formatter
-    is used using a command line argument::
+    is invoked by a command line argument::
 
         python -m friendly --formatter custom_formatter
     """
@@ -87,7 +86,7 @@ parser.add_argument(
 
 parser.add_argument(
     "--lang",
-    default="en",
+    default=current_lang.get_lang(),
     help="""This sets the language used by Friendly.
             Usually this is a two-letter code such as 'fr' for French.
          """,
@@ -103,7 +102,7 @@ parser.add_argument(
 parser.add_argument(
     "-f",
     "--formatter",
-    help="""Specifies an output format (bw, dark, light, docs, markown, or markdown_docs)
+    help="""Specifies an output format (bw, dark, light, docs, markdown, or markdown_docs)
     or a custom formatter function, as a dotted path. By default, the console
     will use dark if it is available.
 

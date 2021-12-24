@@ -1,30 +1,27 @@
 """In this module, we modify the basic console helpers for friendly-traceback
-so as to add custom ones for Rich-based formatters."""
+to add custom ones for Rich-based formatters."""
 
 from friendly_traceback.console_helpers import *  # noqa; include Friendly below
 from friendly_traceback.console_helpers import Friendly, helpers
 from friendly_traceback.functions_help import add_help_attribute, short_description
 from friendly_traceback.config import session
 
+old_set_lang = set_lang  # noqa
+
 from friendly.my_gettext import current_lang
+from friendly import set_lang
 
 # The following is different from the one imported via the import * above
 from friendly import set_formatter
 
 _ = current_lang.translate
 old_history = history  # noqa
-old_set_lang = set_lang  # noqa
 
 
 def history():
     session.rich_add_vspace = False
     old_history()
     session.rich_add_vspace = True
-
-
-def set_lang(lang):
-    old_set_lang(lang)
-    current_lang.install(lang)
 
 
 history.__doc__ = old_history.__doc__

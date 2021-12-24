@@ -23,13 +23,21 @@ gettext.translation() is the class-based API for gettext.
 import gettext
 import os
 
+from . import configuration
 from friendly_traceback import debug_helper
 
 
 class LangState:
     def __init__(self):
         self._translate = lambda text: text
-        self.lang = "en"
+        self.lang = self.get_lang()
+
+    def get_lang(self):
+        """Gets the current saved language"""
+        lang = configuration.read("lang")
+        if lang is None:
+            lang = "en"
+        return lang
 
     def install(self, lang=None):
         """Sets the language to be used for translations"""
@@ -73,35 +81,3 @@ class LangState:
 
 current_lang = LangState()  # noqa
 
-
-# Todo: replace localized messages about new cases by the function below
-# which will do the logging automatically.
-
-
-def please_report():
-    _ = current_lang.translate
-    debug_helper.log("Friendly; please_report: New case to consider.")
-    return _(
-        "Please report this example to "
-        "https://github.com/aroberge/friendly/issues.\n"
-        "If you are using a REPL, use `www('bug')` to do so.\n\n"
-    )
-
-
-def no_information():
-    _ = current_lang.translate
-    debug_helper.log("New case to consider.")
-    return (
-        _("No information is known about this exception.\n")
-        + please_report()
-        + _(
-            "If you are using the Friendly console, use `www()` to\n"
-            "do an Internet search for this particular case.\n"
-        )
-    )
-
-
-def internal_error(e):
-    _ = current_lang.translate
-    debug_helper.log("--> Internal error: " + repr(e))
-    return _("Internal error for Friendly.\n") + please_report()

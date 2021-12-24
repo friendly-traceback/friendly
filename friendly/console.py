@@ -209,7 +209,7 @@ def start_console(
     local_vars=None,
     formatter="dark",
     include="friendly_tb",
-    lang="en",
+    lang=None,
     banner=None,
     background=None,
     displayhook=None,
@@ -218,6 +218,8 @@ def start_console(
     """Starts a console; modified from code.interact"""
     # from . import config
 
+    if lang is None:
+        lang = friendly.get_lang()
     if banner is None:
         banner = BANNER + ft.ft_console.type_friendly() + "\n"
 

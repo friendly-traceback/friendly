@@ -52,20 +52,20 @@ from friendly_traceback.config import session
 from friendly_traceback import (  # noqa
     exclude_file_from_traceback,
     get_include,
-    get_lang,
     get_output,
     get_stream,
     set_include,
 )
 
 from .my_gettext import current_lang
-from friendly import rich_formatters, theme
+from friendly import rich_formatters, theme, configuration
 
 
 exclude_directory_from_traceback(os.path.dirname(__file__))
+get_lang = current_lang.get_lang
 
 
-def install(lang="en", formatter=None, redirect=None, include="explain", _debug=None):
+def install(lang=None, formatter=None, redirect=None, include="explain", _debug=None):
     """
     Replaces ``sys.excepthook`` by friendly's own version.
     Intercepts, and can provide an explanation for all Python exceptions except
@@ -85,6 +85,8 @@ def install(lang="en", formatter=None, redirect=None, include="explain", _debug=
         See set_include() for details.
     """
     # Note: need "explain" since there is no interaction possible with install
+    if lang is None:
+        lang = get_lang()
     set_formatter(formatter=formatter)
     ft_install(lang=lang, redirect=redirect, include=include, _debug=_debug)
 
@@ -152,7 +154,7 @@ def run(
     ``use_rich``: ``False`` by default. Set it to ``True`` if Rich is available
     and the environment supports it.
 
-    ``theme``: Theme to be used with Rich. Currently only ``"dark"``,
+    ``theme``: Theme to be used with Rich. Currently, only ``"dark"``,
     the default, and ``"light"`` are available. ``"light"`` is meant for
     light coloured background and has not been extensively tested.
     """
@@ -244,7 +246,7 @@ def start_console(  # pragma: no cover
     local_vars=None,
     formatter=None,
     include="friendly_tb",
-    lang="en",
+    lang=None,
     banner=None,
     background=None,
     displayhook=None,
@@ -267,4 +269,5 @@ def start_console(  # pragma: no cover
 
 def set_lang(lang):
     ft_set_lang(lang)
+    configuration.write("lang", lang)
     current_lang.install(lang)
