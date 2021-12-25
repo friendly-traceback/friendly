@@ -29,7 +29,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.4.33"
+__version__ = "0.4.34"
 
 
 # ===========================================
@@ -268,9 +268,15 @@ def start_console(  # pragma: no cover
 
 
 def set_lang(lang):
+    """Sets the language to be used."""
     ft_set_lang(lang)
     configuration.write(key="lang", value=lang)
     current_lang.install(lang)
 
 
 set_lang(get_lang())
+
+
+def view_saved():
+    """View all saved values"""
+    configuration.view_saved()
