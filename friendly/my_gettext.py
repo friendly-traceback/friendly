@@ -34,7 +34,7 @@ class LangState:
 
     def get_lang(self):
         """Gets the current saved language"""
-        lang = configuration.read("lang")
+        lang = configuration.read(key="lang")
         if lang is None:
             lang = "en"
         return lang

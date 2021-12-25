@@ -18,11 +18,7 @@ from friendly_traceback import (
     __version__,
 )  # noqa
 
-from friendly_traceback.config import session
-from friendly import configuration, get_lang, set_lang
-configuration.ENVIRONMENT = "ipython"
-set_lang(get_lang())
-
+from friendly_traceback.config import session, did_exception_occur_before
 from friendly.rich_console_helpers import *  # noqa
 from friendly.rich_console_helpers import helpers, current_lang  # noqa
 from friendly import __version__ as version  # noqa
@@ -53,11 +49,8 @@ set_formatter("dark")  # noqa
 print(
     f"friendly_traceback {__version__}; friendly {version}."
 )
+
+if not session.exception_before_import:
+    if did_exception_occur_before():
+        friendly_tb()
 print(_("Type 'Friendly' for basic help."))
-
-
-if session.exception_before_import:
-    if session.saved_info:
-        session.saved_info.pop()
-    session.get_traceback_info(sys.last_type, sys.last_value, sys.last_traceback)
-    friendly_tb()
