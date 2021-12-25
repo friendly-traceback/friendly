@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: friendly\n"
-"POT-Creation-Date: 2021-12-24 18:26-0400\n"
+"POT-Creation-Date: 2021-12-25 12:19-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: André Roberge <andre.roberge@gmail.com>\n"
 "Language-Team: \n"
@@ -55,7 +55,7 @@ msgstr "set_width() no tiene efecto en este formateador."
 
 #: jupyter.py:88
 msgid "Sets the width of the traceback."
-msgstr "Establece el ancho del "
+msgstr "Establece la anchura del rastreo."
 
 #: mu\repl.py:51
 msgid "set_width() is only available using 'day', 'night' or 'black' mode."
@@ -102,6 +102,10 @@ msgstr "Formato simple, sin colores añadidos."
 #: rich_console_helpers.py:88
 msgid "Sets the output width in some modes."
 msgstr "Establece el ancho de la salida en algunos modos."
+
+#: rich_console_helpers.py:89
+msgid "Prints the saved configuration."
+msgstr "Imprime la configuración guardada."
 
 #: rich_formatters.py:124
 msgid "Hide"

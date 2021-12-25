@@ -2,6 +2,7 @@
 
 import configparser
 import os
+import sys
 
 from appdirs import user_config_dir
 
@@ -66,3 +67,10 @@ def write(*, key=None, value=None, environment=None):
     config[section][key] = value
     with open(FILENAME, "w") as config_file:
         config.write(config_file)
+
+
+def view_saved():
+    """View the contents of the file for the configuration"""
+    config = configparser.ConfigParser()
+    config.read(FILENAME)
+    config.write(sys.stdout)

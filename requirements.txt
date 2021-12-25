@@ -1,6 +1,6 @@
 rich >= 10.13
 colorama
 pygments
-friendly-traceback >= 0.4.100
+friendly-traceback >= 0.4.101
 friendly_styles >= 0.1
-appdirs
+appdirs >= 1.4.4

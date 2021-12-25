@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-12-24 18:26-0400\n"
+"POT-Creation-Date: 2021-12-25 12:19-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: André Roberge <andre.roberge@gmail.com>\n"
 "Language-Team: \n"
@@ -108,6 +108,10 @@ msgstr "Mise en forme simple, sans ajout de couleurs."
 #: rich_console_helpers.py:88
 msgid "Sets the output width in some modes."
 msgstr "Définit la largeur du texte dans certains modes."
+
+#: rich_console_helpers.py:89
+msgid "Prints the saved configuration."
+msgstr "Imprime la configuration sauvegardée."
 
 #: rich_formatters.py:124
 msgid "Hide"
