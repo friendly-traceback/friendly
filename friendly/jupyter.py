@@ -99,8 +99,13 @@ light()  # noqa
 set_tb_width(100)  # noqa
 set_width(70)  # noqa
 session.is_jupyter = True
+
 if session.exception_before_import:
+    # recompile to exclude IPython's own files
     if session.saved_info:  # should always be True; just being careful
         session.saved_info.pop()
     session.get_traceback_info(sys.last_type, sys.last_value, sys.last_traceback)
     friendly_tb()  # noqa
+else:
+    if did_exception_occur_before():
+        friendly_tb()

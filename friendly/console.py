@@ -68,7 +68,7 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         display a traceback.  All exceptions are caught except
         SystemExit, which, unlike the case for the original version in the
         standard library, cleanly exists the program. This is done
-        so as to avoid our Friendly's exception hook to intercept
+        to avoid our Friendly's exception hook to intercept
         it and confuse the users.
 
         A note about KeyboardInterrupt: this exception may occur

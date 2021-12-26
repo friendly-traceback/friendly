@@ -52,7 +52,13 @@ print(
     f"friendly_traceback {__version__}; friendly {version}."
 )
 
-if not session.exception_before_import:
+if session.exception_before_import:
+    # recompile to exclude IPython's own files
+    if session.saved_info:  # should always be True; just being careful
+        session.saved_info.pop()
+    session.get_traceback_info(sys.last_type, sys.last_value, sys.last_traceback)
+    friendly_tb()  # noqa
+else:
     if did_exception_occur_before():
         friendly_tb()
 print(_("Type 'Friendly' for basic help."))
