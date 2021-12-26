@@ -23,6 +23,7 @@ from friendly.rich_console_helpers import *  # noqa
 from friendly.rich_console_helpers import helpers, current_lang  # noqa
 from friendly import __version__ as version  # noqa
 from friendly import current_lang  # noqa
+from friendly import configuration
 
 try:
     from IPython.utils import py3compat  # noqa
@@ -35,6 +36,7 @@ _ = current_lang.translate
 colorama.deinit()
 colorama.init(convert=False, strip=False)
 session.ipython_prompt = True
+configuration.ENVIRONMENT = "ipython"
 
 shell.InteractiveShell.showtraceback = lambda self, *args, **kwargs: explain_traceback()
 shell.InteractiveShell.showsyntaxerror = (

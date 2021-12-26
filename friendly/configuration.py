@@ -4,12 +4,14 @@ import configparser
 import os
 import sys
 
+from friendly_traceback import debug_helper
 from appdirs import user_config_dir
 
 app_name = "Friendly"
 app_author = "AndreRoberge"  # No accent on André in case it messes with local encoding
 config_dir = user_config_dir(app_name, app_author)
 FILENAME = os.path.join(config_dir, "friendly.ini")
+ENVIRONMENT = None
 
 
 def ensure_existence():
@@ -26,7 +28,7 @@ def ensure_existence():
 # create configuration directories and files
 try:
     ensure_existence()
-except Exception:
+except Exception:  # noqa
     FILENAME = None
 
 
@@ -34,10 +36,12 @@ def read(*, key=None, environment=None):
     """Returns the value of a key in the current environment"""
     if FILENAME is None:
         return
-    if environment is None:
-        section = "common"
+    if environment is not None:
+        section = environment
+    elif ENVIRONMENT is not None:
+        section = ENVIRONMENT
     else:
-        section = environment.lower()
+        section = "unknown"
     key = key.lower()
     config = configparser.ConfigParser()
     config.read(FILENAME)
@@ -53,10 +57,12 @@ def write(*, key=None, value=None, environment=None):
     """
     if FILENAME is None:
         return
-    if environment is None:
-        section = "common"
+    if environment is not None:
+        section = environment
+    elif ENVIRONMENT is not None:
+        section = ENVIRONMENT
     else:
-        section = environment.lower()
+        section = "unknown"
     key = key.lower()
     value = value.lower()
 

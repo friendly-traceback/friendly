@@ -57,7 +57,7 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         self.rich_console = False
         friendly.set_formatter(formatter, background=background)
         if formatter in ["dark", "light"]:
-            self.rich_console = session.console
+            self.rich_console = True
         self.check_for_builtins_changes()
         self.check_for_annotations()
 
@@ -201,13 +201,13 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
                 prompt = prompt.replace("...:", "...[operators]:[/operators]")
             else:
                 prompt = "[operators]" + prompt
-            return self.rich_console.input(prompt)
+            return session.console.input(prompt)
         return input(prompt)
 
 
 def start_console(
     local_vars=None,
-    formatter="dark",
+    formatter=None,
     include="friendly_tb",
     lang=None,
     banner=None,
@@ -216,12 +216,15 @@ def start_console(
     ipython_prompt=True,
 ):
     """Starts a console; modified from code.interact"""
-    # from . import config
 
     if lang is None:
         lang = friendly.get_lang()
     if banner is None:
         banner = BANNER + ft.ft_console.type_friendly() + "\n"
+    if formatter is None:
+        formatter = friendly.configuration.read(key="formatter")
+        if formatter is None:
+            formatter = "dark"
 
     friendly.set_lang(lang)
 

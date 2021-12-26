@@ -205,6 +205,7 @@ def set_formatter(
     session.rich_add_vspace = True
     session.use_rich = True
     session.jupyter_button_style = ""
+    configuration.write(key="formatter", value=formatter)
     if formatter in ["dark", "light"]:
         session.console = theme.init_rich_console(
             style=formatter,
@@ -270,7 +271,7 @@ def start_console(  # pragma: no cover
 def set_lang(lang):
     """Sets the language to be used."""
     ft_set_lang(lang)
-    configuration.write(key="lang", value=lang)
+    configuration.write(key="lang", value=lang, environment="common")
     current_lang.install(lang)
 
 

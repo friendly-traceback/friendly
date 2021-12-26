@@ -21,8 +21,11 @@ from friendly_traceback import __version__ as ft_version
 from friendly_traceback import debug_helper
 
 from friendly import console, __version__
-from friendly import set_formatter
+from friendly import configuration
 from .my_gettext import current_lang
+configuration.ENVIRONMENT = "terminal"
+
+from friendly.rich_console_helpers import set_formatter
 
 
 versions = "\nfriendly-traceback: {}\nfriendly: {}\nPython: {}\n".format(
@@ -164,10 +167,11 @@ def main():
             set_formatter(formatter, background=args.background)  # pragma: no cover
         else:
             set_formatter(import_function(args.formatter))
-            formatter = "dark"  # for the console - should not be needed
     else:
-        set_formatter("dark", background=args.background)
-        formatter = "dark"
+        formatter = configuration.read(key="formatter")
+        if formatter is None:
+            formatter = "dark"
+        set_formatter(formatter, background=args.background)
 
     console_defaults = {}
     if args.source is not None:
@@ -189,7 +193,6 @@ def main():
         if sys.flags.interactive:  # pragma: no cover
             console.start_console(
                 local_vars=console_defaults,
-                formatter=formatter,
                 background=args.background,
                 lang=args.lang,
                 ipython_prompt=not args.python_prompt,
@@ -198,7 +201,6 @@ def main():
     else:  # pragma: no cover
         console.start_console(
             local_vars=console_defaults,
-            formatter=formatter,
             background=args.background,
             lang=args.lang,
             ipython_prompt=not args.python_prompt,
