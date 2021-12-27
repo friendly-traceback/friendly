@@ -60,7 +60,7 @@ except Exception:  # noqa
     FILENAME = None
 
 
-def read(*, option=None, environment=None):
+def read(*, option="unknown", environment=None):
     """Returns the value of a key in the current environment"""
     if FILENAME is None:
         return
@@ -71,7 +71,6 @@ def read(*, option=None, environment=None):
     else:
         section = "unknown"
         debug_helper.log("Unknown section")
-    option = option.lower()
     config = configparser.ConfigParser()
     config.read(FILENAME)
     if section in config and option in config[section]:
@@ -79,7 +78,7 @@ def read(*, option=None, environment=None):
     return
 
 
-def write(*, option=None, value=None, environment=None):
+def write(*, option="unknown", value="unknown", environment=None):
     """Updates the value of a key in the current environment.
 
     If the section does not already exist, it is created.
@@ -92,8 +91,6 @@ def write(*, option=None, value=None, environment=None):
         section = ENVIRONMENT
     else:
         section = "unknown"
-    option = option.lower()
-    value = value.lower()
 
     config = configparser.ConfigParser()
     config.read(FILENAME)

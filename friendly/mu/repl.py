@@ -27,6 +27,9 @@ def set_formatter(formatter=None, background=None):
     """Sets the default formatter. If no argument is given, a default
     formatter is used.
     """
+    configuration.write(option="formatter", value=formatter)
+    if background is not None:
+        configuration.write(option="background", value=background)
     if formatter in ["black", "day", "night"]:
         style = "light" if formatter == "day" else "dark"
         session.console = theme.init_rich_console(
@@ -44,9 +47,6 @@ def set_formatter(formatter=None, background=None):
         session.rich_add_vspace = False
         set_stream()
     ft_set_formatter(formatter=formatter)
-    configuration.write("formatter", formatter)
-    if background is not None:
-        configuration.write("background", background)
 
 
 def set_width(width=80):
