@@ -12,12 +12,15 @@ from friendly_traceback.functions_help import add_help_attribute, short_descript
 from ..my_gettext import current_lang  # noqa
 from friendly.ipython import *  # noqa  # Will automatically install
 from friendly.rich_console_helpers import Friendly, helpers
+from friendly import configuration
 from friendly import theme
 from friendly import rich_formatters
 
 colorama.deinit()  # reset needed on Windows
 colorama.init(convert=False, strip=False)
 _ = current_lang.translate
+
+configuration.ENVIRONMENT = "mu"
 
 
 def set_formatter(formatter=None, background=None):
@@ -41,6 +44,9 @@ def set_formatter(formatter=None, background=None):
         session.rich_add_vspace = False
         set_stream()
     ft_set_formatter(formatter=formatter)
+    configuration.write("formatter", formatter)
+    if background is not None:
+        configuration.write("background", background)
 
 
 def set_width(width=80):
@@ -102,7 +108,14 @@ for helper in local_helpers:
     Friendly.add_helper(local_helpers[helper])
 helpers.update(local_helpers)
 __all__ = list(helpers.keys())
-day()
+
+
+formatter = configuration.read(option="formatter")
+background = configuration.read(option="background")
+if formatter is not None:
+    set_formatter(formatter, background)
+else:
+    day()
 
 if session.exception_before_import:
     if session.saved_info:

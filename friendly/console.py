@@ -222,7 +222,7 @@ def start_console(
     if banner is None:
         banner = BANNER + ft.ft_console.type_friendly() + "\n"
     if formatter is None:
-        formatter = friendly.configuration.read(key="formatter")
+        formatter = friendly.configuration.read(option="formatter")
         if formatter is None:
             formatter = "dark"
 

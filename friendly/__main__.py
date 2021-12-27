@@ -23,6 +23,7 @@ from friendly_traceback import debug_helper
 from friendly import console, __version__
 from friendly import configuration
 from .my_gettext import current_lang
+
 configuration.ENVIRONMENT = "terminal"
 
 from friendly.rich_console_helpers import set_formatter
@@ -168,7 +169,7 @@ def main():
         else:
             set_formatter(import_function(args.formatter))
     else:
-        formatter = configuration.read(key="formatter")
+        formatter = configuration.read(option="formatter")
         if formatter is None:
             formatter = "dark"
         set_formatter(formatter, background=args.background)

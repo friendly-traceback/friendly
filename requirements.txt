@@ -3,4 +3,4 @@ colorama
 pygments
 friendly-traceback >= 0.4.104
 friendly_styles >= 0.1
-appdirs >= 1.4.4
+appdirs

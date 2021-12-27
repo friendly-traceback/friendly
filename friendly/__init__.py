@@ -29,7 +29,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.4.35"
+__version__ = "0.4.37"
 
 
 # ===========================================
@@ -46,6 +46,7 @@ from friendly_traceback import explain_traceback as ft_explain_traceback
 from friendly_traceback import install as ft_install
 from friendly_traceback import set_formatter as ft_set_formatter
 from friendly_traceback import set_lang as ft_set_lang
+from friendly_traceback import __version__ as ft_version
 from friendly_traceback.config import session
 
 # The following are not used here, and simply made available directly for convenience
@@ -202,10 +203,26 @@ def set_formatter(
     """Sets the default formatter. If no argument is given, a default
     formatter is used.
     """
+    if formatter is not None:
+        configuration.write(option="formatter", value=formatter)
+        if background is not None:
+            configuration.write(option="background", value=background)
+        else:
+            old_background = configuration.read(option="background")
+            if (
+                formatter == configuration.read(option="formatter")
+                and old_background is not None
+            ):
+                background = old_background
+    if color_system is not None:
+        configuration.write(option="color_system", value=color_system)
+    if force_jupyter is not None:
+        configuration.write(option="force_jupyter", value=force_jupyter)
+
     session.rich_add_vspace = True
     session.use_rich = True
     session.jupyter_button_style = ""
-    configuration.write(key="formatter", value=formatter)
+    configuration.write(option="formatter", value=formatter)
     if formatter in ["dark", "light"]:
         session.console = theme.init_rich_console(
             style=formatter,
@@ -271,13 +288,20 @@ def start_console(  # pragma: no cover
 def set_lang(lang):
     """Sets the language to be used."""
     ft_set_lang(lang)
-    configuration.write(key="lang", value=lang, environment="common")
+    configuration.write(option="lang", value=lang, environment="common")
     current_lang.install(lang)
 
 
 set_lang(get_lang())
 
 
-def view_saved():
+def print_settings():
     """View all saved values"""
-    configuration.view_saved()
+    configuration.print_settings()
+
+
+def print_repl_header():
+    """Prints the header at the beginning of an interactive session."""
+    _ = current_lang.translate
+    print(f"friendly_traceback {ft_version}; friendly {__version__}.")
+    print(_("Type 'Friendly' for basic help."))

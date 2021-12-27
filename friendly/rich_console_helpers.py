@@ -9,7 +9,7 @@ from friendly_traceback.config import session
 old_set_lang = set_lang  # noqa
 
 from friendly.my_gettext import current_lang
-from friendly import set_lang, view_saved
+from friendly import set_lang, print_settings
 
 # The following is different from the one imported via the import * above
 from friendly import set_formatter
@@ -63,7 +63,7 @@ def plain():
 
 
 def set_width(width=80):
-    """Sets the width in a iPython/Jupyter session using 'light' or 'dark' mode"""
+    """Sets the width in a iPython/Jupyter session using a Rich formatter."""
     try:
         session.console.width = width
     except Exception:  # noqa
@@ -86,8 +86,14 @@ short_description["light"] = lambda: _(
 )
 short_description["plain"] = lambda: _("Plain formatting, with no colours added.")
 short_description["set_width"] = lambda: _("Sets the output width in some modes.")
-short_description["view_saved"] = lambda : _("Prints the saved configuration.")
-local_helpers = {"dark": dark, "light": light, "plain": plain, "set_width": set_width, "view_saved": view_saved}
+short_description["print_settings"] = lambda: _("Prints the saved configuration.")
+local_helpers = {
+    "dark": dark,
+    "light": light,
+    "plain": plain,
+    "set_width": set_width,
+    "print_settings": print_settings,
+}
 add_help_attribute(local_helpers)
 for helper in local_helpers:
     Friendly.add_helper(local_helpers[helper])
