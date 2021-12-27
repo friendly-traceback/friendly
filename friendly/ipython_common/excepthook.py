@@ -10,8 +10,6 @@ from friendly_traceback import (
     explain_traceback,
 )  # noqa
 
-import colorama
-
 try:
     from IPython.core import compilerop, interactiveshell
 except ImportError:
@@ -26,13 +24,13 @@ else:
 exclude_file_from_traceback(interactiveshell.__file__)
 exclude_file_from_traceback(compilerop.__file__)
 
-colorama.deinit()
-colorama.init(convert=False, strip=False)
 
-interactiveshell.InteractiveShell.showtraceback = (
-    lambda self, *args, **kwargs: explain_traceback()
-)
-interactiveshell.InteractiveShell.showsyntaxerror = (
-    lambda self, *args, **kwargs: explain_traceback()
-)
-install(include="friendly_tb")
+def install_except_hook():
+    """Installs friendly-traceback as an exception hook in IPython"""
+    interactiveshell.InteractiveShell.showtraceback = (
+        lambda self, *args, **kwargs: explain_traceback()
+    )
+    interactiveshell.InteractiveShell.showsyntaxerror = (
+        lambda self, *args, **kwargs: explain_traceback()
+    )
+    install(include="friendly_tb")

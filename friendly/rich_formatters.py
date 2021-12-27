@@ -10,13 +10,13 @@ This module currently contains the following formatters
 
 * ``jupyter()``: basic formatter for Jupyter notebooks
 
-* ``markdown()``: This produces an output formatted with markdown syntax.
+* ``markdown()``: This produces an output formatted with Markdown syntax.
 
-* ``markdown_docs()``: This produces an output formatted markdown syntax,
+* ``markdown_docs()``: This produces an output formatted Markdown syntax,
     but where each header is shifted down by 2 (h1 -> h3, etc.) so that they
     can be inserted in a document, without creating artificial top headers.
 
-* ``rich_markdown()``: This produces an output formatted with markdown syntax,
+* ``rich_markdown()``: This produces an output formatted with Markdown syntax,
     with some modification, with the end result intended to be printed
     in colour in a console using Rich (https://github.com/willmcgugan/rich).
 """
@@ -48,7 +48,7 @@ COUNT = 0  # not a constant
 
 def jupyter_interactive(
     info: Info, include: InclusionChoice = "friendly_tb"
-) -> str:  # noqa
+) -> None:  # noqa
     """This implements a formatter that inserts buttons in a jupyter notebook
     allowing to selectively show what/why/where, instead of
     showing the friendly_tb by default."""
@@ -66,7 +66,6 @@ def jupyter_interactive(
     add_interactive_item(info, "what", count=COUNT)
     add_interactive_item(info, "why", count=COUNT)
     add_interactive_item(info, "where", count=COUNT)
-    return ""
 
 
 def add_message(info: Info, count: int = -1) -> None:
@@ -117,7 +116,10 @@ def add_interactive_item(info: Info, name: InclusionChoice, count: int = -1) -> 
        }}
     }}
      </script>
-     <button id='friendly-tb-btn-show-{name}{count}' onclick='toggle_{name}{count}()' style='display:none {btn_style}'>
+     <button
+         id='friendly-tb-btn-show-{name}{count}'
+         onclick='toggle_{name}{count}()'
+         style='display:none {btn_style}'>
      {name}()
      </button>
     """.format(
@@ -142,7 +144,10 @@ def add_control(count: int = -1) -> None:
     """Adds a single button to control the visibility of all other elements."""
     _ = current_lang.translate
     content = """
-        <button id='friendly-tb-btn-show{count}' onclick='friendly_toggle_more{count}()' style='{btn_style}'>
+        <button
+            id='friendly-tb-btn-show{count}'
+            onclick='friendly_toggle_more{count}()'
+            style='{btn_style}'>
         {more}
         </button>
         <script type="text/Javascript"> function friendly_toggle_more{count}(){{
@@ -231,7 +236,7 @@ def jupyter(
 
     This can be used as a jupyter theme agnostic formatter as it
     works equally well with a light or dark theme.
-    However, some of the information shown may be less than optimal
+    However, some information shown may be less than optimal
     when it comes to visibility/contrast.
     """
     _ = current_lang.translate
@@ -287,7 +292,7 @@ if not ipython_available:
 def markdown(
     info: Info, include: InclusionChoice = "friendly_tb"
 ) -> str:  # pragma: no cover
-    """Traceback formatted with markdown syntax.
+    """Traceback formatted with Markdown syntax.
 
     Some minor changes of the traceback info content are done,
     for nicer final display when the markdown generated content
@@ -299,7 +304,7 @@ def markdown(
 def markdown_docs(
     info: Info, include: InclusionChoice = "explain"
 ) -> str:  # pragma: no cover
-    """Traceback formatted with markdown syntax, where each
+    """Traceback formatted with Markdown syntax, where each
     header is shifted down by 2 (h1 -> h3, etc.) so that they
     can be inserted in a document, without creating artificial
     top headers.
@@ -314,7 +319,7 @@ def markdown_docs(
 def rich_markdown(
     info: Info, include: InclusionChoice = "friendly_tb"
 ) -> str:  # pragma: no cover
-    """Traceback formatted with with markdown syntax suitable for
+    """Traceback formatted with Markdown syntax suitable for
     printing in color in the console using Rich.
 
     Some minor changes of the traceback info content are done,
@@ -333,7 +338,7 @@ def _markdown(
     rich: bool = False,
     documentation: bool = False,
 ) -> str:  # pragma: no cover
-    """Traceback formatted with with markdown syntax."""
+    """Traceback formatted with Markdown syntax."""
     global RICH_HEADER, WIDE_OUTPUT
     if (
         rich
@@ -369,7 +374,7 @@ def _markdown(
     result = [""]
     for item in items_to_show:
         if item in info and info[item].strip():
-            # With normal markdown formatting, it does not make sense to have a
+            # With normal Markdown formatting, it does not make sense to have a
             # header end with a colon.
             # However, we style headers differently with Rich; see
             # Rich theme in file friendly_rich.

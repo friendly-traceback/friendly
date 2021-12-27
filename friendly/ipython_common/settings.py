@@ -4,6 +4,9 @@ from friendly.rich_console_helpers import set_formatter
 
 
 def init_configuration(default_formatter="dark"):
+    """Initialises the formatter using saved configurations for the
+    current environment.
+    """
     if configuration.has_environment("configuration.ENVIRONMENT"):
         formatter = configuration.read(option="formatter")
         background = configuration.read(option="background")
@@ -20,10 +23,10 @@ def init_configuration(default_formatter="dark"):
 
     if configuration.has_environment("configuration.ENVIRONMENT"):
         _ipython_prompt = configuration.read(option="ipython_prompt")
-        if _ipython_prompt in [None, "true"]:
+        if _ipython_prompt in [None, "True"]:
             config.session.ipython_prompt = True
         else:
             config.session.ipython_prompt = False
     else:
         config.session.ipython_prompt = True
-        configuration.write(option="ipython_prompt", value="true")
+        configuration.write(option="ipython_prompt", value="True")
