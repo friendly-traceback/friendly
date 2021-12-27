@@ -6,10 +6,12 @@ from friendly_traceback.functions_help import (
     short_description,
 )  # noqa
 from .ipython import *  # noqa
-from .ipython import helpers, Friendly
 from friendly import rich_formatters
-from friendly.my_gettext import current_lang
+from friendly.my_gettext import current_lang  # noqa
 from friendly_traceback import config
+
+from friendly.rich_console_helpers import *  # noqa
+from friendly.rich_console_helpers import helpers, Friendly
 
 _ = current_lang.translate
 

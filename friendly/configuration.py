@@ -83,6 +83,12 @@ def write(*, option="unknown", value="unknown", environment=None):
 
     If the section does not already exist, it is created.
     """
+    if not isinstance(option, str):
+        debug_helper.log(f"option = {option} is not a string.")
+        return
+    if not isinstance(value, str):
+        debug_helper.log(f"value = {value} is not a string.")
+        return
     if FILENAME is None:
         return
     if environment is not None:
@@ -102,6 +108,9 @@ def write(*, option="unknown", value="unknown", environment=None):
 
 
 def remove_option(option, environment=None):
+    if not isinstance(option, str):
+        debug_helper.log(f"option = {option} is not a string.")
+        return
     if FILENAME is None:
         return
     if environment is not None:
