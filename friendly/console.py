@@ -217,6 +217,11 @@ def start_console(
 ):
     """Starts a console; modified from code.interact"""
 
+    if friendly.configuration.terminal_type:
+        friendly.configuration.ENVIRONMENT = friendly.configuration.terminal_type
+    else:
+        friendly.configuration.ENVIRONMENT = "terminal"
+
     if lang is None:
         lang = friendly.get_lang()
     if banner is None:
@@ -225,6 +230,8 @@ def start_console(
         formatter = friendly.configuration.read(option="formatter")
         if formatter is None:
             formatter = "dark"
+    if background is None:
+        background = friendly.configuration.read(option="background")
 
     friendly.set_lang(lang)
 

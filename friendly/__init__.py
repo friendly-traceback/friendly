@@ -214,6 +214,19 @@ def set_formatter(
                 and old_background is not None
             ):
                 background = old_background
+    elif background is not None:
+        configuration.write(option="background", value=background)
+        old_formatter = configuration.read(option="formatter")
+        if old_formatter is not None:
+            formatter = old_formatter
+            old_color_system = configuration.read(option="color_system")
+            if old_color_system is not None:
+                color_system = old_color_system
+            old_force_jupyter = configuration.read(option="force_jupyter")
+            if old_force_jupyter is not None:
+                force_jupyter = old_force_jupyter
+        else:
+            return
     if color_system is not None:
         configuration.write(option="color_system", value=color_system)
     if force_jupyter is not None:
@@ -298,7 +311,7 @@ def set_lang(lang):
 set_lang(get_lang())
 
 
-def print_settings():
+def _print_settings():
     """View all saved values"""
     configuration.print_settings()
 

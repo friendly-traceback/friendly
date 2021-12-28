@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-12-25 12:19-0400\n"
+"POT-Creation-Date: 2021-12-28 07:04-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,8 +15,12 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: __init__.py:176 __main__.py:178 idle\main.py:203
+#: __init__.py:177 __main__.py:183 idle\main.py:202
 msgid "The file {filename} does not exist."
+msgstr ""
+
+#: __init__.py:310
+msgid "Type 'Friendly' for basic help."
 msgstr ""
 
 #: console.py:93
@@ -44,35 +48,27 @@ msgstr ""
 msgid "Not yet implemented."
 msgstr ""
 
-#: ipython.py:56
-msgid "Type 'Friendly' for basic help."
-msgstr ""
-
-#: jupyter.py:81 rich_console_helpers.py:70
-msgid "set_width() has no effect with this formatter."
-msgstr ""
-
-#: jupyter.py:88
+#: jupyter.py:78
 msgid "Sets the width of the traceback."
 msgstr ""
 
-#: mu\repl.py:51
+#: mu\repl.py:56
 msgid "set_width() is only available using 'day', 'night' or 'black' mode."
 msgstr ""
 
-#: mu\repl.py:90
+#: mu\repl.py:95
 msgid "Colour scheme designed for Mu's day theme."
 msgstr ""
 
-#: mu\repl.py:91
+#: mu\repl.py:96
 msgid "Colour scheme designed for Mu's night theme."
 msgstr ""
 
-#: mu\repl.py:92
+#: mu\repl.py:97
 msgid "Colourful scheme with black background suitable for Mu's high contrast theme."
 msgstr ""
 
-#: mu\repl.py:95
+#: mu\repl.py:100
 msgid "White text on black background; suitable for Mu's high contrast theme."
 msgstr ""
 
@@ -81,35 +77,35 @@ msgid ""
 "Friendly themes are only available in Mu's REPL.\n"
 msgstr ""
 
-#: rich_console_helpers.py:81
+#: rich_console_helpers.py:80
 msgid "Sets a colour scheme designed for a black background."
 msgstr ""
 
-#: rich_console_helpers.py:84
+#: rich_console_helpers.py:83
 msgid "Sets a colour scheme designed for a white background."
 msgstr ""
 
-#: rich_console_helpers.py:87
+#: rich_console_helpers.py:86
 msgid "Plain formatting, with no colours added."
 msgstr ""
 
-#: rich_console_helpers.py:88
+#: rich_console_helpers.py:87
 msgid "Sets the output width in some modes."
 msgstr ""
 
-#: rich_console_helpers.py:89
-msgid "Prints the saved configuration."
+#: rich_console_helpers.py:88
+msgid "Prints the saved settings."
 msgstr ""
 
-#: rich_formatters.py:124
+#: rich_formatters.py:126
 msgid "Hide"
 msgstr ""
 
-#: rich_formatters.py:184
+#: rich_formatters.py:189
 msgid "More ..."
 msgstr ""
 
-#: rich_formatters.py:185
+#: rich_formatters.py:190
 msgid "Show message only"
 msgstr ""
 
