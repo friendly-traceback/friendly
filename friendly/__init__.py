@@ -29,7 +29,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.4.39"
+__version__ = "0.4.40"
 
 
 # ===========================================
@@ -59,7 +59,7 @@ from friendly_traceback import (  # noqa
 )
 
 from .my_gettext import current_lang
-from friendly import rich_formatters, theme, configuration
+from friendly import rich_formatters, theme, settings
 
 
 exclude_directory_from_traceback(os.path.dirname(__file__))
@@ -204,39 +204,39 @@ def set_formatter(
     formatter is used.
     """
     if formatter is not None:
-        configuration.write(option="formatter", value=formatter)
+        settings.write(option="formatter", value=formatter)
         if background is not None:
-            configuration.write(option="background", value=background)
+            settings.write(option="background", value=background)
         else:
-            old_background = configuration.read(option="background")
+            old_background = settings.read(option="background")
             if (
-                formatter == configuration.read(option="formatter")
+                formatter == settings.read(option="formatter")
                 and old_background is not None
             ):
                 background = old_background
     elif background is not None:
-        configuration.write(option="background", value=background)
-        old_formatter = configuration.read(option="formatter")
+        settings.write(option="background", value=background)
+        old_formatter = settings.read(option="formatter")
         if old_formatter is not None:
             formatter = old_formatter
-            old_color_system = configuration.read(option="color_system")
+            old_color_system = settings.read(option="color_system")
             if old_color_system is not None:
                 color_system = old_color_system
-            old_force_jupyter = configuration.read(option="force_jupyter")
+            old_force_jupyter = settings.read(option="force_jupyter")
             if old_force_jupyter is not None:
                 force_jupyter = old_force_jupyter
         else:
             return
     if color_system is not None:
-        configuration.write(option="color_system", value=color_system)
+        settings.write(option="color_system", value=color_system)
     if force_jupyter is not None:
-        configuration.write(option="force_jupyter", value=force_jupyter)
+        settings.write(option="force_jupyter", value=force_jupyter)
 
     session.rich_add_vspace = True
     session.use_rich = True
     session.jupyter_button_style = ""
     set_stream()
-    configuration.write(option="formatter", value=formatter)
+    settings.write(option="formatter", value=formatter)
     if formatter in ["dark", "light"]:
         session.console = theme.init_rich_console(
             style=formatter,
@@ -304,7 +304,7 @@ def start_console(  # pragma: no cover
 def set_lang(lang):
     """Sets the language to be used."""
     ft_set_lang(lang)
-    configuration.write(option="lang", value=lang, environment="common")
+    settings.write(option="lang", value=lang, environment="common")
     current_lang.install(lang)
 
 
@@ -313,7 +313,7 @@ set_lang(get_lang())
 
 def _print_settings():
     """View all saved values"""
-    configuration.print_settings()
+    settings.print_settings()
 
 
 def print_repl_header():

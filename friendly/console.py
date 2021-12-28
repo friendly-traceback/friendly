@@ -217,21 +217,21 @@ def start_console(
 ):
     """Starts a console; modified from code.interact"""
 
-    if friendly.configuration.terminal_type:
-        friendly.configuration.ENVIRONMENT = friendly.configuration.terminal_type
+    if friendly.settings.terminal_type:
+        friendly.settings.ENVIRONMENT = friendly.settings.terminal_type
     else:
-        friendly.configuration.ENVIRONMENT = "terminal"
+        friendly.settings.ENVIRONMENT = "terminal"
 
     if lang is None:
         lang = friendly.get_lang()
     if banner is None:
         banner = BANNER + ft.ft_console.type_friendly() + "\n"
     if formatter is None:
-        formatter = friendly.configuration.read(option="formatter")
+        formatter = friendly.settings.read(option="formatter")
         if formatter is None:
             formatter = "dark"
     if background is None:
-        background = friendly.configuration.read(option="background")
+        background = friendly.settings.read(option="background")
 
     friendly.set_lang(lang)
 

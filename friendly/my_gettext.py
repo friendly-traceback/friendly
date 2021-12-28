@@ -23,7 +23,7 @@ gettext.translation() is the class-based API for gettext.
 import gettext
 import os
 
-from . import configuration
+from . import settings
 from friendly_traceback import debug_helper
 
 
@@ -34,7 +34,7 @@ class LangState:
 
     def get_lang(self):
         """Gets the current saved language"""
-        lang = configuration.read(option="lang", environment="common")
+        lang = settings.read(option="lang", environment="common")
         if lang is None:
             lang = "en"
         return lang

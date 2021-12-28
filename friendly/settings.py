@@ -1,4 +1,4 @@
-"""Configuration file exclusively for friendly -- not for friendly-traceback"""
+"""Settings file exclusively for friendly -- not for friendly-traceback"""
 
 import configparser
 import os
@@ -43,11 +43,11 @@ ENVIRONMENT = None
 # would usually be a combination of the terminal_type and the flavour.
 
 # Perhaps friendly will be used in environments where the user cannot
-# create configuration directories and files
+# create settings directories and files
 
 
 def ensure_existence():
-    """Ensures that a configuration file exists"""
+    """Ensures that a settings file exists"""
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
     if not os.path.exists(FILENAME):
@@ -131,7 +131,7 @@ def remove_option(option, environment=None):
 
 
 def has_environment(environment=None):
-    """Returns True if a section in the configuration file has already been set
+    """Returns True if a section in the settings file has already been set
     for this environment.
     """
     if FILENAME is None:
@@ -146,7 +146,7 @@ def has_environment(environment=None):
 
 
 def print_settings():
-    """Prints the contents of the configuration file"""
+    """Prints the contents of the settings file"""
     config = configparser.ConfigParser()
     print("Current environment: ", ENVIRONMENT)
     config.read(FILENAME)

@@ -15,13 +15,13 @@ from friendly_traceback.functions_help import add_help_attribute
 from friendly_traceback import config
 
 from friendly import get_lang, print_repl_header
-from friendly import configuration
+from friendly import settings
 from ..my_gettext import current_lang
 from . import idle_formatter
 from . import patch_source_cache  # noqa
 
 
-configuration.ENVIRONMENT = "IDLE"
+settings.ENVIRONMENT = "IDLE"
 set_lang(get_lang())
 
 friendly_traceback.exclude_file_from_traceback(__file__)

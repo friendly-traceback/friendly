@@ -2,10 +2,10 @@ from rich import jupyter as rich_jupyter
 
 """Sets up everything required for an IPython terminal session."""
 from friendly.ipython_common.excepthook import install_except_hook
-from friendly.ipython_common.settings import init_configuration
+from friendly.ipython_common.settings import init_settings
 
 from friendly import print_repl_header
-from friendly import configuration
+from friendly import settings
 from friendly_traceback import config
 from friendly.rich_console_helpers import *  # noqa
 
@@ -23,10 +23,10 @@ from friendly.rich_console_helpers import helpers, Friendly
 _ = current_lang.translate
 
 
-if configuration.terminal_type:
-    configuration.ENVIRONMENT = configuration.terminal_type + "-jupyter"
+if settings.terminal_type:
+    settings.ENVIRONMENT = settings.terminal_type + "-jupyter"
 else:
-    configuration.ENVIRONMENT = "jupyter"
+    settings.ENVIRONMENT = "jupyter"
 
 
 # For Jupyter output, Rich specifies a set of fonts starting with Menlo and
@@ -85,7 +85,7 @@ __all__ = list(helpers.keys())
 
 install_except_hook()
 # Use the new interactive light formatter by default.
-init_configuration("interactive-light")
+init_settings("interactive-light")
 set_tb_width(100)  # noqa
 set_width(70)  # noqa
 session.is_jupyter = True

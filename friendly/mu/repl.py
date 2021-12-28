@@ -13,7 +13,7 @@ from friendly.ipython_common import *  # noqa  # Will automatically install
 from friendly.rich_console_helpers import *  # noqa
 from friendly.rich_console_helpers import Friendly, helpers
 from friendly import print_repl_header
-from friendly import configuration
+from friendly import settings
 from friendly import theme
 from friendly import rich_formatters
 
@@ -21,16 +21,16 @@ colorama.deinit()  # reset needed on Windows
 colorama.init(convert=False, strip=False)
 _ = current_lang.translate
 
-configuration.ENVIRONMENT = "mu"
+settings.ENVIRONMENT = "mu"
 
 
 def set_formatter(formatter=None, background=None):
     """Sets the default formatter. If no argument is given, a default
     formatter is used.
     """
-    configuration.write(option="formatter", value=formatter)
+    settings.write(option="formatter", value=formatter)
     if background is not None:
-        configuration.write(option="background", value=background)
+        settings.write(option="background", value=background)
     if formatter in ["black", "day", "night"]:
         style = "light" if formatter == "day" else "dark"
         session.console = theme.init_rich_console(
@@ -111,8 +111,8 @@ helpers.update(local_helpers)
 __all__ = list(helpers.keys())
 
 
-formatter = configuration.read(option="formatter")
-background = configuration.read(option="background")
+formatter = settings.read(option="formatter")
+background = settings.read(option="background")
 if formatter is not None:
     set_formatter(formatter, background)
 else:
