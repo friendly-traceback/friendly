@@ -10,6 +10,7 @@ old_set_lang = set_lang  # noqa
 
 from friendly.my_gettext import current_lang
 from friendly import set_lang, _print_settings
+from friendly.settings import _remove_environment
 
 # The following is different from the one imported via the import * above
 from friendly import set_formatter
@@ -92,6 +93,9 @@ short_description["plain"] = lambda: _("Plain formatting, with no colours added.
 short_description["set_background"] = lambda: _("Sets the background color.")
 short_description["set_width"] = lambda: _("Sets the output width in some modes.")
 short_description["_print_settings"] = lambda: _("Prints the saved settings.")
+short_description["_remove_environment"] = lambda: (
+    "Deletes an environment from the saved settings; default: current environment."
+)
 local_helpers = {
     "dark": dark,
     "light": light,
@@ -99,6 +103,7 @@ local_helpers = {
     "set_width": set_width,
     "set_background": set_background,
     "_print_settings": _print_settings,
+    "_remove_environment": _remove_environment,
 }
 add_help_attribute(local_helpers)
 for helper in local_helpers:

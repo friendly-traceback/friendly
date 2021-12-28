@@ -109,10 +109,8 @@ def write(*, option="unknown", value="unknown", environment=None):
         config.write(config_file)
 
 
-def remove_option(option, environment=None):
-    if not isinstance(option, str):
-        debug_helper.log(f"option = {option} is not a string.")
-        return
+def _remove_environment(environment=None):
+    """Removes an environment (option) previously saved."""
     if FILENAME is None:
         return
     if environment is not None:
@@ -120,12 +118,11 @@ def remove_option(option, environment=None):
     elif ENVIRONMENT is not None:
         section = ENVIRONMENT
     else:
-        section = "unknown"
+        print("No environment defined.")
+        return
     config = configparser.ConfigParser()
     config.read(FILENAME)
-    if config.has_section(section):
-        if config.has_option(section, option):
-            config.remove_option(section, option)
+    config.remove_section(section)
     with open(FILENAME, "w") as config_file:
         config.write(config_file)
 
