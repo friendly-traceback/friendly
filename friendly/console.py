@@ -216,11 +216,11 @@ def start_console(
     ipython_prompt=True,
 ):
     """Starts a console; modified from code.interact"""
-
-    if friendly.settings.terminal_type:
-        friendly.settings.ENVIRONMENT = friendly.settings.terminal_type
-    else:
-        friendly.settings.ENVIRONMENT = "terminal"
+    if friendly.settings.ENVIRONMENT is None:
+        if friendly.settings.terminal_type:
+            friendly.settings.ENVIRONMENT = friendly.settings.terminal_type
+        else:
+            friendly.settings.ENVIRONMENT = "terminal"
 
     if lang is None:
         lang = friendly.get_lang()

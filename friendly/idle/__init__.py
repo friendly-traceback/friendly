@@ -1,4 +1,7 @@
 from .main import *  # noqa
+from friendly import settings
+
+settings.ENVIRONMENT = "IDLE"
 
 __all__ = list(helpers)  # noqa
 __all__.append("install")  # noqa
