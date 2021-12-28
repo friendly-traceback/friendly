@@ -9,8 +9,10 @@ from friendly_traceback.config import session, did_exception_occur_before  # noq
 from friendly_traceback.functions_help import add_help_attribute, short_description
 
 from ..my_gettext import current_lang  # noqa
-from friendly.ipython import *  # noqa  # Will automatically install
+from friendly.ipython_common import *  # noqa  # Will automatically install
+from friendly.rich_console_helpers import *  # noqa
 from friendly.rich_console_helpers import Friendly, helpers
+from friendly import print_repl_header
 from friendly import configuration
 from friendly import theme
 from friendly import rich_formatters
@@ -116,6 +118,6 @@ if formatter is not None:
 else:
     day()
 
-print_repl_header()  # noqa
+print_repl_header()
 if did_exception_occur_before():
     friendly_tb()  # noqa
