@@ -10,21 +10,21 @@ from idlelib import run as idlelib_run
 
 import friendly_traceback  # noqa
 from friendly_traceback.console_helpers import *  # noqa
-from friendly_traceback.console_helpers import helpers, Friendly  # noqa
+from friendly_traceback.console_helpers import helpers, Friendly, set_lang  # noqa
 from friendly_traceback.functions_help import add_help_attribute
-from friendly_traceback.config import session
+from friendly_traceback import config
 
+from friendly import get_lang, print_repl_header
+from friendly import configuration
 from ..my_gettext import current_lang
 from . import idle_formatter
 from . import patch_source_cache  # noqa
 
 
+configuration.ENVIRONMENT = "IDLE"
+set_lang(get_lang())
+
 friendly_traceback.exclude_file_from_traceback(__file__)
-
-
-def set_lang(lang):
-    current_lang.install(lang)
-    Friendly.set_lang(lang)
 
 
 def set_formatter(formatter="idle"):
@@ -99,7 +99,7 @@ def idle_writer(output, color=None):
             sys.stdout.shell.write(fragment[0], "stderr")  # noqa
 
 
-def install_in_idle_shell(lang="en"):
+def install_in_idle_shell(lang=get_lang()):
     """Installs Friendly in IDLE's shell so that it can retrieve
     code entered in IDLE's repl.
     Note that this requires Python version 3.10+ since IDLE did not support
@@ -116,14 +116,13 @@ def install_in_idle_shell(lang="en"):
     idle_writer("Friendly cannot handle SyntaxErrors for code entered in the shell.\n")
 
 
-def install(lang="en"):
+def install(lang=get_lang()):
     """Installs Friendly in the IDLE shell, with a custom formatter.
     For Python versions before 3.10, this was not directly supported, so a
     Friendly console is used instead of IDLE's shell.
 
     Changes introduced in Python 3.10 were back-ported to Python 3.9.5.
     """
-    print("installing in idle.main")
     sys.stderr = sys.stdout.shell  # noqa
     friendly_traceback.set_formatter(idle_formatter.idle_formatter)
     if sys.version_info >= (3, 9, 5):
@@ -149,7 +148,7 @@ def start_console(lang="en", displayhook=None, ipython_prompt=True):
 
 def run(
     filename,
-    lang=None,
+    lang=get_lang(),
     include="friendly_tb",
     args=None,
     console=True,
@@ -220,9 +219,7 @@ def run(
     )
 
 
-if session.exception_before_import:
-    if session.saved_info:  # should always be True; just being careful
-        session.saved_info.pop()
+if config.did_exception_occur_before():
     install()
-    session.get_traceback_info(sys.last_type, sys.last_value, sys.last_traceback)
+    print_repl_header()
     friendly_tb()  # noqa

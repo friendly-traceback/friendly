@@ -67,7 +67,6 @@ def set_width(width=80):
     try:
         session.console.width = width
     except Exception:  # noqa
-        print(_("set_width() has no effect with this formatter."))
         return
     session.rich_width = width
     if session.is_jupyter:

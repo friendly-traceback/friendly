@@ -1,12 +1,11 @@
 """Mu's repl uses an IPython QtConsole.
 Mu has three themes designated (in English) as 'day', 'night',
 and 'high contrast'."""
-import sys
 
 import colorama  # noqa
 from friendly_traceback import set_stream
 from friendly_traceback import set_formatter as ft_set_formatter
-from friendly_traceback.config import session  # noqa
+from friendly_traceback.config import session, did_exception_occur_before  # noqa
 from friendly_traceback.functions_help import add_help_attribute, short_description
 
 from ..my_gettext import current_lang  # noqa
@@ -117,8 +116,6 @@ if formatter is not None:
 else:
     day()
 
-if session.exception_before_import:
-    if session.saved_info:
-        session.saved_info.pop()
-    session.get_traceback_info(sys.last_type, sys.last_value, sys.last_traceback)
+print_repl_header()  # noqa
+if did_exception_occur_before():
     friendly_tb()  # noqa

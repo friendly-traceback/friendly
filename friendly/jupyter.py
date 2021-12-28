@@ -1,19 +1,33 @@
 from rich import jupyter as rich_jupyter
 
+"""Sets up everything required for an IPython terminal session."""
+from friendly.ipython_common.excepthook import install_except_hook
+from friendly.ipython_common.settings import init_configuration
+
+from friendly import print_repl_header
+from friendly import configuration
+from friendly_traceback import config
+from friendly.rich_console_helpers import *  # noqa
+
 from friendly_traceback import session  # noqa
 from friendly_traceback.functions_help import (
     add_help_attribute,
     short_description,
 )  # noqa
-from .ipython import *  # noqa
-from friendly import rich_formatters
-from friendly.my_gettext import current_lang  # noqa
-from friendly_traceback import config
 
+# from .ipython import *  # noqa
+from friendly.my_gettext import current_lang  # noqa
 from friendly.rich_console_helpers import *  # noqa
 from friendly.rich_console_helpers import helpers, Friendly
 
 _ = current_lang.translate
+
+
+if configuration.terminal_type:
+    configuration.ENVIRONMENT = configuration.terminal_type + "-jupyter"
+else:
+    configuration.ENVIRONMENT = "jupyter"
+
 
 # For Jupyter output, Rich specifies a set of fonts starting with Menlo and
 # ending with monospace as last resort whereas Jupyter notebooks just
@@ -22,40 +36,16 @@ _ = current_lang.translate
 rich_jupyter.JUPYTER_HTML_FORMAT = (
     "<pre style='white-space:pre;overflow-x:auto;line-height:normal'>{code}</pre>"
 )
-old_set_formatter = set_formatter  # noqa
 old_light = light  # noqa
 old_dark = dark  # noqa
 
 
-def set_formatter(
-    formatter=None, color_system="auto", force_jupyter=None, background=None
-):
-    """Sets the default formatter. If no argument is given, a default
-    formatter is used.
-    """
-    session.rich_add_vspace = False
-    session.use_rich = True
-    if formatter == "jupyter":
-        set_formatter(rich_formatters.jupyter)
-    else:
-        old_set_formatter(
-            formatter=formatter,
-            color_system=color_system,
-            force_jupyter=force_jupyter,
-            background=background,
-        )
-
-
-helpers["set_formatter"] = set_formatter
-Friendly.set_formatter = set_formatter  # noqa
-
-
 def light():
-    set_formatter("interactive")
+    set_formatter("interactive")  # noqa
 
 
 def dark():
-    set_formatter("interactive-dark")
+    set_formatter("interactive-dark")  # noqa
 
 
 light.__doc__ = old_light.__doc__
@@ -79,7 +69,6 @@ def set_tb_width(width=None):
     try:
         session.console.width = width
     except Exception:  # noqa
-        print(_("set_width() has no effect with this formatter."))
         return
     session.rich_tb_width = width
     if session.rich_width is None or session.rich_width > session.rich_tb_width:
@@ -94,12 +83,12 @@ helpers["set_tb_width"] = set_tb_width
 
 __all__ = list(helpers.keys())
 
+install_except_hook()
 # Use the new interactive light formatter by default.
-
-light()  # noqa
+init_configuration("interactive-light")
 set_tb_width(100)  # noqa
 set_width(70)  # noqa
 session.is_jupyter = True
-
+print_repl_header()
 if config.did_exception_occur_before():
     friendly_tb()  # noqa

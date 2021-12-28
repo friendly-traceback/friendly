@@ -5,11 +5,12 @@ import os
 import sys
 
 from friendly_traceback import debug_helper
-from appdirs import user_config_dir
+import appdirs
 
-app_name = "Friendly"
-app_author = "AndreRoberge"  # No accent on André in case it messes with local encoding
-config_dir = user_config_dir(app_name, app_author)
+
+config_dir = appdirs.user_config_dir(
+    appname="FriendlyTraceback", appauthor=False  # noqa
+)
 FILENAME = os.path.join(config_dir, "friendly.ini")
 
 # I tried to install psutil to determine the kind of terminal (if any)
@@ -41,6 +42,9 @@ ENVIRONMENT = None
 # If a terminal type is identified, then the ENVIRONMENT variable
 # would usually be a combination of the terminal_type and the flavour.
 
+# Perhaps friendly will be used in environments where the user cannot
+# create configuration directories and files
+
 
 def ensure_existence():
     """Ensures that a configuration file exists"""
@@ -52,8 +56,6 @@ def ensure_existence():
             config.write(config_file)
 
 
-# Perhaps friendly will be used in environments where the user cannot
-# create configuration directories and files
 try:
     ensure_existence()
 except Exception:  # noqa
@@ -146,5 +148,6 @@ def has_environment(environment=None):
 def print_settings():
     """Prints the contents of the configuration file"""
     config = configparser.ConfigParser()
+    print("Current environment: ", ENVIRONMENT)
     config.read(FILENAME)
     config.write(sys.stdout)

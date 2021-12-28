@@ -20,6 +20,6 @@ else:
 
 install_except_hook()
 init_configuration("dark")
+print_repl_header()
 if config.did_exception_occur_before():
     friendly_tb()  # noqa
-print_repl_header()

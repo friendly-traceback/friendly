@@ -29,7 +29,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.4.38"
+__version__ = "0.4.39"
 
 
 # ===========================================
@@ -222,6 +222,7 @@ def set_formatter(
     session.rich_add_vspace = True
     session.use_rich = True
     session.jupyter_button_style = ""
+    set_stream()
     configuration.write(option="formatter", value=formatter)
     if formatter in ["dark", "light"]:
         session.console = theme.init_rich_console(
@@ -241,7 +242,6 @@ def set_formatter(
         )
         formatter = rich_formatters.jupyter_interactive
         session.jupyter_button_style = ";color: white; background-color:black;"
-        set_stream()
     elif formatter in ["interactive", "interactive-light"]:
         session.console = theme.init_rich_console(
             style="light",
@@ -250,7 +250,10 @@ def set_formatter(
             background=background,
         )
         formatter = rich_formatters.jupyter_interactive
-        set_stream()
+    elif formatter == "jupyter":
+        formatter = rich_formatters.jupyter
+        session.use_rich = False
+        theme.disable_rich()
     else:
         session.use_rich = False
         set_stream()
