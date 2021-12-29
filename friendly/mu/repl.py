@@ -2,6 +2,10 @@
 Mu has three themes designated (in English) as 'day', 'night',
 and 'high contrast'."""
 
+import json
+import os
+
+import appdirs
 import colorama  # noqa
 from friendly_traceback import set_stream
 from friendly_traceback import set_formatter as ft_set_formatter
@@ -22,6 +26,7 @@ colorama.init(convert=False, strip=False)
 _ = current_lang.translate
 
 settings.ENVIRONMENT = "mu"
+mu_data_dir = appdirs.user_data_dir(appname="mu", appauthor="python")
 
 
 def set_formatter(formatter=None, background=None):
@@ -31,7 +36,7 @@ def set_formatter(formatter=None, background=None):
     settings.write(option="formatter", value=formatter)
     if background is not None:
         settings.write(option="background", value=background)
-    if formatter in ["black", "day", "night"]:
+    if formatter in ["colourful", "day", "night"]:
         style = "light" if formatter == "day" else "dark"
         session.console = theme.init_rich_console(
             style=style,
@@ -55,7 +60,9 @@ def set_width(width=80):
     if session.use_rich:
         session.console._width = width
     else:
-        print(_("set_width() is only available using 'day', 'night' or 'black' mode."))
+        print(
+            _("set_width() is only available using 'day', 'night' or 'colourful' mode.")
+        )
 
 
 add_help_attribute({"set_formatter": set_formatter, "set_width": set_width})
@@ -84,25 +91,30 @@ def night():
     set_formatter("night", background="#373737")
 
 
-def black():
+def colourful():
     """Colourful theme with black background."""
-    set_formatter("black", background="#000000")
+    set_formatter("colourful", background="#000000")
 
 
-def bw():
+def contrast():
     """White text on black background."""
     set_formatter("repl", background="#000000")
 
 
 short_description["day"] = lambda: _("Colour scheme designed for Mu's day theme.")
 short_description["night"] = lambda: _("Colour scheme designed for Mu's night theme.")
-short_description["black"] = lambda: _(
+short_description["colourful"] = lambda: _(
     "Colourful scheme with black background suitable for Mu's high contrast theme."
 )
-short_description["bw"] = lambda: _(
+short_description["contrast"] = lambda: _(
     "White text on black background; suitable for Mu's high contrast theme."
 )
-local_helpers = {"day": day, "night": night, "black": black, "bw": bw}
+local_helpers = {
+    "day": day,
+    "night": night,
+    "colourful": colourful,
+    "contrast": contrast,
+}
 add_help_attribute(local_helpers)
 
 for helper in local_helpers:
@@ -112,12 +124,36 @@ __all__ = list(helpers.keys())
 
 
 excepthook.install_except_hook()
-if settings.has_environment("mu"):
-    formatter = settings.read(option="formatter")
-    background = settings.read(option="background")
-    set_formatter(formatter=formatter, background=background)
+
+try:
+    with open(os.path.join(mu_data_dir, "session.json")) as fp:
+        mu_settings = json.load(fp)
+except FileNotFoundError:
+    mu_settings = {}
+
+if "theme" in mu_settings:
+    mu_theme = mu_settings["theme"]
+    if mu_theme == "day":
+        day()
+    elif mu_theme == "night":
+        night()
+    elif settings.has_environment("mu"):
+        formatter = settings.read(option="formatter")
+        background = settings.read(option="background")
+        if formatter == "dark" and background == "#000000":
+            colourful()
+        else:
+            contrast()
+    else:
+        contrast()
 else:
     day()
+if "locale" in mu_settings:
+    set_lang(mu_settings["locale"])  # noqa
+elif settings.has_environment("common"):
+    lang = settings.read(option="lang")
+    if lang is not None:
+        set_lang(lang)  # noqa
 
 print_repl_header()
 if did_exception_occur_before():
