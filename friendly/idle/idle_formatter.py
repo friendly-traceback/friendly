@@ -40,13 +40,16 @@ def format_source(text, keep_caret):
     for index, line in enumerate(lines):
         if index == error_line and not keep_caret:
             continue
+        colon_location = line.find(":") + 1
 
         if index == error_line - 1:
-            new_lines.append((line[0:begin], "default"))
+            new_lines.append((line[0:colon_location], "stdout"))
+            new_lines.append((line[colon_location:begin], "default"))
             new_lines.append((line[begin:end], "ERROR"))
             new_lines.append((line[end:], "default"))
         else:
-            new_lines.append((line, "default"))
+            new_lines.append((line[0:colon_location], "stdout"))
+            new_lines.append((line[colon_location:], "default"))
         new_lines.append(("\n", "default"))
     return new_lines
 

@@ -22,14 +22,14 @@ have as part of the public API, please let us know.
 import os
 import sys
 
-valid_version = sys.version_info.major >= 3 and sys.version_info.minor >= 6
+valid_version = sys.version_info >= (3, 6)
 
 if not valid_version:  # pragma: no cover
     print("Python 3.6 or newer is required.")
     sys.exit()
 
 del valid_version
-__version__ = "0.5.2"
+__version__ = "0.5.3"
 
 
 # ===========================================
@@ -236,7 +236,8 @@ def set_formatter(
     session.use_rich = True
     session.jupyter_button_style = ""
     set_stream()
-    settings.write(option="formatter", value=formatter)
+    if isinstance(formatter, str):
+        settings.write(option="formatter", value=formatter)
     if formatter in ["dark", "light"]:
         session.console = theme.init_rich_console(
             style=formatter,
