@@ -89,6 +89,8 @@ def format_traceback(text):
     except that lines with code are shown in the default color (usually black).
     """
     lines = text.split("\n")
+    if lines[-2].startswith("SyntaxError:"):
+        lines = lines[1:]  # Remove file name
     new_lines = []
     for line in lines:
         if line.startswith("    "):

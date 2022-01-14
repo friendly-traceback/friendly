@@ -111,10 +111,6 @@ def install_in_idle_shell(lang=get_lang()):
     friendly_traceback.exclude_file_from_traceback(idlelib_run.__file__)
     friendly_traceback.install(include="friendly_tb", redirect=idle_writer, lang=lang)
 
-    # Current limitation
-    idle_writer("                                WARNING\n", "ERROR")  # noqa
-    idle_writer("Friendly cannot handle SyntaxErrors for code entered in the shell.\n")
-
 
 def install(lang=get_lang()):
     """Installs Friendly in the IDLE shell, with a custom formatter.

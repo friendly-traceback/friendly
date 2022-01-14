@@ -5,31 +5,28 @@ from friendly_traceback import exclude_file_from_traceback
 exclude_file_from_traceback(__file__)
 from friendly_traceback.path_info import EXCLUDED_FILE_PATH
 
-install()  # noqa
-
-n = -1
+N = -1
 entries = {}
 
 
-def getcode():
-    global n
+def get_syntax_error():
+    global N
 
-    rpchandler = rpc.objecttable["exec"].rpchandler
+    rpc_handler = rpc.objecttable["exec"].rpchandler
     while True:
-        n += 1
-        filename = f"<pyshell#{n}>"
-        lines = rpchandler.remotecall("linecache", "getlines", (filename, None), {})
+        N += 1
+        filename = f"<pyshell#{N}>"
+        lines = rpc_handler.remotecall("linecache", "getlines", (filename, None), {})
         if not lines:
-            n -= 1
+            N -= 1
             break
         entries[filename] = "\n".join(lines)
 
-    for i in range(n, -1, -1):
+    for i in range(N, -1, -1):
         filename = f"<pyshell#{i}>"
         if filename not in entries:
             continue
-        if entries[filename].strip() == "getcode()":
+        if entries[filename].replace(" ", "") == "get_syntax_error()":
             EXCLUDED_FILE_PATH.add(filename)
-            print("excluding", filename)
             continue
         compile(entries[filename], filename, "exec")
