@@ -90,7 +90,10 @@ def format_traceback(text):
     """
     lines = text.split("\n")
     if lines[-2].startswith("SyntaxError:"):
-        lines = lines[1:]  # Remove file name
+        if lines[2].strip().startswith("File"):
+            lines = lines[3:]  # Remove everything before syntax error
+        else:
+            lines = lines[1:]  # Remove file name
     new_lines = []
     for line in lines:
         if line.startswith("    "):

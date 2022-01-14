@@ -19,6 +19,7 @@ from friendly import settings
 from ..my_gettext import current_lang
 from . import idle_formatter
 from . import patch_source_cache  # noqa
+from .get_syntax import get_syntax_error
 
 
 settings.ENVIRONMENT = "IDLE"
@@ -41,6 +42,8 @@ add_help_attribute({"set_formatter": set_formatter, "set_lang": set_lang})
 Friendly.add_helper(set_formatter)
 Friendly.add_helper(set_lang)
 _old_displayhook = sys.displayhook
+
+helpers["get_syntax_error"] = get_syntax_error
 
 
 def _displayhook(value):
