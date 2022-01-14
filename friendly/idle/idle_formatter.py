@@ -14,7 +14,7 @@ if sys.version_info >= (3, 9, 5):
     repl_indentation["suggest"] = "single"  # more appropriate value
 
 
-def format_source(text, keep_caret):
+def format_source(text):
     """Formats the source code shown by where().
 
     Often, the location of an error is indicated by one or more ^ below
@@ -26,36 +26,44 @@ def format_source(text, keep_caret):
     lines = text.split("\n")
     while not lines[-1].strip():
         lines.pop()
-    caret_set = {"^"}
-    error_line = -2
-    begin = end = 0
+    caret_set = set(" ^->")
+    error_lines = {}
     for index, line in enumerate(lines):
-        if set(line.strip()) == caret_set:
-            error_line = index
-            begin = line.find("^")
-            end = begin + len(line.strip())
-            break
+        if set(line).issubset(caret_set):
+            error_lines[index] = line
 
     new_lines = []
     for index, line in enumerate(lines):
-        if index == error_line and not keep_caret:
+        if index in error_lines:
             continue
+        colon_location = line.find(":") + 1
 
-        if index == error_line - 1:
-            new_lines.append((line[0:begin], "default"))
-            new_lines.append((line[begin:end], "ERROR"))
-            new_lines.append((line[end:], "default"))
+        new_lines.append((line[0:colon_location], "stdout"))
+        if index + 1 in error_lines:
+            line_with_carets = error_lines[index + 1]
+            for char_index, char in enumerate(line):
+                if char_index < colon_location:
+                    continue
+                if (
+                    char_index < len(line_with_carets)
+                    and line_with_carets[char_index] == "^"
+                ):
+                    new_lines.append((line[char_index], "ERROR"))
+                else:
+                    new_lines.append(((line[char_index], "default")))
         else:
-            new_lines.append((line, "default"))
+            new_lines.append((line[colon_location:], "default"))
         new_lines.append(("\n", "default"))
     return new_lines
 
 
 def format_text(info, item, indentation):
-    """Format text with embedded code fragment surrounded by backquote characters."""
+    """Format text with embedded code fragment surrounded by back-quote characters."""
     new_lines = []
     text = info[item].rstrip()
     for line in text.split("\n"):
+        if not line.strip():
+            continue
         if "`" in line and line.count("`") % 2 == 0:
             fragments = line.split("`")
             for index, fragment in enumerate(fragments):
@@ -93,13 +101,6 @@ def format_traceback(text):
 
 def idle_formatter(info, include="friendly_tb"):
     """Formatter that takes care of color definitions."""
-    # The explanation for SyntaxError and subclasses states that the
-    # location of the error is indicated by ^
-    keep_caret = (
-        "SyntaxError" in info["shortened_traceback"]
-        or "IndentationError" in info["shortened_traceback"]
-        or "TabError" in info["shortened_traceback"]
-    )
     items_to_show = select_items(include)
     spacing = {"single": " " * 4, "double": " " * 8, "none": ""}
     result = ["\n"]
@@ -111,7 +112,7 @@ def idle_formatter(info, include="friendly_tb"):
             if "traceback" in item:  # no additional indentation
                 result.extend(format_traceback(info[item]))
             elif "source" in item:  # no additional indentation
-                result.extend(format_source(info[item], keep_caret))
+                result.extend(format_source(info[item]))
             elif "header" in item:
                 indentation = spacing[repl_indentation[item]]
                 result.append((indentation + info[item], "stderr"))

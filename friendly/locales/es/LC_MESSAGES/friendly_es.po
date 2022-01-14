@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: friendly\n"
-"POT-Creation-Date: 2021-12-28 07:04-0400\n"
+"POT-Creation-Date: 2022-01-14 07:18-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: André Roberge <andre.roberge@gmail.com>\n"
 "Language-Team: \n"
@@ -11,11 +11,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.0.1\n"
 
-#: __init__.py:177 __main__.py:183 idle\main.py:202
+#: __init__.py:177 __main__.py:175 idle\main.py:202
 msgid "The file {filename} does not exist."
 msgstr "El archivo {filename} no existe."
 
-#: __init__.py:310
+#: __init__.py:324
 msgid "Type 'Friendly' for basic help."
 msgstr ""
 "Escriba 'Friendly' para obtener ayuda sobre funciones/métodos especiales."
@@ -53,27 +53,27 @@ msgstr "Aún no implementado."
 msgid "Sets the width of the traceback."
 msgstr "Establece la anchura del rastreo."
 
-#: mu\repl.py:56
-msgid "set_width() is only available using 'day', 'night' or 'black' mode."
+#: mu\repl.py:64
+msgid "set_width() is only available using 'day', 'night' or 'colourful' mode."
 msgstr ""
-"set_width() sólo está disponible en modo \"día\", \"noche\" o \"negro\"."
+"set_width() sólo está disponible en modo \"day\", \"night\" o \"colourful\"."
 
-#: mu\repl.py:95
+#: mu\repl.py:104
 msgid "Colour scheme designed for Mu's day theme."
 msgstr "Combinación de colores diseñada para el tema 'día' de Mu."
 
-#: mu\repl.py:96
+#: mu\repl.py:105
 msgid "Colour scheme designed for Mu's night theme."
 msgstr "Combinación de colores diseñada para el tema 'noche' de Mu."
 
-#: mu\repl.py:97
+#: mu\repl.py:106
 msgid ""
 "Colourful scheme with black background suitable for Mu's high contrast theme."
 msgstr ""
 "Esquema colorido con fondo negro adecuado para el tema de alto contraste de "
 "Mu."
 
-#: mu\repl.py:100
+#: mu\repl.py:109
 msgid "White text on black background; suitable for Mu's high contrast theme."
 msgstr ""
 "Texto blanco sobre fondo negro; adecuado para el tema de alto contraste de "
@@ -83,23 +83,27 @@ msgstr ""
 msgid "Friendly themes are only available in Mu's REPL.\n"
 msgstr "Los temas amigables sólo están disponibles en el REPL de Mu.\n"
 
-#: rich_console_helpers.py:80
+#: rich_console_helpers.py:86
 msgid "Sets a colour scheme designed for a black background."
 msgstr "Establece un esquema de color diseñado para un fondo negro."
 
-#: rich_console_helpers.py:83
+#: rich_console_helpers.py:89
 msgid "Sets a colour scheme designed for a white background."
 msgstr "Establece una combinación de colores diseñada para un fondo blanco."
 
-#: rich_console_helpers.py:86
+#: rich_console_helpers.py:92
 msgid "Plain formatting, with no colours added."
 msgstr "Formato simple, sin colores añadidos."
 
-#: rich_console_helpers.py:87
+#: rich_console_helpers.py:93
+msgid "Sets the background color."
+msgstr "Establece el color de fondo."
+
+#: rich_console_helpers.py:94
 msgid "Sets the output width in some modes."
 msgstr "Establece el ancho de la salida en algunos modos."
 
-#: rich_console_helpers.py:88
+#: rich_console_helpers.py:95
 msgid "Prints the saved settings."
 msgstr ""
 
