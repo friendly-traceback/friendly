@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-01-14 07:18-0400\n"
+"POT-Creation-Date: 2022-01-15 16:32-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: __init__.py:177 __main__.py:175 idle\main.py:202
+#: __init__.py:177 __main__.py:175 idle\main.py:220
 msgid "The file {filename} does not exist."
 msgstr ""
 
@@ -40,12 +40,14 @@ msgstr ""
 msgid "Warning: you have redefined the python builtin `{name}`."
 msgstr ""
 
-#: idle\future_work.py:38 idle\future_work.py:41
-msgid "No SyntaxError recorded."
+#: idle\main.py:150
+msgid ""
+"Friendly cannot be installed in this version of IDLE.\n"
 msgstr ""
 
-#: idle\future_work.py:59
-msgid "Not yet implemented."
+#: idle\main.py:151
+msgid ""
+"Using Friendly's own console instead.\n"
 msgstr ""
 
 #: jupyter.py:78

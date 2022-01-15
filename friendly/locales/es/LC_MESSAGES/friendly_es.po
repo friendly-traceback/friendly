@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: friendly\n"
-"POT-Creation-Date: 2022-01-14 07:18-0400\n"
+"POT-Creation-Date: 2022-01-15 16:32-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: André Roberge <andre.roberge@gmail.com>\n"
 "Language-Team: \n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.0.1\n"
 
-#: __init__.py:177 __main__.py:175 idle\main.py:202
+#: __init__.py:177 __main__.py:175 idle\main.py:220
 msgid "The file {filename} does not exist."
 msgstr "El archivo {filename} no existe."
 
@@ -41,13 +41,13 @@ msgstr "En lugar de `{hint}`, quizás quisiste decir `{assignment}`."
 msgid "Warning: you have redefined the python builtin `{name}`."
 msgstr "Advertencia: redefiniste el objeto incorporado de python `{name}`."
 
-#: idle\future_work.py:38 idle\future_work.py:41
-msgid "No SyntaxError recorded."
-msgstr "No se ha registrado ningún SyntaxError."
+#: idle\main.py:150
+msgid "Friendly cannot be installed in this version of IDLE.\n"
+msgstr ""
 
-#: idle\future_work.py:59
-msgid "Not yet implemented."
-msgstr "Aún no implementado."
+#: idle\main.py:151
+msgid "Using Friendly's own console instead.\n"
+msgstr ""
 
 #: jupyter.py:78
 msgid "Sets the width of the traceback."
@@ -126,6 +126,12 @@ msgid ""
 msgstr ""
 "Color {color} no válido.\n"
 "Los colores deben ser en la forma #dddddd."
+
+#~ msgid "No SyntaxError recorded."
+#~ msgstr "No se ha registrado ningún SyntaxError."
+
+#~ msgid "Not yet implemented."
+#~ msgstr "Aún no implementado."
 
 #~ msgid "set_width() has no effect with this formatter."
 #~ msgstr "set_width() no tiene efecto en este formateador."
