@@ -9,12 +9,14 @@ import sys
 from idlelib import run as idlelib_run
 
 import friendly_traceback  # noqa
+from friendly_traceback.config import session
 from friendly_traceback.console_helpers import *  # noqa
-from friendly_traceback.console_helpers import helpers, Friendly, set_lang  # noqa
+from friendly_traceback.console_helpers import _nothing_to_show
+from friendly_traceback.console_helpers import helpers, Friendly  # noqa
+from friendly_traceback.console_helpers import set_lang  # noqa
 from friendly_traceback.functions_help import add_help_attribute
-from friendly_traceback import config
 
-from friendly import get_lang, print_repl_header
+from friendly import get_lang
 from friendly import settings
 from ..my_gettext import current_lang
 from . import idle_formatter
@@ -28,6 +30,18 @@ set_lang(get_lang())
 friendly_traceback.exclude_file_from_traceback(__file__)
 
 
+def history():
+    """Prints the list of error messages recorded so far."""
+    if not session.saved_info:
+        session.write_err(_nothing_to_show() + "\n")
+        return
+    for info in session.saved_info:
+        message = session.formatter(info, include="message")
+        if message:
+            idle_writer(message[1:])
+
+
+# TODO: look at removing this as an option
 def set_formatter(formatter="idle"):
     """Sets the formatter; the default value is 'idle'."""
     if formatter == "idle":
@@ -38,9 +52,12 @@ def set_formatter(formatter="idle"):
 
 set_lang.__doc__ = Friendly.set_lang.__doc__
 
-add_help_attribute({"set_formatter": set_formatter, "set_lang": set_lang})
+add_help_attribute(
+    {"history": history, "set_formatter": set_formatter, "set_lang": set_lang}
+)
 Friendly.add_helper(set_formatter)
 Friendly.add_helper(set_lang)
+Friendly.add_helper(history)
 _old_displayhook = sys.displayhook
 
 helpers["get_syntax_error"] = get_syntax_error
@@ -122,14 +139,16 @@ def install(lang=get_lang()):
 
     Changes introduced in Python 3.10 were back-ported to Python 3.9.5.
     """
+    _ = current_lang.translate
+
     sys.stderr = sys.stdout.shell  # noqa
     friendly_traceback.set_formatter(idle_formatter.idle_formatter)
     if sys.version_info >= (3, 9, 5):
         install_in_idle_shell(lang=lang)
         sys.displayhook = _displayhook
     else:
-        idle_writer("Friendly cannot be installed in this version of IDLE.\n")
-        idle_writer("Using Friendly's own console instead.\n")
+        idle_writer(_("Friendly cannot be installed in this version of IDLE.\n"))
+        idle_writer(_("Using Friendly's own console instead.\n"))
         start_console(lang=lang, displayhook=_displayhook)
 
 
@@ -216,9 +235,3 @@ def run(
         formatter=idle_formatter.idle_formatter,
         ipython_prompt=ipython_prompt,
     )
-
-
-if config.did_exception_occur_before():
-    install()
-    print_repl_header()
-    friendly_tb()  # noqa
