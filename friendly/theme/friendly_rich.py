@@ -5,6 +5,7 @@ All Rich-related imports and redefinitions are done here.
 """
 import sys
 
+import rich
 from rich import pretty  # noqa
 from rich.console import Console  # noqa
 from rich.markdown import Markdown, Heading, CodeBlock  # noqa
@@ -68,8 +69,20 @@ def init_console(
             color_system=color_system,  # noqa
             force_jupyter=force_jupyter,
         )
+        # The following is needed in IPython/Jupyter to configure
+        # the global Rich console so that it has the same theme.
+        rich.reconfigure(
+            theme=light_background_theme,
+            color_system=color_system,  # noqa
+            force_jupyter=force_jupyter,
+        )
     else:
         console = Console(
+            theme=dark_background_theme,
+            color_system=color_system,  # noqa
+            force_jupyter=force_jupyter,
+        )
+        rich.reconfigure(
             theme=dark_background_theme,
             color_system=color_system,  # noqa
             force_jupyter=force_jupyter,
