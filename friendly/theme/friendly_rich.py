@@ -21,7 +21,7 @@ try:
     friendly_dark = styles.get_style_by_name("friendly_dark")
 except Exception:  # noqa
     # When using the JupyterLab app for the first time
-    # the friendly styles would not be recognized by JupyterLab
+    # the friendly styles would not be recognized by JupyterLab.
     # JupyterLab catches an ImportError and raise a custom
     # ClassNotFound exception
     from friendly_styles import friendly_light, friendly_dark
@@ -38,9 +38,7 @@ dark_background_theme = Theme(friendly_dark.friendly_style)
 light_background_theme = Theme(friendly_light.friendly_style)
 
 
-def init_console(
-    style="dark", theme="brunante", color_system="auto", force_jupyter=None
-):
+def init_console(style="dark", theme="dark", color_system="auto", force_jupyter=None):
     def _patch_heading(self, *_args):
         """By default, all headings are centered by Rich; I prefer to have
         them left-justified, except for <h3>
@@ -64,29 +62,17 @@ def init_console(
     CodeBlock.__rich_console__ = _patch_code_block
 
     if style == "light":
-        console = Console(
-            theme=light_background_theme,
-            color_system=color_system,  # noqa
-            force_jupyter=force_jupyter,
-        )
-        # The following is needed in IPython/Jupyter to configure
-        # the global Rich console so that it has the same theme.
         rich.reconfigure(
             theme=light_background_theme,
-            color_system=color_system,  # noqa
+            color_system=color_system,
             force_jupyter=force_jupyter,
         )
     else:
-        console = Console(
-            theme=dark_background_theme,
-            color_system=color_system,  # noqa
-            force_jupyter=force_jupyter,
-        )
         rich.reconfigure(
             theme=dark_background_theme,
-            color_system=color_system,  # noqa
+            color_system=color_system,
             force_jupyter=force_jupyter,
         )
-
+    console = rich.get_console()
     pretty.install(console=console, indent_guides=True)
     return console
