@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2022-01-15 16:32-0400\n"
+"POT-Creation-Date: 2022-01-26 05:36-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,20 +23,28 @@ msgstr ""
 msgid "Type 'Friendly' for basic help."
 msgstr ""
 
-#: console.py:93
+#: console.py:28
+msgid ""
+"   Do you find these warnings useful?\n"
+"   Comment at https://github.com/friendly-traceback/friendly-traceback/issues/7.\n"
+"\n"
+"   You can use www('warnings') to go to that url."
+msgstr ""
+
+#: console.py:95
 msgid "Warning: you added a type hint to the python builtin `{name}`."
 msgstr ""
 
-#: console.py:96
+#: console.py:98
 msgid ""
 "Warning: you used a type hint for a variable without assigning it a value.\n"
 msgstr ""
 
-#: console.py:99
+#: console.py:101
 msgid "Instead of `{hint}`, perhaps you meant `{assignment}`."
 msgstr ""
 
-#: console.py:170
+#: console.py:171
 msgid "Warning: you have redefined the python builtin `{name}`."
 msgstr ""
 
@@ -103,15 +111,15 @@ msgstr ""
 msgid "Prints the saved settings."
 msgstr ""
 
-#: rich_formatters.py:126
+#: rich_formatters.py:128
 msgid "Hide"
 msgstr ""
 
-#: rich_formatters.py:189
+#: rich_formatters.py:191
 msgid "More ..."
 msgstr ""
 
-#: rich_formatters.py:190
+#: rich_formatters.py:192
 msgid "Show message only"
 msgstr ""
 

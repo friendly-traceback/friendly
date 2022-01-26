@@ -31,6 +31,8 @@ from pygments.lexers import PythonLexer, PythonTracebackLexer  # noqa
 from pygments.formatters import HtmlFormatter  # noqa
 
 from rich import jupyter as rich_jupyter
+from rich.markdown import Markdown
+from rich.panel import Panel
 
 ipython_available = False
 try:  # pragma: no cover
@@ -198,12 +200,10 @@ def rich_writer(text: str) -> None:  # pragma: no cover
     global RICH_HEADER, WIDE_OUTPUT
     if session.rich_add_vspace:
         session.console.print()
-    md = theme.friendly_rich.Markdown(
-        text, inline_code_lexer="python", code_theme=theme.CURRENT_THEME
-    )
+    md = Markdown(text, inline_code_lexer="python", code_theme=theme.CURRENT_THEME)
     if RICH_HEADER:
         title = "Traceback"
-        md = theme.friendly_rich.Panel(md, title=title)
+        md = Panel(md, title=title)
         RICH_HEADER = False
     session.console.print(md)
     if WIDE_OUTPUT:

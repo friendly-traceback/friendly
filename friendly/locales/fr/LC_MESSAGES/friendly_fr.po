@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2022-01-15 16:32-0400\n"
+"POT-Creation-Date: 2022-01-26 05:36-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: André Roberge <andre.roberge@gmail.com>\n"
 "Language-Team: \n"
@@ -25,26 +25,40 @@ msgstr ""
 "Tapez \"Friendly\" pour obtenir de l'aide sur les fonctions ou méthodes "
 "spéciales."
 
-#: console.py:93
+#: console.py:28
+msgid ""
+"   Do you find these warnings useful?\n"
+"   Comment at https://github.com/friendly-traceback/friendly-traceback/"
+"issues/7.\n"
+"\n"
+"   You can use www('warnings') to go to that url."
+msgstr ""
+"   Trouvez-vous ces avertissements utiles ?\n"
+"   Commentez à l'adresse https://github.com/friendly-traceback/friendly-"
+"traceback/issues/7.\n"
+"\n"
+"   Vous pouvez utiliser www('warnings') pour aller à cet hyperlien."
+
+#: console.py:95
 msgid "Warning: you added a type hint to the python builtin `{name}`."
 msgstr ""
 "Attention : vous avez utilisé des annotations de type pour l'identifiant "
 "Python (builtin) `{name}`."
 
-#: console.py:96
+#: console.py:98
 msgid ""
 "Warning: you used a type hint for a variable without assigning it a value.\n"
 msgstr ""
 "Attention : vous avez utilisé une annotation de type pour une variable sans "
 "lui attribuer une valeur.\n"
 
-#: console.py:99
+#: console.py:101
 msgid "Instead of `{hint}`, perhaps you meant `{assignment}`."
 msgstr ""
 "Au lieu de `{hint}`, peut-être que vous vouliez plutôt écrire : `{assignment}"
 "`."
 
-#: console.py:170
+#: console.py:171
 msgid "Warning: you have redefined the python builtin `{name}`."
 msgstr ""
 "Attention : vous avez redéfini l'identifiant Python (builtin) `{name}`."
@@ -113,15 +127,15 @@ msgstr "Définit la largeur du texte dans certains modes."
 msgid "Prints the saved settings."
 msgstr "Imprime les paramètres enregistrés."
 
-#: rich_formatters.py:126
+#: rich_formatters.py:128
 msgid "Hide"
 msgstr "Cacher"
 
-#: rich_formatters.py:189
+#: rich_formatters.py:191
 msgid "More ..."
 msgstr "Plus ..."
 
-#: rich_formatters.py:190
+#: rich_formatters.py:192
 msgid "Show message only"
 msgstr "Afficher uniquement le message"
 

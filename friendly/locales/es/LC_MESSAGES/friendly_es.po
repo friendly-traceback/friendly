@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: friendly\n"
-"POT-Creation-Date: 2022-01-15 16:32-0400\n"
+"POT-Creation-Date: 2022-01-26 05:36-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: André Roberge <andre.roberge@gmail.com>\n"
 "Language-Team: \n"
@@ -20,24 +20,33 @@ msgid "Type 'Friendly' for basic help."
 msgstr ""
 "Escriba 'Friendly' para obtener ayuda sobre funciones/métodos especiales."
 
-#: console.py:93
+#: console.py:28
+msgid ""
+"   Do you find these warnings useful?\n"
+"   Comment at https://github.com/friendly-traceback/friendly-traceback/"
+"issues/7.\n"
+"\n"
+"   You can use www('warnings') to go to that url."
+msgstr ""
+
+#: console.py:95
 msgid "Warning: you added a type hint to the python builtin `{name}`."
 msgstr ""
 "Advertencia: agregaste un indicador de tipo al objeto incorporado de python "
 "`{name}`."
 
-#: console.py:96
+#: console.py:98
 msgid ""
 "Warning: you used a type hint for a variable without assigning it a value.\n"
 msgstr ""
 "Advertencia: usaste un indicador de tipo para una variable sin asignarle un "
 "valor.\n"
 
-#: console.py:99
+#: console.py:101
 msgid "Instead of `{hint}`, perhaps you meant `{assignment}`."
 msgstr "En lugar de `{hint}`, quizás quisiste decir `{assignment}`."
 
-#: console.py:170
+#: console.py:171
 msgid "Warning: you have redefined the python builtin `{name}`."
 msgstr "Advertencia: redefiniste el objeto incorporado de python `{name}`."
 
@@ -107,15 +116,15 @@ msgstr "Establece el ancho de la salida en algunos modos."
 msgid "Prints the saved settings."
 msgstr ""
 
-#: rich_formatters.py:126
+#: rich_formatters.py:128
 msgid "Hide"
 msgstr "Ocultar"
 
-#: rich_formatters.py:189
+#: rich_formatters.py:191
 msgid "More ..."
 msgstr "Más ..."
 
-#: rich_formatters.py:190
+#: rich_formatters.py:192
 msgid "Show message only"
 msgstr "Mostrar sólo el mensaje"
 

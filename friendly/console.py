@@ -17,13 +17,15 @@ from friendly.rich_console_helpers import helpers
 from .my_gettext import current_lang
 
 import friendly
-from . import theme
+
+from rich.markdown import Markdown
 
 BANNER = "\nfriendly-traceback: {}\nfriendly: {}\nPython: {}\n".format(
     ft.__version__, friendly.__version__, platform.python_version()
 )
 
-please_comment = (
+_ = current_lang.translate
+please_comment = _(
     "   Do you find these warnings useful?\n"
     "   Comment at https://github.com/friendly-traceback/friendly-traceback/issues/7.\n\n"
     "   You can use www('warnings') to go to that url."
@@ -41,7 +43,7 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         ipython_prompt=True,
     ):
         """This class builds upon Python's code.InteractiveConsole
-        so as to provide friendly tracebacks. It keeps track
+        to provide friendly tracebacks. It keeps track
         of code fragment executed by treating each of them as
         an individual source file.
         """
@@ -82,7 +84,7 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
 
     def check_for_annotations(self):
         """Attempts to detect code that uses : instead of = by mistake"""
-        _ = current_lang.translate
+
         if "__annotations__" not in self.locals:
             return
 
@@ -103,9 +105,9 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
                 warning = warning_builtins.format(name=name)
                 if self.rich_console:
                     warning = "#### " + warning
-                    warning = theme.friendly_rich.Markdown(warning)
-                    self.rich_console.print(warning)
-                    self.rich_console.print(please_comment)
+                    warning = Markdown(warning)
+                    session.console.print(warning)
+                    session.console.print(please_comment)
                 else:
                     print(warning)
                     print(please_comment)
@@ -140,9 +142,9 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
 
         if warning:
             if self.rich_console:
-                warning = theme.friendly_rich.Markdown(warning)
-                self.rich_console.print(warning)
-                self.rich_console.print(please_comment)
+                warning = Markdown(warning)
+                session.console.print(warning)
+                session.console.print(please_comment)
             else:
                 print(warning)
                 print(please_comment)
@@ -151,7 +153,6 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
 
     def check_for_builtins_changes(self):
         """Warning users if they assign a value to a builtin"""
-        _ = current_lang.translate
         changed = []
         for name in self.saved_builtins:
             if name.startswith("__") and name.endswith("__"):
@@ -171,9 +172,9 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
                     "Warning: you have redefined the python builtin `{name}`."
                 ).format(name=name)
                 if self.rich_console:
-                    warning = theme.friendly_rich.Markdown("#### " + warning)
-                    self.rich_console.print(warning)
-                    self.rich_console.print(please_comment)
+                    warning = Markdown("#### " + warning)
+                    session.console.print(warning)
+                    session.console.print(please_comment)
                 else:
                     print(warning)
                     print(please_comment)
