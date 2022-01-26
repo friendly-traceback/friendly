@@ -165,7 +165,8 @@ def main():
             set_formatter(formatter, background=args.background)  # pragma: no cover
         else:
             set_formatter(import_function(args.formatter))
-
+    else:
+        set_formatter("dark", background=args.background)  # pragma: no cover
     console_defaults = {}
     if args.source is not None:
         filename = Path(args.source)
