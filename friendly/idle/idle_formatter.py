@@ -9,6 +9,7 @@ All that matters is that, it is debugged and works appropriately! ;-)
 
 import sys
 from friendly_traceback.base_formatters import select_items, no_result, repl_indentation
+from ..utils import get_highlighting_range
 
 if sys.version_info >= (3, 9, 5):
     repl_indentation["suggest"] = "single"  # more appropriate value
@@ -26,11 +27,7 @@ def format_source(text):
     lines = text.split("\n")
     while not lines[-1].strip():
         lines.pop()
-    caret_set = set(" ^->")
-    error_lines = {}
-    for index, line in enumerate(lines):
-        if set(line).issubset(caret_set):
-            error_lines[index] = line
+    error_lines = get_highlighting_range(lines)
 
     new_lines = []
     for index, line in enumerate(lines):
@@ -38,21 +35,23 @@ def format_source(text):
             continue
         colon_location = line.find(":") + 1
 
-        new_lines.append((line[0:colon_location], "stdout"))
+        new_lines.append((line[:colon_location], "stdout"))
         if index + 1 in error_lines:
-            line_with_carets = error_lines[index + 1]
-            for char_index, char in enumerate(line):
-                if char_index < colon_location:
-                    continue
-                if (
-                    char_index < len(line_with_carets)
-                    and line_with_carets[char_index] == "^"
-                ):
-                    new_lines.append((line[char_index], "ERROR"))
+            no_highlight = True
+            end = -1
+            for begin, end in error_lines[index + 1]:
+                text = line[begin:end]
+                if no_highlight:
+                    if begin < colon_location:
+                        text = line[colon_location:end]
+                    new_lines.append((text, "default"))
+                    no_highlight = False
                 else:
-                    new_lines.append(((line[char_index], "default")))
-        else:
-            new_lines.append((line[colon_location:], "default"))
+                    if not text:
+                        text = " "
+                    new_lines.append((text, "ERROR"))
+                    no_highlight = True
+            new_lines.append((line[end:], "default"))
         new_lines.append(("\n", "default"))
     return new_lines
 
