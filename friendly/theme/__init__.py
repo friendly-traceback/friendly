@@ -41,10 +41,14 @@ def init_rich_console(
         theme = "friendly_light"
         if background is not None:
             friendly_light.background_color = background
+        else:
+            background = friendly_light.background_color
     else:
         theme = "friendly_dark"
         if background is not None:
             friendly_dark.background_color = background
+        else:
+            background = friendly_dark.background_color
     CURRENT_THEME = theme
 
     return friendly_rich.init_console(

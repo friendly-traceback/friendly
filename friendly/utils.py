@@ -11,7 +11,7 @@ def get_highlighting_range(lines):
     # error continues on the next line
     error_lines = {}
     for index, line in enumerate(lines):
-        if set(line.replace(" ", "")).issubset(caret_set) and "^" in line:
+        if set(line.strip().replace(" ", "")).issubset(caret_set) and "^" in line:
             error_lines[index] = []
             highlighting = False
             char_index = begin = 0
