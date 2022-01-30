@@ -16,7 +16,7 @@ from rich.text import Text
 from rich.theme import Theme
 
 from pygments import styles
-from pygments.token import Error
+from pygments.token import Error, Number, Operator
 from friendly_styles import friendly_light, friendly_dark
 from friendly_traceback import debug_helper
 
@@ -38,7 +38,49 @@ light_background_theme = Theme(friendly_light.friendly_style)
 USE_CARETS = False
 
 
-def init_console(style="dark", theme="dark", color_system="auto", force_jupyter=None):
+def highlight_line(line, line_parts, theme):
+    error_style = theme.styles[Error]
+    background = theme.background_color
+    operator_style = f"{theme.styles[Operator]} on {background}"
+    number_style = f"{theme.styles[Number]} on {background}"
+
+    bg, fg = error_style.split(" ")
+    bg = bg.split(":")[1]
+    error_style = f"{fg} on {bg}"
+    has_line_number = re.match(r"^\s*\d+\s*:", line) or re.match(
+        r"^\s*-->\s*\d+\s*:", line
+    )
+    colon_position = line.find(":")
+    highlighting = False
+    text = None
+    for begin, end in line_parts:
+        if highlighting:
+            part = Text(line[begin:end], style=error_style)
+        elif has_line_number and begin < colon_position:
+            begin_line = line[begin : colon_position + 1]
+            arrow_position = begin_line.find("-->")
+            if arrow_position != -1:
+                part = Text(line[begin : arrow_position + 3], style=operator_style)
+                part.append(
+                    Text(line[arrow_position + 3 : colon_position], style=number_style)
+                )
+            else:
+                part = Text(line[begin:colon_position], style=number_style)
+            part.append(
+                Text(line[colon_position : colon_position + 1], style=operator_style)
+            )
+            part.append(Text(line[colon_position + 1 : end], style="markdown.code"))
+        else:
+            part = Text(line[begin:end], style="markdown.code")
+        if text is None:
+            text = part
+        else:
+            text.append(part)
+        highlighting = not highlighting
+    return text
+
+
+def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
     def _patch_heading(self, *_args):
         """By default, all headings are centered by Rich; I prefer to have
         them left-justified, except for <h3>
@@ -53,79 +95,23 @@ def init_console(style="dark", theme="dark", color_system="auto", force_jupyter=
     Heading.__rich_console__ = _patch_heading
 
     def _patch_code_block(self, *_args):
-        code = str(self.text).rstrip()
         if self.lexer_name == "default":
             self.lexer_name = "python"
+        code = str(self.text).rstrip()
 
-        lines = [line for line in code.split("\n")]
+        lines = code.split("\n")
         error_lines = get_highlighting_range(lines)
-
         if (
             debug_helper.DEBUG
             and not USE_CARETS
             and self.lexer_name == "python"
             and error_lines
         ):
-            if theme == "dark":
-                error_style = friendly_dark.styles[Error]
-            else:
-                error_style = friendly_light.styles[Error]
-            bg, fg = error_style.split(" ")
-            bg = bg.split(":")[1]
-            error_style = f"{fg} on {bg}"
-
             for index, line in enumerate(lines):
                 if index in error_lines:
                     continue
-                has_line_number = re.match(r"^\s*\d+\s*:", line) or re.match(
-                    r"^\s*-->\s*\d+\s*:", line
-                )
-                colon_position = line.find(":")
                 if index + 1 in error_lines:
-                    highlighting = False
-                    text = None
-                    for begin, end in error_lines[index + 1]:
-                        if highlighting:
-                            part = Text(line[begin:end], style=error_style)
-                        else:
-                            if has_line_number and begin < colon_position:
-                                begin_line = line[begin : colon_position + 1]
-                                arrow_position = begin_line.find("-->")
-                                if arrow_position != -1:
-                                    part = Text(
-                                        line[begin : arrow_position + 3],
-                                        style="operators",
-                                    )
-                                    part.append(
-                                        Text(
-                                            line[arrow_position + 3 : colon_position],
-                                            style="repr.number",
-                                        )
-                                    )
-                                else:
-                                    part = Text(
-                                        line[begin:colon_position], style="repr.number"
-                                    )
-                                part.append(
-                                    Text(
-                                        line[colon_position : colon_position + 1],
-                                        style="operators",
-                                    )
-                                )
-                                part.append(
-                                    Text(
-                                        line[colon_position + 1 : end],
-                                        style="markdown.code",
-                                    )
-                                )
-                            else:
-                                part = Text(line[begin:end], style="markdown.code")
-                        if text is None:
-                            text = part
-                        else:
-                            text.append(part)
-                        highlighting = not highlighting
-                    yield text
+                    yield highlight_line(line, error_lines[index + 1], theme)
                 else:
                     yield Syntax(line, self.lexer_name, theme=theme, word_wrap=True)
         else:
@@ -133,7 +119,7 @@ def init_console(style="dark", theme="dark", color_system="auto", force_jupyter=
 
     CodeBlock.__rich_console__ = _patch_code_block
 
-    if style == "light":
+    if theme == friendly_light:
         rich.reconfigure(
             theme=light_background_theme,
             color_system=color_system,
