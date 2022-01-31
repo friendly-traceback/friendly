@@ -4,6 +4,7 @@ All Rich-related imports and redefinitions are done here.
 
 """
 import inspect
+import re
 import sys
 
 from ..utils import get_highlighting_range
@@ -61,7 +62,65 @@ def is_exception(string):
         return False
 
 
-def highlight_line(line, line_parts, theme):
+def simple_line_highlighting(line, line_parts, theme):
+    error_style = theme.styles[Error]
+    bg, fg = error_style.split(" ")
+    bg = bg.split(":")[1]
+    error_style = f"{fg} on {bg}"
+
+    background = theme.background_color
+    operator_style = f"{theme.styles[Operator]} on {background}"
+    number_style = f"{theme.styles[Number]} on {background}"
+    code_style = f"{theme.styles[Generic]} on {background}"
+
+    has_line_number = re.match(r"^\s*\d+\s*:", line) or re.match(
+        r"^\s*-->\s*\d+\s*:", line
+    )
+    colon_position = line.find(":")
+    highlighting = False
+    text = None
+    if not line_parts:
+        line_parts = [(0, len(line))]
+    for begin, end in line_parts:
+        if highlighting:
+            part = Text(line[begin:end], style=error_style)
+
+        elif has_line_number and begin < colon_position:
+            begin_line = line[begin : colon_position + 1]
+            arrow_position = begin_line.find("-->")
+            if arrow_position != -1:
+                part = Text(line[begin : arrow_position + 3], style=operator_style)
+                part.append(
+                    Text(line[arrow_position + 3 : colon_position], style=number_style)
+                )
+                part.append(
+                    Text(
+                        line[colon_position : colon_position + 1], style=operator_style
+                    )
+                )
+                part.append(Text(line[colon_position + 1 : end], style=code_style))
+            else:
+                part = Text(line[begin:colon_position], style=number_style)
+                part.append(
+                    Text(
+                        line[colon_position : colon_position + 1], style=operator_style
+                    )
+                )
+                part.append(Text(line[colon_position + 1 : end], style=code_style))
+        else:
+            if line.strip() == "(...)":
+                part = Text(line[begin:end], style=operator_style)
+            else:
+                part = Text(line[begin:end], style=code_style)
+        if text is None:
+            text = part
+        else:
+            text.append(part)
+        highlighting = not highlighting
+    return text
+
+
+def highlighting_line_by_line(line, line_parts, theme):
     error_style = theme.styles[Error]
     background = theme.background_color
     operator_style = f"{theme.styles[Operator]} on {background}"
@@ -167,14 +226,30 @@ def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
 
         lines = code.split("\n")
         error_lines = get_highlighting_range(lines)
+        tokens = token_utils.tokenize(code)
+        no_multiline_string = True
+        for token in tokens:
+            if token.start_row != token.end_row:
+                no_multiline_string = False
+                break
         if not USE_CARETS and self.lexer_name == "python" and error_lines:
             for index, line in enumerate(lines):
                 if index in error_lines:
                     continue
                 if index + 1 in error_lines:
-                    yield highlight_line(line, error_lines[index + 1], theme)
+                    if no_multiline_string:
+                        yield highlighting_line_by_line(
+                            line, error_lines[index + 1], theme
+                        )
+                    else:
+                        yield simple_line_highlighting(
+                            line, error_lines[index + 1], theme
+                        )
                 else:
-                    yield Syntax(line, self.lexer_name, theme=theme, word_wrap=True)
+                    if no_multiline_string:
+                        yield Syntax(line, self.lexer_name, theme=theme, word_wrap=True)
+                    else:
+                        yield simple_line_highlighting(line, None, theme)
         else:
             yield Syntax(code, self.lexer_name, theme=theme, word_wrap=True)
 
