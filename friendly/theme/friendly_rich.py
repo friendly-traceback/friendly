@@ -93,25 +93,16 @@ def simple_line_highlighting(line, line_parts, theme):
                 part.append(
                     Text(line[arrow_position + 3 : colon_position], style=number_style)
                 )
-                part.append(
-                    Text(
-                        line[colon_position : colon_position + 1], style=operator_style
-                    )
-                )
-                part.append(Text(line[colon_position + 1 : end], style=code_style))
             else:
                 part = Text(line[begin:colon_position], style=number_style)
-                part.append(
-                    Text(
-                        line[colon_position : colon_position + 1], style=operator_style
-                    )
-                )
-                part.append(Text(line[colon_position + 1 : end], style=code_style))
+            part.append(
+                Text(line[colon_position : colon_position + 1], style=operator_style)
+            )
+            part.append(Text(line[colon_position + 1 : end], style=code_style))
+        elif line.strip() == "(...)":
+            part = Text(line[begin:end], style=operator_style)
         else:
-            if line.strip() == "(...)":
-                part = Text(line[begin:end], style=operator_style)
-            else:
-                part = Text(line[begin:end], style=code_style)
+            part = Text(line[begin:end], style=code_style)
         if text is None:
             text = part
         else:
