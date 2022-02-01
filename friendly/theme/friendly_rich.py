@@ -190,7 +190,7 @@ def highlighting_line_by_line(line, line_parts, theme):
                     part.append(sub_part)
         if text is None:
             text = part
-        else:
+        elif part is not None:  # None can happen for EOF
             text.append(part)
         highlighting = not highlighting
     return text

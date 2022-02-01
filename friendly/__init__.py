@@ -29,7 +29,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.5.11"
+__version__ = "0.5.12"
 
 
 # ===========================================
@@ -255,7 +255,7 @@ def set_formatter(
             background=background,
         )
         formatter = rich_formatters.jupyter_interactive
-        session.jupyter_button_style = ";color: white; background-color:black;"
+        session.jupyter_button_style = ";color:white; background-color:#101010;"
     elif formatter in ["interactive", "interactive-light"]:
         session.console = theme.init_rich_console(
             style="light",
