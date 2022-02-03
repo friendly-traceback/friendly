@@ -1,6 +1,7 @@
 import sys
 
 from pygments import styles
+from pygments.token import Error
 from friendly_styles import friendly_light, friendly_dark
 
 # When friendly is imported in environments that have previously
@@ -22,6 +23,9 @@ CURRENT_THEME = friendly_dark
 default_dark_background_colour = friendly_dark.background_color
 default_light_background_colour = friendly_light.background_color
 
+default_dark_highlight_colour = friendly_dark.styles[Error]
+default_light_highlight_colour = friendly_light.styles[Error]
+
 
 def get_default_background_color():
     if CURRENT_THEME == friendly_dark:
@@ -37,3 +41,17 @@ def set_pygments_background_color(color):
 
     CURRENT_THEME.background_color = color
     return color
+
+
+def set_pygments_error_token(bg, fg):
+    CURRENT_THEME.styles[Error] = f"bg:{bg} {fg}"
+
+
+def get_pygments_error_token():
+    if CURRENT_THEME == friendly_dark:
+        colour = default_dark_highlight_colour
+    else:
+        colour = default_light_highlight_colour
+    bg, fg = colour.split(" ")
+    bg = bg[3:]
+    return bg, fg

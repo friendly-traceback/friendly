@@ -7,6 +7,7 @@ import inspect
 import re
 
 from .friendly_pygments import friendly_dark, friendly_light
+from . import colours
 from ..utils import get_highlighting_range
 
 import rich
@@ -16,23 +17,12 @@ from rich.syntax import Syntax
 from rich.text import Text
 from rich.theme import Theme
 
-from pygments.token import (
-    Comment,
-    Error,
-    Generic,
-    Keyword,
-    Name,
-    Number,
-    Operator,
-    String,
-)
+from pygments.token import Comment, Generic, Keyword, Name, Number, Operator, String
 
 from friendly_traceback import token_utils
 
 dark_background_theme = Theme(friendly_dark.friendly_style)
 light_background_theme = Theme(friendly_light.friendly_style)
-
-USE_CARETS = False
 
 
 def is_builtin(string):
@@ -50,10 +40,7 @@ def is_exception(string):
 
 
 def simple_line_highlighting(line, line_parts, theme):
-    error_style = theme.styles[Error]
-    bg, fg = error_style.split(" ")
-    bg = bg.split(":")[1]
-    error_style = f"{fg} on {bg}"
+    error_style = colours.get_highlight()
 
     background = theme.background_color
     operator_style = f"{theme.styles[Operator]} on {background}"
@@ -99,7 +86,6 @@ def simple_line_highlighting(line, line_parts, theme):
 
 
 def highlighting_line_by_line(line, line_parts, theme):
-    error_style = theme.styles[Error]
     background = theme.background_color
     operator_style = f"{theme.styles[Operator]} on {background}"
     number_style = f"{theme.styles[Number]} on {background}"
@@ -111,9 +97,7 @@ def highlighting_line_by_line(line, line_parts, theme):
     exception_style = f"{theme.styles[Generic.Error]} on {background}"
     string_style = f"{theme.styles[String]} on {background}"
 
-    bg, fg = error_style.split(" ")
-    bg = bg.split(":")[1]
-    error_style = f"{fg} on {bg}"
+    error_style = colours.get_highlight()
     highlighting = False
     text = None
     tokens = token_utils.tokenize(line)
@@ -210,7 +194,12 @@ def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
             if token.start_row != token.end_row:
                 no_multiline_string = False
                 break
-        if not USE_CARETS and self.lexer_name == "python" and error_lines:
+
+        if (
+            colours.get_highlight() is not None
+            and self.lexer_name == "python"
+            and error_lines
+        ):
             for index, line in enumerate(lines):
                 if index in error_lines:
                     continue
@@ -227,7 +216,7 @@ def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
                     if no_multiline_string:
                         yield Syntax(line, self.lexer_name, theme=theme, word_wrap=True)
                     else:
-                        yield simple_line_highlighting(line, None, theme)
+                        yield simple_line_highlighting(line, [], theme)
         else:
             yield Syntax(code, self.lexer_name, theme=theme, word_wrap=True)
 

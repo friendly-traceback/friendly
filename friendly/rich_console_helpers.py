@@ -72,10 +72,10 @@ def set_background(color=None):
     set_formatter(background=color)
 
 
-def set_highlight_color(color):
+def set_highlight(bg="#cc0000", fg="white"):
     """Sets the highlight colour. Use None to turn off highlight."""
     # Need to validate colour if not None, and revert to default
-    default = "#ffffff on #ff0000"  # noqa
+    colours.set_highlight(bg=bg, fg=fg)
 
 
 def set_width(width=80):
@@ -85,12 +85,10 @@ def set_width(width=80):
     except Exception:  # noqa
         return
     session.rich_width = width
-    if session.is_jupyter:
-        if (
-            session.rich_tb_width is not None
-            and session.rich_width > session.rich_tb_width
-        ):
-            session.rich_tb_width = width
+    if session.is_jupyter and (
+        session.rich_tb_width is not None and session.rich_width > session.rich_tb_width
+    ):
+        session.rich_tb_width = width
 
 
 short_description["dark"] = lambda: _(
@@ -101,6 +99,7 @@ short_description["light"] = lambda: _(
 )
 short_description["plain"] = lambda: _("Plain formatting, with no colours added.")
 short_description["set_background"] = lambda: _("Sets the background color.")
+short_description["set_highlight"] = lambda: _("Sets the highlight colors; bg and fg.")
 short_description["set_width"] = lambda: _("Sets the output width in some modes.")
 short_description["_print_settings"] = lambda: _("Prints the saved settings.")
 short_description["_remove_environment"] = lambda: (
@@ -112,6 +111,7 @@ local_helpers = {
     "plain": plain,
     "set_width": set_width,
     "set_background": set_background,
+    "set_highlight": set_highlight,
     "_print_settings": _print_settings,
     "_remove_environment": _remove_environment,
 }

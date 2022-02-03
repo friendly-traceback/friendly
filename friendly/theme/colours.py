@@ -41,6 +41,35 @@ def set_background_color(color):
         return color
 
 
+def set_highlight(bg="#cc0000", fg="white"):
+    if bg is None or fg is None:
+        settings.write(option="highlight", value="use carets")
+        return
+    try:
+        fg = validate_color(fg)
+    except ValueError as e:
+        print(e.args[0])
+        return
+    try:
+        bg = validate_color(bg)
+    except ValueError as e:
+        print(e.args[0])
+        return
+
+    # use Rich format to save value
+    settings.write(option="highlight", value=f"{fg} on {bg}")
+
+
+def get_highlight():
+    highlight = settings.read(option="highlight")
+    if highlight == "use carets":
+        return None
+    elif highlight is None:
+        bg, fg = friendly_pygments.get_pygments_error_token()
+        return f"{fg} on {bg}"
+    return highlight
+
+
 NAMED_COLOURS = {
     "aliceblue": "#F0F8FF",
     "antiquewhite": "#FAEBD7",
