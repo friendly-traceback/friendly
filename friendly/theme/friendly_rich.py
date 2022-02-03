@@ -45,7 +45,7 @@ def simple_line_highlighting(line, line_parts, theme):
     background = theme.background_color
     operator_style = f"{theme.styles[Operator]} on {background}"
     number_style = f"{theme.styles[Number]} on {background}"
-    code_style = f"{theme.styles[Generic]} on {background}"
+    code_style = f"{theme.styles[Name]} on {background}"
 
     has_line_number = re.match(r"^\s*\d+\s*:", line) or re.match(
         r"^\s*-->\s*\d+\s*:", line
@@ -184,39 +184,43 @@ def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
     def _patch_code_block(self, *_args):
         if self.lexer_name == "default":
             self.lexer_name = "python"
-        code = str(self.text).rstrip()
 
+        code = str(self.text).rstrip()
         lines = code.split("\n")
+
+        # As we might process line by line, the tokenization will not work
+        # when multiline docstrings appear; we thus exclude them from our
+        # token by token highlighting.
+        problem_lines = []
+        for index, line in enumerate(lines):
+            if token_utils.untokenize(token_utils.tokenize(line)) != line:
+                problem_lines.append(index)
+        if problem_lines:
+            problem_lines = list(range(problem_lines[0], problem_lines[-1] + 1))
         error_lines = get_highlighting_range(lines)
-        tokens = token_utils.tokenize(code)
-        no_multiline_string = True
-        for token in tokens:
-            if token.start_row != token.end_row:
-                no_multiline_string = False
-                break
 
         if (
-            colours.get_highlight() is not None
-            and self.lexer_name == "python"
+            colours.get_highlight() is not None  # use carets
+            and self.lexer_name == "python"  # do not process pytb
             and error_lines
         ):
             for index, line in enumerate(lines):
                 if index in error_lines:
                     continue
                 if index + 1 in error_lines:
-                    if no_multiline_string:
-                        yield highlighting_line_by_line(
-                            line, error_lines[index + 1], theme
-                        )
-                    else:
+                    if index in problem_lines:
                         yield simple_line_highlighting(
                             line, error_lines[index + 1], theme
                         )
-                else:
-                    if no_multiline_string:
-                        yield Syntax(line, self.lexer_name, theme=theme, word_wrap=True)
                     else:
+                        yield highlighting_line_by_line(
+                            line, error_lines[index + 1], theme
+                        )
+                else:
+                    if index in problem_lines:
                         yield simple_line_highlighting(line, [], theme)
+                    else:
+                        yield Syntax(line, self.lexer_name, theme=theme, word_wrap=True)
         else:
             yield Syntax(code, self.lexer_name, theme=theme, word_wrap=True)
 
