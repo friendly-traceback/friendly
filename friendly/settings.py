@@ -5,6 +5,7 @@ import os
 import sys
 
 from friendly_traceback import debug_helper
+from friendly_traceback.config import session
 import appdirs
 
 
@@ -26,18 +27,13 @@ elif "TERMINAL_EMULATOR" in os.environ:  # used by PyCharm
 elif "TERM" in os.environ:  # Unix?
     terminal_type = os.environ["TERM"]
 elif sys.platform == "win32":
-    # The following might not be reliable.
+    # The following might be used to distinguish between powershell and cmd.
     _ps = len(os.getenv("PSModulePath", "").split(os.pathsep))
-    if _ps == 3:
-        terminal_type = "powershell"
-    elif _ps == 2:
-        terminal_type = "cmd"
-    else:
-        terminal_type = ""
+    terminal_type = f"win32-{_ps}"
 else:
-    terminal_type = ""
+    terminal_type = "sys.platform"
 
-ENVIRONMENT = None
+ENVIRONMENT = terminal_type
 # ENVIRONMENT is determined by the "flavour" of friendly.
 # If a terminal type is identified, then the ENVIRONMENT variable
 # would usually be a combination of the terminal_type and the flavour.
@@ -65,14 +61,14 @@ except Exception:  # noqa
 def read(*, option="unknown", environment=None):
     """Returns the value of a key in the current environment"""
     if FILENAME is None:
-        return
+        return getattr(session, option) if hasattr(session, option) else None
     if environment is not None:
         section = environment
     elif ENVIRONMENT is not None:
         section = ENVIRONMENT
     else:
         section = "unknown"
-        debug_helper.log("Unknown section")
+        debug_helper.log(f"Reading unknown section: {option}")
     config = configparser.ConfigParser()
     config.read(FILENAME)
     if section in config and option in config[section]:
@@ -92,6 +88,7 @@ def write(*, option="unknown", value="unknown", environment=None):
         debug_helper.log(f"value = {value} is not a string.")
         return
     if FILENAME is None:
+        setattr(session, option, value)
         return
     if environment is not None:
         section = environment
@@ -99,6 +96,7 @@ def write(*, option="unknown", value="unknown", environment=None):
         section = ENVIRONMENT
     else:
         section = "unknown"
+        debug_helper.log(f"writing unknown for environment={environment}")
 
     config = configparser.ConfigParser()
     config.read(FILENAME)
@@ -133,10 +131,7 @@ def has_environment(environment=None):
     """
     if FILENAME is None:
         return False
-    if environment is not None:
-        section = environment
-    else:
-        section = ENVIRONMENT
+    section = environment if environment is not None else ENVIRONMENT
     config = configparser.ConfigParser()
     config.read(FILENAME)
     return config.has_section(section)

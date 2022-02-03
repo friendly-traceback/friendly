@@ -37,6 +37,9 @@ __version__ = "0.5.12"
 import inspect
 from pathlib import Path
 
+from .my_gettext import current_lang
+from friendly import rich_formatters, theme, settings
+
 from friendly_traceback import (
     editors_helpers,
     exclude_directory_from_traceback,
@@ -57,9 +60,6 @@ from friendly_traceback import (  # noqa
     get_stream,
     set_include,
 )
-
-from .my_gettext import current_lang
-from friendly import rich_formatters, theme, settings
 
 
 exclude_directory_from_traceback(os.path.dirname(__file__))
@@ -206,7 +206,7 @@ def set_formatter(
     if formatter is not None:
         settings.write(option="formatter", value=formatter)
         if background is not None:
-            settings.write(option="background", value=background)
+            background = theme.colours.set_background_color(background)
         else:
             old_background = settings.read(option="background")
             if (
@@ -215,18 +215,18 @@ def set_formatter(
             ):
                 background = old_background
     elif background is not None:
-        settings.write(option="background", value=background)
+        background = theme.colours.set_background_color(background)
         old_formatter = settings.read(option="formatter")
-        if old_formatter is not None:
-            formatter = old_formatter
-            old_color_system = settings.read(option="color_system")
-            if old_color_system is not None:
-                color_system = old_color_system
-            old_force_jupyter = settings.read(option="force_jupyter")
-            if old_force_jupyter is not None:
-                force_jupyter = old_force_jupyter
-        else:
+        if old_formatter is None:
             return
+        formatter = old_formatter
+        old_color_system = settings.read(option="color_system")
+        if old_color_system is not None:
+            color_system = old_color_system
+        old_force_jupyter = settings.read(option="force_jupyter")
+        if old_force_jupyter is not None:
+            force_jupyter = old_force_jupyter
+
     if color_system is not None:
         settings.write(option="color_system", value=color_system)
     if force_jupyter is not None:

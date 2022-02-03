@@ -24,7 +24,7 @@ from .my_gettext import current_lang
 from friendly_traceback.base_formatters import no_result, repl, select_items
 from friendly_traceback.config import session
 from friendly_traceback.typing_info import InclusionChoice, Info
-from friendly import theme
+from friendly.theme import friendly_pygments
 
 from pygments import highlight  # noqa
 from pygments.lexers import PythonLexer, PythonTracebackLexer  # noqa
@@ -200,7 +200,9 @@ def rich_writer(text: str) -> None:  # pragma: no cover
     global RICH_HEADER, WIDE_OUTPUT
     if session.rich_add_vspace:
         session.console.print()
-    md = Markdown(text, inline_code_lexer="python", code_theme=theme.CURRENT_THEME)
+    md = Markdown(
+        text, inline_code_lexer="python", code_theme=friendly_pygments.CURRENT_THEME
+    )
     if RICH_HEADER:
         title = "Traceback"
         md = Panel(md, title=title)

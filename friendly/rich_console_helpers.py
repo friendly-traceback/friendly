@@ -11,6 +11,7 @@ old_set_lang = set_lang  # noqa
 from friendly.my_gettext import current_lang
 from friendly import set_lang, _print_settings
 from friendly.settings import _remove_environment
+from friendly.theme import colours
 
 # The following is different from the one imported via the import * above
 from friendly import set_formatter
@@ -63,9 +64,18 @@ def plain():
     set_formatter("plain")
 
 
-def set_background(color):
+def set_background(color=None):
     """Sets the background color for the current environment."""
+    if color is None:
+        colours.set_background_color(None)
+        return
     set_formatter(background=color)
+
+
+def set_highlight_color(color):
+    """Sets the highlight colour. Use None to turn off highlight."""
+    # Need to validate colour if not None, and revert to default
+    default = "#ffffff on #ff0000"  # noqa
 
 
 def set_width(width=80):
