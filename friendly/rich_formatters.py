@@ -63,11 +63,14 @@ def jupyter_interactive(
     _ = current_lang.translate
     session.rich_add_vspace = False
     add_message(info, count=COUNT)
-    add_control(count=COUNT)
+    add_detailed_tb = len(info["detailed_tb"]) > 2
+    add_control(count=COUNT, add_detailed_tb=add_detailed_tb)
     add_friendly_tb(info, count=COUNT)
     add_interactive_item(info, "what", count=COUNT)
     add_interactive_item(info, "why", count=COUNT)
     add_interactive_item(info, "where", count=COUNT)
+    if add_detailed_tb:
+        add_interactive_item(info, "detailed_tb", count=COUNT)
 
 
 def add_message(info: Info, count: int = -1) -> None:
@@ -142,9 +145,31 @@ def add_interactive_item(info: Info, name: InclusionChoice, count: int = -1) -> 
     rich_jupyter.JUPYTER_HTML_FORMAT = old_jupyter_html_format
 
 
-def add_control(count: int = -1) -> None:
+def add_control(count: int = -1, add_detailed_tb: bool = False) -> None:
     """Adds a single button to control the visibility of all other elements."""
     _ = current_lang.translate
+    if add_detailed_tb:
+        btn_detailed_tb = """;var btn_detailed_tb =
+        document.getElementById('friendly-tb-btn-show-detailed_tb{count}');""".format(
+            count=count
+        )
+        var_detailed_tb_content = """var detailed_tb_content =
+        document.getElementById('friendly-tb-detailed_tb-content{count}');""".format(
+            count=count
+        )
+        show_detailed_tb_button = """btn_detailed_tb.style.display = 'block';"""
+        hide_detailed_tb_button = """
+            btn_detailed_tb.style.display = 'none';
+            btn_detailed_tb.textContent = 'detailed_tb()';"""
+        show_detailed_tb_content = "detailed_tb_content.display = 'block';"
+        hide_detailed_tb_content = "detailed_tb_content.display = 'none';"
+    else:
+        btn_detailed_tb = ""
+        var_detailed_tb_content = ""
+        show_detailed_tb_button = ""
+        hide_detailed_tb_button = ""
+        show_detailed_tb_content = ""
+        hide_detailed_tb_content = ""
     content = """
         <button
             id='friendly-tb-btn-show{count}'
@@ -157,11 +182,13 @@ def add_control(count: int = -1) -> None:
         var btn_what = document.getElementById('friendly-tb-btn-show-what{count}');
         var btn_where = document.getElementById('friendly-tb-btn-show-where{count}');
         var btn_why = document.getElementById('friendly-tb-btn-show-why{count}');
+        {btn_detailed_tb};
         var message = document.getElementById('friendly-message{count}');
         var friendly_tb_content = document.getElementById('friendly-tb-friendly_tb-content{count}');
         var what_content = document.getElementById('friendly-tb-what-content{count}');
         var why_content = document.getElementById('friendly-tb-why-content{count}');
         var where_content = document.getElementById('friendly-tb-where-content{count}');
+        {var_detailed_tb_content};
 
         if (btn_what.style.display == 'none'){{
             message.style.display = 'none';
@@ -169,7 +196,9 @@ def add_control(count: int = -1) -> None:
             btn_why.style.display = 'block';
             btn_where.style.display = 'block';
             friendly_tb_content.style.display = 'block';
+            {show_detailed_tb_content};
             btn.textContent = "{only}";
+            {show_detailed_tb_button};
         }} else {{
             btn_what.style.display = 'none';
             btn_what.textContent = 'what()';
@@ -180,9 +209,11 @@ def add_control(count: int = -1) -> None:
             what_content.style.display = 'none';
             why_content.style.display = 'none';
             where_content.style.display = 'none';
+            {hide_detailed_tb_content};
             friendly_tb_content.style.display = 'none';
             message.style.display = 'block';
             btn.textContent = "{more}";
+            {hide_detailed_tb_button};
         }}
         }};
         </script>
@@ -191,6 +222,12 @@ def add_control(count: int = -1) -> None:
         more=_("More ..."),
         only=_("Show message only"),
         btn_style=session.jupyter_button_style,
+        btn_detailed_tb=btn_detailed_tb,
+        var_detailed_tb_content=var_detailed_tb_content,
+        show_detailed_tb_content=show_detailed_tb_content,
+        hide_detailed_tb_content=hide_detailed_tb_content,
+        show_detailed_tb_button=show_detailed_tb_button,
+        hide_detailed_tb_button=hide_detailed_tb_button,
     )
     display(HTML(content))
 
@@ -334,6 +371,24 @@ def rich_markdown(
     return _markdown(info, include, rich=True)
 
 
+def detailed_tb(info: Info) -> str:  # Special case
+    # TODO: document this
+    markdown_items = {
+        "source": ("```python\n", "\n```"),
+        "var_info": ("```python\n", "\n```"),
+    }
+    result = [""]
+    for location, source, var_info in info["detailed_tb"]:
+        result.append(location)
+        prefix, suffix = markdown_items["source"]
+        result.append(prefix + source + suffix)
+        if var_info:
+            prefix, suffix = markdown_items["var_info"]
+            result.append(prefix + var_info + suffix)
+        result.append("\n")
+    return "\n".join(result)
+
+
 def _markdown(
     info: Info,
     include: InclusionChoice,
@@ -342,6 +397,9 @@ def _markdown(
 ) -> str:  # pragma: no cover
     """Traceback formatted with Markdown syntax."""
     global RICH_HEADER, WIDE_OUTPUT
+    if include == "detailed_tb":
+        return detailed_tb(info)
+
     if (
         rich
         and session.is_jupyter
