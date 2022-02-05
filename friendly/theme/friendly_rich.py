@@ -39,7 +39,50 @@ def is_exception(string):
         return False
 
 
+def format_with_highlight(lines, error_lines, theme):
+    """Formats lines, replacing code underlined by ^^ (on the following line)
+       into highlighted code, and removing the ^^ from the end result.
+    """
+    # As we might process line by line, the tokenization will not work
+    # when multiline triple-quoted strings are included;
+    # we thus exclude them from our token by token highlighting.
+    contain_triple_quoted = [
+        index
+        for index, line in enumerate(lines)
+        if token_utils.untokenize(token_utils.tokenize(line)) != line
+    ]
+    # We ensure that any line that might include content from a triple-quoted
+    # string is not included.
+    if contain_triple_quoted:
+        contain_triple_quoted = list(
+            range(contain_triple_quoted[0], contain_triple_quoted[-1] + 1)
+        )
+    result = []
+
+    for index, line in enumerate(lines):
+        if index in error_lines:  # Skip over lines containing ^^
+            continue
+        if index + 1 in error_lines:
+            if index in contain_triple_quoted:
+                result.append(
+                    simple_line_highlighting(line, error_lines[index + 1], theme)
+                )
+            else:
+                result.append(highlight_by_tokens(line, error_lines[index + 1], theme))
+        elif index in contain_triple_quoted:
+            result.append(simple_line_highlighting(line, [], theme))
+        else:
+            result.append(Syntax(line, "python", theme=theme, word_wrap=True))
+    return result
+
+
 def simple_line_highlighting(line, line_parts, theme):
+    """Fallback method for highlighting code when there might be some
+    triple quoted strings spanning multiple lines. As the highlighting
+    is done a singe line at a time, any tokenization of the line content
+    might fail. We thus use Rich's Text() instead of Syntax() to highlight
+    different part of each line.
+    """
     error_style = colours.get_highlight()
 
     background = theme.background_color
@@ -85,7 +128,10 @@ def simple_line_highlighting(line, line_parts, theme):
     return text
 
 
-def highlighting_line_by_line(line, line_parts, theme):
+def highlight_by_tokens(line, line_parts, theme):
+    """This is a simplified version of what Pygments does when highlighting
+    some code.
+    """
     background = theme.background_color
     operator_style = f"{theme.styles[Operator]} on {background}"
     number_style = f"{theme.styles[Number]} on {background}"
@@ -187,40 +233,14 @@ def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
 
         code = str(self.text).rstrip()
         lines = code.split("\n")
-
-        # As we might process line by line, the tokenization will not work
-        # when multiline docstrings appear; we thus exclude them from our
-        # token by token highlighting.
-        problem_lines = []
-        for index, line in enumerate(lines):
-            if token_utils.untokenize(token_utils.tokenize(line)) != line:
-                problem_lines.append(index)
-        if problem_lines:
-            problem_lines = list(range(problem_lines[0], problem_lines[-1] + 1))
         error_lines = get_highlighting_range(lines)
 
         if (
-            colours.get_highlight() is not None  # use carets
+            colours.get_highlight() is not None  # otherwise, use carets
             and self.lexer_name == "python"  # do not process pytb
             and error_lines
         ):
-            for index, line in enumerate(lines):
-                if index in error_lines:
-                    continue
-                if index + 1 in error_lines:
-                    if index in problem_lines:
-                        yield simple_line_highlighting(
-                            line, error_lines[index + 1], theme
-                        )
-                    else:
-                        yield highlighting_line_by_line(
-                            line, error_lines[index + 1], theme
-                        )
-                else:
-                    if index in problem_lines:
-                        yield simple_line_highlighting(line, [], theme)
-                    else:
-                        yield Syntax(line, self.lexer_name, theme=theme, word_wrap=True)
+            yield from format_with_highlight(lines, error_lines, theme)
         else:
             yield Syntax(code, self.lexer_name, theme=theme, word_wrap=True)
 
