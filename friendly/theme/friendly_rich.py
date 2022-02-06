@@ -98,9 +98,12 @@ def simple_line_highlighting(line, line_parts, theme):
     text = None
     if not line_parts:
         line_parts = [(0, len(line))]
+
     for begin, end in line_parts:
         if highlighting:
             part = Text(line[begin:end], style=error_style)
+            if not line[begin:end]:
+                part.append(Text(" ", style=error_style))
 
         elif has_line_number and begin < colon_position:
             begin_line = line[begin : colon_position + 1]
@@ -151,6 +154,8 @@ def highlight_by_tokens(line, line_parts, theme):
     for begin, end in line_parts:
         if highlighting:
             part = Text(line[begin:end], style=error_style)
+            if not line[begin:end]:
+                part.append(Text(" ", style=error_style))
             last_column = end
         else:
             part = None
