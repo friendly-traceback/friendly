@@ -151,7 +151,7 @@ def highlight_by_tokens(line, line_parts, theme):
     text = None
     tokens = token_utils.tokenize(line)
     last_column = 0
-    for begin, end in line_parts:
+    for index, (begin, end) in enumerate(line_parts):
         if highlighting:
             part = Text(line[begin:end], style=error_style)
             if not line[begin:end]:
@@ -163,17 +163,15 @@ def highlight_by_tokens(line, line_parts, theme):
                 if token.start_col < begin:
                     continue
                 if token.start_col >= end:
+                    start = token.start_col
+                    if len(line_parts) > index + 1:
+                        # we might want to highlight some spaces before the start of the token
+                        start = min(token.start_col, line_parts[index + 1][0])
                     if part is None:
-                        part = Text(
-                            " " * (token.start_col - last_column), style=code_style
-                        )
+                        part = Text(" " * (start - last_column), style=code_style)
                     else:
-                        part.append(
-                            Text(
-                                " " * (token.start_col - last_column), style=code_style
-                            )
-                        )
-                    last_column = token.start_col
+                        part.append(Text(" " * (start - last_column), style=code_style))
+                    last_column = start
                     break
                 if token.start_col > last_column:
                     if part is None:
