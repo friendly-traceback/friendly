@@ -41,7 +41,7 @@ def is_exception(string):
 
 def format_with_highlight(lines, error_lines, theme):
     """Formats lines, replacing code underlined by ^^ (on the following line)
-       into highlighted code, and removing the ^^ from the end result.
+    into highlighted code, and removing the ^^ from the end result.
     """
     # As we might process line by line, the tokenization will not work
     # when multiline triple-quoted strings are included;
@@ -146,6 +146,29 @@ def highlight_by_tokens(line, line_parts, theme):
     exception_style = f"{theme.styles[Generic.Error]} on {background}"
     string_style = f"{theme.styles[String]} on {background}"
 
+    def highlight_token(token):
+        """Imitating pygment's styling of individual token."""
+        if token.is_keyword():
+            if token.string in ["True", "False", "None"]:
+                sub_part = Text(token.string, style=constant_style)
+            else:
+                sub_part = Text(token.string, style=keyword_style)
+        elif is_builtin(token.string):
+            sub_part = Text(token.string, style=builtin_style)
+        elif is_exception(token.string):
+            sub_part = Text(token.string, style=exception_style)
+        elif token.is_comment():
+            sub_part = Text(token.string, style=comment_style)
+        elif token.is_number():
+            sub_part = Text(token.string, style=number_style)
+        elif token.is_operator():
+            sub_part = Text(token.string, style=operator_style)
+        elif token.is_string():
+            sub_part = Text(token.string, style=string_style)
+        else:
+            sub_part = Text(token.string, style=code_style)
+        return sub_part
+
     error_style = colours.get_highlight()
     highlighting = False
     text = None
@@ -163,47 +186,31 @@ def highlight_by_tokens(line, line_parts, theme):
                 if token.start_col < begin:
                     continue
                 if token.start_col >= end:
+                    # After inserting some non-highlighted space,
+                    # we are going to highlight the next token.
+                    # However, we might want to highlight some spaces
+                    # before that token, so we don't include them here.
                     start = token.start_col
-                    if len(line_parts) > index + 1:
-                        # we might want to highlight some spaces before the start of the token
+                    if len(line_parts) > index + 1:  # should always be True
                         start = min(token.start_col, line_parts[index + 1][0])
+                    inserted_space = " " * (start - last_column)
                     if part is None:
-                        part = Text(" " * (start - last_column), style=code_style)
+                        part = Text(inserted_space, style=code_style)
                     else:
-                        part.append(Text(" " * (start - last_column), style=code_style))
+                        part.append(Text(inserted_space, style=code_style))
                     last_column = start
                     break
+
                 if token.start_col > last_column:
+                    # We need to insert the required spaces between the tokens.
+                    inserted_space = " " * (token.start_col - last_column)
                     if part is None:
-                        part = Text(
-                            " " * (token.start_col - last_column), style=code_style
-                        )
+                        part = Text(inserted_space, style=code_style)
                     else:
-                        part.append(
-                            Text(
-                                " " * (token.start_col - last_column), style=code_style
-                            )
-                        )
+                        part.append(Text(inserted_space, style=code_style))
                 last_column = token.end_col
-                if token.is_keyword():
-                    if token.string in ["True", "False", "None"]:
-                        sub_part = Text(token.string, style=constant_style)
-                    else:
-                        sub_part = Text(token.string, style=keyword_style)
-                elif is_builtin(token.string):
-                    sub_part = Text(token.string, style=builtin_style)
-                elif is_exception(token.string):
-                    sub_part = Text(token.string, style=exception_style)
-                elif token.is_comment():
-                    sub_part = Text(token.string, style=comment_style)
-                elif token.is_number():
-                    sub_part = Text(token.string, style=number_style)
-                elif token.is_operator():
-                    sub_part = Text(token.string, style=operator_style)
-                elif token.is_string():
-                    sub_part = Text(token.string, style=string_style)
-                else:
-                    sub_part = Text(token.string, style=code_style)
+
+                sub_part = highlight_token(token)
                 if part is None:
                     part = sub_part
                 else:
