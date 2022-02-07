@@ -3,6 +3,7 @@
 import configparser
 import os
 import sys
+from tempfile import NamedTemporaryFile
 
 from friendly_traceback import debug_helper
 from friendly_traceback.config import session
@@ -42,14 +43,26 @@ ENVIRONMENT = terminal_type
 # create settings directories and files
 
 
+def config_atomic_write(config: configparser.ConfigParser) -> None:
+    """Atomically write a ConfigParser instance to FILENAME.
+
+    Without a way to write the config atomically, we could write
+    garbage on the config file, rendering it unparsable.
+    """
+    with NamedTemporaryFile(
+        dir=os.path.dirname(FILENAME), delete=False, mode="w", encoding="UTF-8"
+    ) as tmpfile:
+        config.write(tmpfile)
+    os.rename(tmpfile.name, FILENAME)
+
+
 def ensure_existence():
     """Ensures that a settings file exists"""
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
     if not os.path.exists(FILENAME):
         config = configparser.ConfigParser()
-        with open(FILENAME, "w") as config_file:
-            config.write(config_file)
+        config_atomic_write(config)
 
 
 try:
@@ -103,8 +116,7 @@ def write(*, option="unknown", value="unknown", environment=None):
     if not config.has_section(section):
         config.add_section(section)
     config[section][option] = value
-    with open(FILENAME, "w") as config_file:
-        config.write(config_file)
+    config_atomic_write(config)
 
 
 def _remove_environment(environment=None):
@@ -121,8 +133,7 @@ def _remove_environment(environment=None):
     config = configparser.ConfigParser()
     config.read(FILENAME)
     config.remove_section(section)
-    with open(FILENAME, "w") as config_file:
-        config.write(config_file)
+    config_atomic_write(config)
 
 
 def has_environment(environment=None):
