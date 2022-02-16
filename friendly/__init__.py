@@ -22,14 +22,15 @@ have as part of the public API, please let us know.
 import os
 import sys
 
-valid_version = sys.version_info >= (3, 6)
+valid_version = sys.version_info >= (3, 6, 1)
 
 if not valid_version:  # pragma: no cover
-    print("Python 3.6 or newer is required.")
+    # Rich does not support 3.6.0
+    print("Python 3.6.1 or newer is required.")
     sys.exit()
 
 del valid_version
-__version__ = "0.5.16"
+__version__ = "0.5.17"
 
 
 # ===========================================

@@ -8,7 +8,7 @@ import re
 
 from .friendly_pygments import friendly_dark, friendly_light
 from . import colours
-from ..utils import get_highlighting_range
+from ..utils import get_highlighting_ranges
 
 import rich
 from rich import pretty
@@ -243,7 +243,7 @@ def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
 
         code = str(self.text).rstrip()
         lines = code.split("\n")
-        error_lines = get_highlighting_range(lines)
+        error_lines = get_highlighting_ranges(lines)
 
         if (
             colours.get_highlight() is not None  # otherwise, use carets

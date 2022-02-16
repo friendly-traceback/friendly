@@ -9,7 +9,7 @@ All that matters is that, it is debugged and works appropriately! ;-)
 
 import sys
 from friendly_traceback.base_formatters import select_items, no_result, repl_indentation
-from ..utils import get_highlighting_range
+from ..utils import get_highlighting_ranges
 
 if sys.version_info >= (3, 9, 5):
     repl_indentation["suggest"] = "single"  # more appropriate value
@@ -27,7 +27,7 @@ def format_source(text):
     lines = text.split("\n")
     while not lines[-1].strip():
         lines.pop()
-    error_lines = get_highlighting_range(lines)
+    error_lines = get_highlighting_ranges(lines)
 
     new_lines = []
     for index, line in enumerate(lines):
