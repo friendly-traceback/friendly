@@ -44,6 +44,5 @@ def get_single_line_highlighting_ranges(line):
             begin = char_index
             scanning_carets = False
     # include the last subrange
-    if begin != char_index:
-        caret_line.append((begin, char_index + 1))
+    caret_line.append((begin, char_index + 1))
     return caret_line
