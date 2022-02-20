@@ -8,7 +8,7 @@ import re
 
 from .friendly_pygments import friendly_dark, friendly_light
 from . import colours
-from ..utils import get_highlighting_ranges
+from friendly_traceback.utils import get_highlighting_ranges
 
 import rich
 from rich import pretty
