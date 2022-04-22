@@ -1,5 +1,5 @@
 """Sets up everything required for an IPython terminal session."""
-from friendly.ipython_common.excepthook import install_except_hook
+from friendly.ipython_common import excepthook
 from friendly.ipython_common.settings import init_settings
 
 from friendly import print_repl_header
@@ -18,7 +18,7 @@ if settings.terminal_type:
 else:
     settings.ENVIRONMENT = "ipython"
 
-install_except_hook()
+excepthook.enable()
 init_settings("dark")
 print_repl_header()
 if config.did_exception_occur_before():

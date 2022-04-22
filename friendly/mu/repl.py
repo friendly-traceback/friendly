@@ -123,7 +123,7 @@ helpers.update(local_helpers)
 __all__ = list(helpers.keys())
 
 
-excepthook.install_except_hook()
+excepthook.enable()
 
 try:
     with open(os.path.join(mu_data_dir, "session.json")) as fp:

@@ -8,6 +8,7 @@ from friendly_traceback import (
     install,
     exclude_file_from_traceback,
     explain_traceback,
+    uninstall,
 )  # noqa
 
 try:
@@ -25,8 +26,18 @@ exclude_file_from_traceback(interactiveshell.__file__)
 exclude_file_from_traceback(compilerop.__file__)
 
 
-def install_except_hook():
+original_exception_hooks = {}
+
+
+def enable():
     """Installs friendly-traceback as an exception hook in IPython"""
+    # save old values
+    original_exception_hooks[
+        "showtraceback"
+    ] = interactiveshell.InteractiveShell.showtraceback
+    original_exception_hooks[
+        "showsyntaxerror"
+    ] = interactiveshell.InteractiveShell.showsyntaxerror
     interactiveshell.InteractiveShell.showtraceback = (
         lambda self, *args, **kwargs: explain_traceback()
     )
@@ -34,3 +45,17 @@ def install_except_hook():
         lambda self, *args, **kwargs: explain_traceback()
     )
     install(include="friendly_tb")
+
+
+def disable():
+    if not original_exception_hooks:
+        print("friendly is not installed.")
+        return
+    uninstall()
+    interactiveshell.InteractiveShell.showtraceback = original_exception_hooks[
+        "showtraceback"
+    ]
+    interactiveshell.InteractiveShell.showsyntaxerror = original_exception_hooks[
+        "showsyntaxerror"
+    ]
+    original_exception_hooks.clear()

@@ -1,7 +1,7 @@
 from rich import jupyter as rich_jupyter
 
 """Sets up everything required for an IPython terminal session."""
-from friendly.ipython_common.excepthook import install_except_hook
+from friendly.ipython_common import excepthook
 from friendly.ipython_common.settings import init_settings
 
 from friendly import print_repl_header
@@ -83,7 +83,7 @@ helpers["set_tb_width"] = set_tb_width
 
 __all__ = list(helpers.keys())
 
-install_except_hook()
+excepthook.enable()
 # Use the new interactive light formatter by default.
 init_settings("interactive-light")
 set_tb_width(100)  # noqa
