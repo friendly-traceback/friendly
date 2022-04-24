@@ -11,6 +11,8 @@ __all__ = list(helpers)  # noqa
 __all__.append("run")  # noqa
 __all__.append("start_console")  # noqa
 __all__.append("Friendly")  # noqa
+__all__.remove("disable")
+__all__.remove("enable")
 install()
 
 if config.did_exception_occur_before():

@@ -62,6 +62,9 @@ _old_displayhook = sys.displayhook
 
 helpers["get_syntax_error"] = get_syntax_error
 
+Friendly.remove_helper("disable")
+Friendly.remove_helper("enable")
+
 
 def _displayhook(value):
     if value is None:
