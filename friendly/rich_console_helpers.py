@@ -50,6 +50,35 @@ def dark():
     set_formatter("dark")
 
 
+def disable():
+    """Disable friendly's exception hook, restoring the previous one"""
+    if not session.installed:
+        print(_("Friendly is already disabled."))
+        return
+    try:
+        get_ipython()  # noqa
+    except NameError:
+        session.uninstall()
+        return
+    from .ipython_common import excepthook
+
+    excepthook.disable()
+
+
+def enable():
+    """Enable friendly's exception hook."""
+    if session.installed:
+        print(_("Friendly is already enabled."))
+    try:
+        get_ipython()  # noqa
+    except NameError:
+        session.install()
+        return
+    from .ipython_common import excepthook
+
+    excepthook.enable()
+
+
 def light():
     """Synonym of set_formatter('light') designed to be used
     within iPython/Jupyter programming environments.
@@ -94,6 +123,8 @@ def set_width(width=80):
 short_description["dark"] = lambda: _(
     "Sets a colour scheme designed for a black background."
 )
+short_description["disable"] = lambda: _("Disable friendly's exception hook.")
+short_description["enable"] = lambda: _("Enable friendly's exception hook.")
 short_description["light"] = lambda: _(
     "Sets a colour scheme designed for a white background."
 )
@@ -107,6 +138,8 @@ short_description["_remove_environment"] = lambda: (
 )
 local_helpers = {
     "dark": dark,
+    "disable": disable,
+    "enable": enable,
     "light": light,
     "plain": plain,
     "set_width": set_width,
