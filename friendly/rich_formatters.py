@@ -63,7 +63,10 @@ def jupyter_interactive(
     _ = current_lang.translate
     session.rich_add_vspace = False
     add_message(info, count=COUNT)
-    add_detailed_tb = len(info["detailed_tb"]) > 2
+    if "detailed_tb" in info:
+        add_detailed_tb = len(info["detailed_tb"]) > 2
+    else:
+        add_detailed_tb = False
     add_control(count=COUNT, add_detailed_tb=add_detailed_tb)
     add_friendly_tb(info, count=COUNT)
     add_interactive_item(info, "what", count=COUNT)
@@ -397,8 +400,10 @@ def _markdown(
 ) -> str:  # pragma: no cover
     """Traceback formatted with Markdown syntax."""
     global RICH_HEADER, WIDE_OUTPUT
-    if include == "detailed_tb":
+    if include == "detailed_tb" and "detailed_tb" in info:
         return detailed_tb(info)
+    elif include == "detailed_tb":
+        include = "where"
 
     if (
         rich
