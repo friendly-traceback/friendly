@@ -376,6 +376,8 @@ def rich_markdown(
 
 def detailed_tb(info: Info) -> str:  # Special case
     # TODO: document this
+    if "detailed_tb" not in info:
+        return ""
     markdown_items = {
         "source": ("```python\n", "\n```"),
         "var_info": ("```python\n", "\n```"),
@@ -403,8 +405,7 @@ def _markdown(
     if include == "detailed_tb" and "detailed_tb" in info:
         return detailed_tb(info)
     elif include == "detailed_tb":
-        include = "where"
-
+        return ""
     if (
         rich
         and session.is_jupyter
