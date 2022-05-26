@@ -137,6 +137,10 @@ parser.add_argument(
     action="store_true",
 )
 
+parser.add_argument(
+    "-i", help="""Starts the console after executing a source""", action="store_true"
+)
+
 
 def main():
     _ = current_lang.translate
@@ -149,7 +153,7 @@ def main():
     include = "friendly_tb"
     if args.include:  # pragma: no cover
         include = args.include
-    elif args.source and not sys.flags.interactive:
+    elif args.source and not (sys.flags.interactive or args.i):
         include = "explain"
     if args.debug:  # pragma: no cover
         debug_helper.DEBUG = True
@@ -184,7 +188,7 @@ def main():
             console_defaults.update(module_dict)
         except Exception:  # noqa
             explain_traceback()
-        if sys.flags.interactive:  # pragma: no cover
+        if sys.flags.interactive or args.i:  # pragma: no cover
             console.start_console(
                 local_vars=console_defaults,
                 background=args.background,
