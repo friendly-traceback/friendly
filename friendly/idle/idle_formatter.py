@@ -52,6 +52,8 @@ def format_source(text):
                     new_lines.append((text, "ERROR"))
                     no_highlight = True
             new_lines.append((line[end:], "default"))
+        else:
+            new_lines.append((line[colon_location:], "default"))
         new_lines.append(("\n", "default"))
     return new_lines
 
