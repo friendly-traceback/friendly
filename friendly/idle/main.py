@@ -147,7 +147,9 @@ def install(lang=get_lang()):
 
     sys.stderr = sys.stdout.shell  # noqa
     friendly_traceback.set_formatter(idle_formatter.idle_formatter)
-    if sys.version_info >= (3, 9, 5) or sys.version_info == (3, 8, 10):
+    if sys.version_info >= (3, 9, 5) or (
+        sys.version_info >= (3, 8, 10) and sys.version_info < (3, 9, 0)
+    ):
         install_in_idle_shell(lang=lang)
         sys.displayhook = _displayhook
     else:
