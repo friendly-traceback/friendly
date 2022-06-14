@@ -140,13 +140,14 @@ def install(lang=get_lang()):
     For Python versions before 3.10, this was not directly supported, so a
     Friendly console is used instead of IDLE's shell.
 
-    Changes introduced in Python 3.10 were back-ported to Python 3.9.5.
+    Changes introduced in Python 3.10 were back-ported to Python 3.9.5 and
+    to Python 3.8.10.
     """
     _ = current_lang.translate
 
     sys.stderr = sys.stdout.shell  # noqa
     friendly_traceback.set_formatter(idle_formatter.idle_formatter)
-    if sys.version_info >= (3, 9, 5):
+    if sys.version_info >= (3, 9, 5) or sys.version_info == (3, 8, 10):
         install_in_idle_shell(lang=lang)
         sys.displayhook = _displayhook
     else:
