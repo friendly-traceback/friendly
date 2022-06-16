@@ -29,6 +29,7 @@ settings.ENVIRONMENT = "IDLE"
 set_lang(get_lang())
 
 friendly_traceback.exclude_file_from_traceback(__file__)
+_writer = partial(idle_writer.writer, stream=sys.stdout.shell)
 
 
 def history():
@@ -39,7 +40,7 @@ def history():
     for info in session.saved_info:
         message = session.formatter(info, include="message")
         if message:
-            idle_writer(message[1:])
+            _writer(message[1:])
 
 
 # TODO: look at removing this as an option
@@ -65,8 +66,6 @@ helpers["get_syntax_error"] = get_syntax_error
 
 Friendly.remove_helper("disable")
 Friendly.remove_helper("enable")
-
-_writer = partial(idle_writer.writer, stream=sys.stdout.shell)
 
 
 def _displayhook(value):
