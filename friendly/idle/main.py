@@ -2,8 +2,9 @@
 as a replacement for the standard traceback in IDLE."""
 
 import inspect
-from pathlib import Path
 import sys
+from pathlib import Path
+from functools import partial
 
 
 from idlelib import run as idlelib_run
@@ -19,7 +20,7 @@ from friendly_traceback.functions_help import add_help_attribute
 from friendly import get_lang
 from friendly import settings
 from ..my_gettext import current_lang
-from . import idle_formatter
+from .. import idle_writer
 from . import patch_source_cache  # noqa
 from .get_syntax import get_syntax_error
 
@@ -45,7 +46,7 @@ def history():
 def set_formatter(formatter="idle"):
     """Sets the formatter; the default value is 'idle'."""
     if formatter == "idle":
-        friendly_traceback.set_formatter(idle_formatter.idle_formatter)
+        friendly_traceback.set_formatter(idle_writer.formatter)
     else:
         friendly_traceback.set_formatter(formatter=formatter)
 
@@ -65,12 +66,14 @@ helpers["get_syntax_error"] = get_syntax_error
 Friendly.remove_helper("disable")
 Friendly.remove_helper("enable")
 
+_writer = partial(idle_writer.writer, stream=sys.stdout.shell)
+
 
 def _displayhook(value):
     if value is None:
         return
     if str(type(value)) == "<class 'function'>" and hasattr(value, "__rich_repr__"):
-        idle_writer(
+        _writer(
             [
                 (f"    {value.__name__}():", "default"),
                 (f" {value.__rich_repr__()[0]}", "stdout"),
@@ -90,36 +93,15 @@ def _displayhook(value):
                     else:
                         newline.append((content, "default"))
                 newline.append("\n")
-                idle_writer(newline)
+                _writer(newline)
             elif "():" in line:
                 parts = line.split("():")
-                idle_writer(
-                    ((f"{    parts[0]}():", "default"), (parts[1], "stdout"), "\n")
-                )
+                _writer(((f"{    parts[0]}():", "default"), (parts[1], "stdout"), "\n"))
             else:
-                idle_writer(line + "\n")
+                _writer(line + "\n")
         return
 
     _old_displayhook(value)
-
-
-def idle_writer(output, color=None):
-    """Use this instead of standard sys.stderr to write traceback so that
-    they can be colorized.
-    """
-    if isinstance(output, str):
-        if color is None:
-            sys.stdout.shell.write(output, "stderr")  # noqa
-        else:
-            sys.stdout.shell.write(output, color)  # noqa
-        return
-    for fragment in output:
-        if isinstance(fragment, str):
-            sys.stdout.shell.write(fragment, "stderr")  # noqa
-        elif len(fragment) == 2:
-            sys.stdout.shell.write(fragment[0], fragment[1])  # noqa
-        else:
-            sys.stdout.shell.write(fragment[0], "stderr")  # noqa
 
 
 def install_in_idle_shell(lang=get_lang()):
@@ -132,7 +114,7 @@ def install_in_idle_shell(lang=get_lang()):
     raises SyntaxErrors.
     """
     friendly_traceback.exclude_file_from_traceback(idlelib_run.__file__)
-    friendly_traceback.install(include="friendly_tb", redirect=idle_writer, lang=lang)
+    friendly_traceback.install(include="friendly_tb", redirect=_writer, lang=lang)
 
 
 def install(lang=get_lang()):
@@ -146,24 +128,24 @@ def install(lang=get_lang()):
     _ = current_lang.translate
 
     sys.stderr = sys.stdout.shell  # noqa
-    friendly_traceback.set_formatter(idle_formatter.idle_formatter)
+    friendly_traceback.set_formatter(idle_writer.formatter)
     if sys.version_info >= (3, 9, 5) or (
         sys.version_info >= (3, 8, 10) and sys.version_info < (3, 9, 0)
     ):
         install_in_idle_shell(lang=lang)
         sys.displayhook = _displayhook
     else:
-        idle_writer(_("Friendly cannot be installed in this version of IDLE.\n"))
-        idle_writer(_("Using Friendly's own console instead.\n"))
+        _writer(_("Friendly cannot be installed in this version of IDLE.\n"))
+        _writer(_("Using Friendly's own console instead.\n"))
         start_console(lang=lang, displayhook=_displayhook)
 
 
 def start_console(lang="en", displayhook=None, ipython_prompt=True):
     """Starts a Friendly console with a custom formatter for IDLE"""
     sys.stderr = sys.stdout.shell  # noqa
-    friendly_traceback.set_stream(idle_writer)
+    friendly_traceback.set_stream(_writer)
     friendly_traceback.start_console(
-        formatter=idle_formatter.idle_formatter,
+        formatter=idle_writer.formatter,
         lang=lang,
         displayhook=displayhook,
         ipython_prompt=ipython_prompt,
@@ -211,8 +193,8 @@ def run(
     _ = current_lang.translate
 
     sys.stderr = sys.stdout.shell  # noqa
-    friendly_traceback.set_formatter(idle_formatter.idle_formatter)
-    friendly_traceback.set_stream(idle_writer)
+    friendly_traceback.set_formatter(idle_writer.formatter)
+    friendly_traceback.set_stream(_writer)
 
     filename = Path(filename)
     if not filename.is_absolute():
@@ -238,6 +220,6 @@ def run(
         include=include,
         args=args,
         console=console,
-        formatter=idle_formatter.idle_formatter,
+        formatter=idle_writer.formatter,
         ipython_prompt=ipython_prompt,
     )
