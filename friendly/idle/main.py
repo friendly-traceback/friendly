@@ -43,21 +43,9 @@ def history():
             _writer(message[1:])
 
 
-# TODO: look at removing this as an option
-def set_formatter(formatter="idle"):
-    """Sets the formatter; the default value is 'idle'."""
-    if formatter == "idle":
-        friendly_traceback.set_formatter(idle_writer.formatter)
-    else:
-        friendly_traceback.set_formatter(formatter=formatter)
-
-
 set_lang.__doc__ = Friendly.set_lang.__doc__
 
-add_help_attribute(
-    {"history": history, "set_formatter": set_formatter, "set_lang": set_lang}
-)
-Friendly.add_helper(set_formatter)
+add_help_attribute({"history": history, "set_lang": set_lang})
 Friendly.add_helper(set_lang)
 Friendly.add_helper(history)
 _old_displayhook = sys.displayhook
@@ -66,6 +54,7 @@ helpers["get_syntax_error"] = get_syntax_error
 
 Friendly.remove_helper("disable")
 Friendly.remove_helper("enable")
+Friendly.remove_helper("set_formatter")
 
 
 def _displayhook(value):
@@ -208,7 +197,9 @@ def run(
         return
 
     if not console:
-        if sys.version_info >= (3, 10):
+        if sys.version_info >= (3, 9, 5) or (
+            sys.version_info >= (3, 8, 10) and sys.version_info < (3, 9, 0)
+        ):
             install_in_idle_shell()
         else:
             sys.stderr.write("Friendly cannot be installed in this version of IDLE.\n")
