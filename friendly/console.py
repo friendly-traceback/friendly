@@ -25,11 +25,6 @@ BANNER = "\nfriendly-traceback: {}\nfriendly: {}\nPython: {}\n".format(
 )
 
 _ = current_lang.translate
-please_comment = _(
-    "   Do you find these warnings useful?\n"
-    "   Comment at https://github.com/friendly-traceback/friendly-traceback/issues/7.\n\n"
-    "   You can use www('warnings') to go to that url."
-)
 
 
 class FriendlyConsole(ft_console.FriendlyTracebackConsole):
@@ -53,6 +48,7 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
             ipython_prompt=ipython_prompt,
         )
         self.old_locals = {}
+        self.saved_annotations = {}
         self.saved_builtins = {}
         for name in dir(builtins):
             self.saved_builtins[name] = getattr(builtins, name)
@@ -100,34 +96,40 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
         )
         suggest_str = _("Instead of `{hint}`, perhaps you meant `{assignment}`.")
 
+        warning_given = False
         for name in hints:
+            if (
+                name in self.saved_annotations
+                and hints[name] == self.saved_annotations[name]
+            ):
+                continue
             if name in dir(builtins):
                 warning = warning_builtins.format(name=name)
+                warning_given = True
                 if self.rich_console:
                     warning = "#### " + warning
                     warning = Markdown(warning)
                     session.console.print(warning)
-                    session.console.print(please_comment)
                 else:
                     print(warning)
-                    print(please_comment)
-
-        wrote_title = False
-        warning = ""
 
         for name in hints:
             if name in dir(builtins):  # Already taken care of these above
+                continue
+            if (
+                name in self.saved_annotations
+                and hints[name] == self.saved_annotations[name]
+            ):
                 continue
             if (
                 name not in self.locals
                 or name in self.old_locals
                 and self.old_locals[name] == self.locals[name]
             ):
-                if not wrote_title:
-                    warning = header_warning
-                    wrote_title = True
-                    if self.rich_console:
-                        warning = "#### " + warning
+                warning_given = True
+                warning = header_warning
+                if self.rich_console:
+                    warning = "#### " + warning
                 if not str(f"{hints[name]}").startswith("<"):
                     suggest = suggest_str.format(
                         hint=f"{name} : {hints[name]}",
@@ -139,17 +141,14 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
                     suggest = "* " + suggest
                 if suggest:
                     warning = warning + suggest + "\n"
+                if self.rich_console:
+                    warning = Markdown(warning)
+                    session.console.print(warning)
+                else:
+                    print(warning)
 
-        if warning:
-            if self.rich_console:
-                warning = Markdown(warning)
-                session.console.print(warning)
-                session.console.print(please_comment)
-            else:
-                print(warning)
-                print(please_comment)
-
-            self.locals["__annotations__"] = {}
+        if warning_given:
+            self.saved_annotations = hints.copy()
 
     def check_for_builtins_changes(self):
         """Warning users if they assign a value to a builtin"""
@@ -174,10 +173,8 @@ class FriendlyConsole(ft_console.FriendlyTracebackConsole):
                 if self.rich_console:
                     warning = Markdown("#### " + warning)
                     session.console.print(warning)
-                    session.console.print(please_comment)
                 else:
                     print(warning)
-                    print(please_comment)
                 changed.append(name)
 
         for name in changed:
