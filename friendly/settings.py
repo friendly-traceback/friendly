@@ -6,10 +6,10 @@ import sys
 
 from friendly_traceback import debug_helper
 from friendly_traceback.config import session
-import appdirs
+import platformdirs
 
 
-config_dir = appdirs.user_config_dir(
+config_dir = platformdirs.user_config_dir(
     appname="FriendlyTraceback", appauthor=False  # noqa
 )
 FILENAME = os.path.join(config_dir, "friendly.ini")

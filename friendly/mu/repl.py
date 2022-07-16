@@ -5,7 +5,7 @@ and 'high contrast'."""
 import json
 import os
 
-import appdirs
+import platformdirs
 import colorama  # noqa
 from friendly_traceback import set_stream
 from friendly_traceback import set_formatter as ft_set_formatter
@@ -26,7 +26,7 @@ colorama.init(convert=False, strip=False)
 _ = current_lang.translate
 
 settings.ENVIRONMENT = "mu"
-mu_data_dir = appdirs.user_data_dir(appname="mu", appauthor="python")
+mu_data_dir = platformdirs.user_data_dir(appname="mu", appauthor="python")
 
 
 def set_formatter(formatter=None, background=None):
