@@ -223,39 +223,6 @@ class ColourHighlighter:
         else:
             return Text(text_string, style=self.code_style)
 
-    def format_line(self, line, line_parts):
-        errors = line_parts[1::2]
-        end_lineno_marker = line.find("|") + 1
-        lineno_marker = line[0:end_lineno_marker]
-        rest = line[end_lineno_marker:]
-        tokens = token_utils.tokenize(rest)
-        if "-->" in lineno_marker:
-            new_line = [
-                Text(lineno_marker.replace("-->", " > "), style=self.number_style)
-            ]
-        else:
-            new_line = [Text(lineno_marker, style=self.comment_style)]
-        end_previous = end_lineno_marker
-        for token in tokens:
-            if not token.string:
-                continue
-            for begin, end in errors:
-                begin -= end_lineno_marker
-                end -= end_lineno_marker
-                if begin <= token.start_col <= end:
-                    if begin > end_previous:
-                        spaces = " " * (begin - end_previous)
-                        new_line.append(spaces)
-                        end_previous = begin
-                    nb_spaces = token.start_col - end_previous
-                    text_string = " " * nb_spaces + token.string
-                    new_line.append(Text(text_string, style=self.error_style))
-                    break
-            else:
-                new_line.append(self.highlight_token(token, end_previous))
-            end_previous = token.end_col
-        return [new_line]
-
 
 def format_with_highlight(lines, error_lines, theme):
     """Formats lines, replacing code underlined by ^^ (on the following line)
