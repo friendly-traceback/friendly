@@ -141,7 +141,8 @@ class ColourHighlighter:
     def format_code_line_with_error(self, new_line, tokens, error_line):
         end_previous = 0
         for token in tokens:
-            if not token.string:
+            if not token.string.strip():
+                # handle spaces explicitly below to get the alignment right
                 continue
             for begin, end in error_line:
                 if begin <= token.start_col < end:
