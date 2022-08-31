@@ -286,6 +286,13 @@ def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
         code = str(self.text).rstrip()
         lines = code.split("\n")
         error_lines = get_highlighting_ranges(lines)
+        # Sometimes, an entire line is the cause of an error and is not
+        # highlighted with carets so that error_lines is an empty dict.
+        if not error_lines:
+            for line in lines:
+                if line.strip().startswith("-->"):
+                    error_lines = {0: tuple()}
+                    break
 
         if (
             colours.get_highlight() is not None  # otherwise, use carets
