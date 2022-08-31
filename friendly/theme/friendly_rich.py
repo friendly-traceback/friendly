@@ -3,8 +3,8 @@
 All Rich-related imports and redefinitions are done here.
 
 """
+import builtins
 import inspect
-import re
 
 from .friendly_pygments import friendly_dark, friendly_light
 from . import colours
@@ -26,201 +26,243 @@ light_background_theme = Theme(friendly_light.friendly_style)
 
 
 def is_builtin(string):
+    if string.strip() not in dir(builtins):
+        return False
     try:
-        return inspect.isbuiltin(eval(string))
+        return inspect.isbuiltin(eval(string.strip()))
     except:  # noqa
         return False
 
 
 def is_exception(string):
+    if string.strip() not in dir(builtins):
+        return False
     try:
-        return issubclass(eval(string), BaseException)
+        return issubclass(eval(string.strip()), BaseException)
     except:  # noqa
         return False
+
+
+class MultilineString:
+    def __init__(self, begin_col=None, begin_line=None, end_col=None, end_line=None):
+        self.begin_col = begin_col
+        self.begin_line = begin_line - 1
+        self.end_col = end_col
+        self.end_line = end_line - 1
+
+
+class ColourHighlighter:
+    def __init__(self, theme):
+        self.theme = theme
+        background = theme.background_color
+        self.operator_style = f"{theme.styles[Operator]} on {background}"
+        self.number_style = f"{theme.styles[Number]} on {background}"
+        self.code_style = f"{theme.styles[Name]} on {background}"
+        self.keyword_style = f"{theme.styles[Keyword]} on {background}"
+        self.constant_style = f"{theme.styles[Keyword.Constant]} on {background}"
+        self.comment_style = f"{theme.styles[Comment]} on {background}"
+        self.builtin_style = f"{theme.styles[Name.Builtin]} on {background}"
+        self.exception_style = f"{theme.styles[Generic.Error]} on {background}"
+        self.string_style = f"{theme.styles[String]} on {background}"
+        self.error_style = colours.get_highlight()
+
+    def split_lineno_from_code(self, lines):
+        # Also remove lines of markers
+        self.lineno_info = []
+        self.code_lines = []
+        self.end_lineno_marker = lines[0].find("|") + 1
+        for line in lines:
+            lineno_marker = line[0 : self.end_lineno_marker]
+            if lineno_marker.strip():
+                self.lineno_info.append(lineno_marker)
+                self.code_lines.append((line[self.end_lineno_marker :]))
+
+    def shift_error_lines(self, error_lines):
+        new_error_lines = {}
+        line_numbers = sorted(list(error_lines.keys()))
+        up_shift = 1
+        for lineno in line_numbers:
+            new_error_lines[lineno - up_shift] = []
+            for (begin, end) in error_lines[lineno][1::2]:
+                new_error_lines[lineno - up_shift].append(
+                    (
+                        max(0, begin - self.end_lineno_marker),
+                        end - self.end_lineno_marker,
+                    )
+                )
+            up_shift += 1
+        return new_error_lines
+
+    def find_multiline_strings(self):
+        self.multiline_strings = []
+        source = "\n".join(self.code_lines)
+        tokens = token_utils.tokenize(source)
+        multiline_string = None
+        for index, token in enumerate(tokens):
+            if multiline_string:
+                if multiline_string.end_line == token.start_row:
+                    multiline_string.end_col = token.start_col
+                self.multiline_strings.append(multiline_string)
+            if token.start_row != token.end_row:
+                multiline_string = MultilineString(
+                    begin_col=token.start_col,
+                    begin_line=token.start_row,
+                    end_col=token.end_col,
+                    end_line=token.end_row,
+                )
+                if index != 0:
+                    prev_token = tokens[index - 1]
+                    if multiline_string.begin_line == prev_token.end_row:
+                        multiline_string.begin_col = tokens[index - 1].end_col
+            else:
+                multiline_string = None
+
+    def format_lineno_info(self, lineno_marker):
+        if "-->" in lineno_marker:
+            indent, number = lineno_marker.split("-->")
+            text = Text(indent + " > ", style=self.operator_style)
+            return text.append(Text(number, style=self.number_style))
+        return Text(lineno_marker, style=self.comment_style)
+
+    def format_code_line(self, new_line, code_line, error_line=None):
+        if not error_line:
+            error_line = []
+        tokens = token_utils.tokenize(code_line)
+        if error_line:
+            return self.format_code_line_with_error(new_line, tokens, error_line)
+        end_previous = 0
+        for token in tokens:
+            if not token.string:
+                continue
+            new_line.append(self.highlight_token(token, end_previous))
+            end_previous = token.end_col
+        return new_line
+
+    def format_code_line_with_error(self, new_line, tokens, error_line):
+        end_previous = 0
+        for token in tokens:
+            if not token.string:
+                continue
+            for begin, end in error_line:
+                if begin <= token.start_col < end:
+                    if begin > end_previous:
+                        spaces = " " * (begin - end_previous)
+                        new_line.append(spaces)
+                        end_previous = begin
+                    nb_spaces = token.start_col - end_previous
+                    text_string = " " * nb_spaces + token.string
+                    new_line.append(Text(text_string, style=self.error_style))
+                    break
+            else:
+                new_line.append(self.highlight_token(token, end_previous))
+            end_previous = token.end_col
+        return new_line
+
+    def format_lines(self, lines, error_lines):
+        self.split_lineno_from_code(lines)
+        error_lines = self.shift_error_lines(error_lines)
+        self.find_multiline_strings()
+        lineno = -1
+        new_lines = []
+        for lineno_marker, code_line in zip(self.lineno_info, self.code_lines):
+            lineno += 1
+            error_line = error_lines[lineno] if lineno in error_lines else None
+            new_line = self.format_lineno_info(lineno_marker)
+
+            inside_multiline = False
+            for line_ in self.multiline_strings:
+                if line_.begin_line < lineno < line_.end_line:
+                    inside_multiline = True
+                    break
+                elif lineno == line_.end_line:
+                    new_line.append(
+                        Text(code_line[0 : line_.end_col], style=self.string_style)
+                    )
+                    code_line = code_line[line_.end_col :]
+                    if error_line:
+                        new_error_line = []
+                        for (begin, end) in error_line:
+                            new_error_line.append(
+                                (
+                                    max(0, begin - line_.end_col),
+                                    end - line_.end_col,
+                                )
+                            )
+                        error_line = new_error_line
+
+            if inside_multiline:
+                new_line.append(Text(code_line, style=self.string_style))
+            elif error_line:
+                new_line = self.format_code_line(new_line, code_line, error_line)
+            else:
+                new_line = self.format_code_line(new_line, code_line)
+            new_lines.append(new_line)
+        return new_lines
+
+    def highlight_token(self, token, end_previous=0):
+        """Imitating pygment's styling of individual token."""
+        nb_spaces = token.start_col - end_previous
+        text_string = " " * nb_spaces + token.string
+        if token.is_keyword():
+            if text_string in ["True", "False", "None"]:
+                return Text(text_string, style=self.constant_style)
+            else:
+                return Text(text_string, style=self.keyword_style)
+        elif is_builtin(text_string):
+            return Text(text_string, style=self.builtin_style)
+        elif is_exception(text_string):
+            return Text(text_string, style=self.exception_style)
+        elif token.is_comment():
+            return Text(text_string, style=self.comment_style)
+        elif token.is_number():
+            return Text(text_string, style=self.number_style)
+        elif token.is_operator():
+            return Text(text_string, style=self.operator_style)
+        elif token.is_string() or token.is_unclosed_string():
+            return Text(text_string, style=self.string_style)
+        else:
+            return Text(text_string, style=self.code_style)
+
+    def format_line(self, line, line_parts):
+        errors = line_parts[1::2]
+        end_lineno_marker = line.find("|") + 1
+        lineno_marker = line[0:end_lineno_marker]
+        rest = line[end_lineno_marker:]
+        tokens = token_utils.tokenize(rest)
+        if "-->" in lineno_marker:
+            new_line = [
+                Text(lineno_marker.replace("-->", " > "), style=self.number_style)
+            ]
+        else:
+            new_line = [Text(lineno_marker, style=self.comment_style)]
+        end_previous = end_lineno_marker
+        for token in tokens:
+            if not token.string:
+                continue
+            for begin, end in errors:
+                begin -= end_lineno_marker
+                end -= end_lineno_marker
+                if begin <= token.start_col <= end:
+                    if begin > end_previous:
+                        spaces = " " * (begin - end_previous)
+                        new_line.append(spaces)
+                        end_previous = begin
+                    nb_spaces = token.start_col - end_previous
+                    text_string = " " * nb_spaces + token.string
+                    new_line.append(Text(text_string, style=self.error_style))
+                    break
+            else:
+                new_line.append(self.highlight_token(token, end_previous))
+            end_previous = token.end_col
+        return [new_line]
 
 
 def format_with_highlight(lines, error_lines, theme):
     """Formats lines, replacing code underlined by ^^ (on the following line)
     into highlighted code, and removing the ^^ from the end result.
     """
-    # As we might process line by line, the tokenization will not work
-    # when multiline triple-quoted strings are included;
-    # we thus exclude them from our token by token highlighting.
-    contain_triple_quoted = [
-        index
-        for index, line in enumerate(lines)
-        if token_utils.untokenize(token_utils.tokenize(line)) != line
-    ]
-    # We ensure that any line that might include content from a triple-quoted
-    # string is not included.
-    if contain_triple_quoted:
-        contain_triple_quoted = list(
-            range(contain_triple_quoted[0], contain_triple_quoted[-1] + 1)
-        )
-    result = []
-
-    for index, line in enumerate(lines):
-        if index in error_lines:  # Skip over lines containing ^^
-            continue
-        if index + 1 in error_lines:
-            if index in contain_triple_quoted:
-                result.append(
-                    simple_line_highlighting(line, error_lines[index + 1], theme)
-                )
-            else:
-                result.append(highlight_by_tokens(line, error_lines[index + 1], theme))
-        elif index in contain_triple_quoted:
-            result.append(simple_line_highlighting(line, [], theme))
-        else:
-            result.append(Syntax(line, "python", theme=theme, word_wrap=True))
-    return result
-
-
-def simple_line_highlighting(line, line_parts, theme):
-    """Fallback method for highlighting code when there might be some
-    triple quoted strings spanning multiple lines. As the highlighting
-    is done a singe line at a time, any tokenization of the line content
-    might fail. We thus use Rich's Text() instead of Syntax() to highlight
-    different part of each line.
-    """
-    error_style = colours.get_highlight()
-
-    background = theme.background_color
-    operator_style = f"{theme.styles[Operator]} on {background}"
-    number_style = f"{theme.styles[Number]} on {background}"
-    code_style = f"{theme.styles[Name]} on {background}"
-
-    has_line_number = re.match(r"^\s*\d+\s*:", line) or re.match(
-        r"^\s*-->\s*\d+\s*:", line
-    )
-    colon_position = line.find(":")
-    highlighting = False
-    text = None
-    if not line_parts:
-        line_parts = [(0, len(line))]
-
-    for begin, end in line_parts:
-        if highlighting:
-            part = Text(line[begin:end], style=error_style)
-            if not line[begin:end]:
-                part.append(Text(" ", style=error_style))
-
-        elif has_line_number and begin < colon_position:
-            begin_line = line[begin : colon_position + 1]
-            arrow_position = begin_line.find("-->")
-            if arrow_position != -1:
-                part = Text(line[begin : arrow_position + 3], style=operator_style)
-                part.append(
-                    Text(line[arrow_position + 3 : colon_position], style=number_style)
-                )
-            else:
-                part = Text(line[begin:colon_position], style=number_style)
-            part.append(
-                Text(line[colon_position : colon_position + 1], style=operator_style)
-            )
-            part.append(Text(line[colon_position + 1 : end], style=code_style))
-        elif line.strip() == "(...)":
-            part = Text(line[begin:end], style=operator_style)
-        else:
-            part = Text(line[begin:end], style=code_style)
-        if text is None:
-            text = part
-        else:
-            text.append(part)
-        highlighting = not highlighting
-    return text
-
-
-def highlight_by_tokens(line, line_parts, theme):
-    """This is a simplified version of what Pygments does when highlighting
-    some code.
-    """
-    background = theme.background_color
-    operator_style = f"{theme.styles[Operator]} on {background}"
-    number_style = f"{theme.styles[Number]} on {background}"
-    code_style = f"{theme.styles[Name]} on {background}"
-    keyword_style = f"{theme.styles[Keyword]} on {background}"
-    constant_style = f"{theme.styles[Keyword.Constant]} on {background}"
-    comment_style = f"{theme.styles[Comment]} on {background}"
-    builtin_style = f"{theme.styles[Name.Builtin]} on {background}"
-    exception_style = f"{theme.styles[Generic.Error]} on {background}"
-    string_style = f"{theme.styles[String]} on {background}"
-
-    def highlight_token(token):
-        """Imitating pygment's styling of individual token."""
-        if token.is_keyword():
-            if token.string in ["True", "False", "None"]:
-                sub_part = Text(token.string, style=constant_style)
-            else:
-                sub_part = Text(token.string, style=keyword_style)
-        elif is_builtin(token.string):
-            sub_part = Text(token.string, style=builtin_style)
-        elif is_exception(token.string):
-            sub_part = Text(token.string, style=exception_style)
-        elif token.is_comment():
-            sub_part = Text(token.string, style=comment_style)
-        elif token.is_number():
-            sub_part = Text(token.string, style=number_style)
-        elif token.is_operator():
-            sub_part = Text(token.string, style=operator_style)
-        elif token.is_string():
-            sub_part = Text(token.string, style=string_style)
-        else:
-            sub_part = Text(token.string, style=code_style)
-        return sub_part
-
-    error_style = colours.get_highlight()
-    highlighting = False
-    text = None
-    tokens = token_utils.tokenize(line)
-    last_column = 0
-    for index, (begin, end) in enumerate(line_parts):
-        if highlighting:
-            part = Text(line[begin:end], style=error_style)
-            if not line[begin:end]:
-                part.append(Text(" ", style=error_style))
-            last_column = end
-        else:
-            part = None
-            for token in tokens:
-                if token.start_col < begin:
-                    continue
-                if token.start_col >= end:
-                    # After inserting some non-highlighted space,
-                    # we are going to highlight the next token.
-                    # However, we might want to highlight some spaces
-                    # before that token, so we don't include them here.
-                    start = token.start_col
-                    if len(line_parts) > index + 1:  # should always be True
-                        start = min(token.start_col, line_parts[index + 1][0])
-                    inserted_space = " " * (start - last_column)
-                    if part is None:
-                        part = Text(inserted_space, style=code_style)
-                    else:
-                        part.append(Text(inserted_space, style=code_style))
-                    last_column = start
-                    break
-
-                if token.start_col > last_column:
-                    # We need to insert the required spaces between the tokens.
-                    inserted_space = " " * (token.start_col - last_column)
-                    if part is None:
-                        part = Text(inserted_space, style=code_style)
-                    else:
-                        part.append(Text(inserted_space, style=code_style))
-                last_column = token.end_col
-
-                sub_part = highlight_token(token)
-                if part is None:
-                    part = sub_part
-                else:
-                    part.append(sub_part)
-        if text is None:
-            text = part
-        elif part is not None:  # None can happen for EOF
-            text.append(part)
-        highlighting = not highlighting
-    return text
+    highlighter = ColourHighlighter(theme)
+    return highlighter.format_lines(lines, error_lines)
 
 
 def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
