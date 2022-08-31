@@ -58,9 +58,12 @@ def format_source(text):
     for index, line in enumerate(lines):
         if index in error_lines:
             continue
-        colon_location = line.find(":") + 1
+        colon_location = line.find("|") + 1
 
-        new_lines.append((line[:colon_location], "stdout"))
+        if line.lstrip().startswith("-->"):
+            new_lines.append((line[:colon_location], "stderr"))
+        else:
+            new_lines.append((line[:colon_location], "stdout"))
         if index + 1 in error_lines:
             no_highlight = True
             end = -1
