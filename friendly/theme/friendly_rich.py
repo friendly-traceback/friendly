@@ -70,12 +70,20 @@ class ColourHighlighter:
         # Also remove lines of markers
         self.lineno_info = []
         self.code_lines = []
-        self.end_lineno_marker = lines[0].find("|") + 1
+        for line in lines:
+            if line.find("|") == -1 and set(line.strip()) != {"^"}:
+                self.end_lineno_marker = 0
+                break
+        else:
+            self.end_lineno_marker = lines[0].find("|") + 1
         for line in lines:
             lineno_marker = line[0 : self.end_lineno_marker]
             if lineno_marker.strip():
                 self.lineno_info.append(lineno_marker)
                 self.code_lines.append((line[self.end_lineno_marker :]))
+            elif set(line.strip()) != {"^"}:
+                self.lineno_info.append("")
+                self.code_lines.append(line)
 
     def shift_error_lines(self, error_lines):
         new_error_lines = {}
@@ -154,6 +162,25 @@ class ColourHighlighter:
                     text_string = " " * nb_spaces + token.string
                     new_line.append(Text(text_string, style=self.error_style))
                     break
+                elif token.start_col <= begin and token.end_col >= end:
+                    # Error is inside token.string;
+                    # For example, highlighting \' in
+                    #  'don\'t'
+                    #      ^^
+                    style = self.get_style(token)
+                    if token.start_col > end_previous:
+                        spaces = " " * (token.start_col - end_previous)
+                        new_line.append(spaces)
+                    tok_string = token.string
+                    text_string = tok_string[: begin - token.start_col]
+                    new_line.append(Text(text_string, style=style))
+                    text_string = tok_string[
+                        begin - token.start_col : end - token.start_col
+                    ]
+                    new_line.append(Text(text_string, style=self.error_style))
+                    text_string = tok_string[end - token.start_col :]
+                    new_line.append(Text(text_string, style=style))
+                    break
             else:
                 new_line.append(self.highlight_token(token, end_previous))
             end_previous = token.end_col
@@ -204,25 +231,31 @@ class ColourHighlighter:
         """Imitating pygment's styling of individual token."""
         nb_spaces = token.start_col - end_previous
         text_string = " " * nb_spaces + token.string
+        style = self.get_style(token)
+        return Text(text_string, style=style)
+
+    def get_style(self, token):
+        """Imitating pygment's styling of individual token."""
+        text_string = token.string
         if token.is_keyword():
             if text_string in ["True", "False", "None"]:
-                return Text(text_string, style=self.constant_style)
+                return self.constant_style
             else:
-                return Text(text_string, style=self.keyword_style)
+                return self.keyword_style
         elif is_builtin(text_string):
-            return Text(text_string, style=self.builtin_style)
+            return self.builtin_style
         elif is_exception(text_string):
-            return Text(text_string, style=self.exception_style)
+            return self.exception_style
         elif token.is_comment():
-            return Text(text_string, style=self.comment_style)
+            return self.comment_style
         elif token.is_number():
-            return Text(text_string, style=self.number_style)
+            return self.number_style
         elif token.is_operator():
-            return Text(text_string, style=self.operator_style)
+            return self.operator_style
         elif token.is_string() or token.is_unclosed_string():
-            return Text(text_string, style=self.string_style)
+            return self.string_style
         else:
-            return Text(text_string, style=self.code_style)
+            return self.code_style
 
 
 def format_with_highlight(lines, error_lines, theme):
