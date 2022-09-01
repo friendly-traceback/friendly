@@ -71,7 +71,11 @@ class ColourHighlighter:
         self.lineno_info = []
         self.code_lines = []
         for line in lines:
-            if line.find("|") == -1 and set(line.strip()) != {"^"}:
+            if (
+                line.find("|") == -1
+                and set(line.strip()) != {"^"}
+                and line.strip() != ":"
+            ):
                 self.end_lineno_marker = 0
                 break
         else:
