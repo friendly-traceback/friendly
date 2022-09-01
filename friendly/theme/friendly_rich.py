@@ -262,14 +262,6 @@ class ColourHighlighter:
             return self.code_style
 
 
-def format_with_highlight(lines, error_lines, theme):
-    """Formats lines, replacing code underlined by ^^ (on the following line)
-    into highlighted code, and removing the ^^ from the end result.
-    """
-    highlighter = ColourHighlighter(theme)
-    return highlighter.format_lines(lines, error_lines)
-
-
 def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
     def _patch_heading(self, *_args):
         """By default, all headings are centered by Rich; I prefer to have
@@ -304,7 +296,7 @@ def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
             and self.lexer_name == "python"  # do not process pytb
             and error_lines
         ):
-            yield from format_with_highlight(lines, error_lines, theme)
+            yield from ColourHighlighter(theme).format_lines(lines, error_lines)
         else:
             yield Syntax(code, self.lexer_name, theme=theme, word_wrap=True)
 
