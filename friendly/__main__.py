@@ -9,6 +9,7 @@ command line. You can find more details by doing::
 
 """
 import argparse
+import os
 import platform
 import runpy
 import sys
@@ -144,6 +145,7 @@ parser.add_argument(
 
 def main():
     _ = current_lang.translate
+    sys.path.insert(0, os.getcwd())
     args = parser.parse_args()
     if args.version:  # pragma: no cover
         print(f"\nFriendly version {__version__}")

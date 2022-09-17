@@ -52,6 +52,18 @@ class MultilineString:
 
 
 class ColourHighlighter:
+    """This class is intended to take the output from friendly traceback
+    with typical line numbering and highlighting with carets, i.e. something
+    like:
+        1| import math
+     -->2| print(math.Pi)
+                      ^^
+        3| ...
+
+    And add syntax colouring and replacing the carets ^ by special highlight
+    of the line above.
+    """
+
     def __init__(self, theme):
         self.theme = theme
         background = theme.background_color
