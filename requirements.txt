@@ -1,6 +1,6 @@
 rich >= 11
 colorama
 pygments
-friendly-traceback >= 0.6.0
+friendly-traceback >= 0.7.3
 friendly_styles >= 0.2
 platformdirs

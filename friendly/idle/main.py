@@ -34,11 +34,11 @@ _writer = partial(idle_writer.writer, stream=sys.stdout.shell)
 
 def history():
     """Prints the list of error messages recorded so far."""
-    if not session.saved_info:
+    if not session.recorded_tracebacks:
         session.write_err(_nothing_to_show() + "\n")
         return
-    for info in session.saved_info:
-        message = session.formatter(info, include="message")
+    for tb in session.recorded_tracebacks:
+        message = session.formatter(tb.info, include="message")
         if message:
             _writer(message[1:])
 

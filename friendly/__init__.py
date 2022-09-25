@@ -21,6 +21,9 @@ have as part of the public API, please let us know.
 """
 import os
 import sys
+import warnings
+
+warnings.simplefilter("always")
 
 valid_version = sys.version_info >= (3, 6, 1)
 
@@ -30,7 +33,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.6.0"
+__version__ = "0.7.2"
 
 
 # ===========================================
@@ -65,6 +68,7 @@ from friendly_traceback import (  # noqa
 
 exclude_directory_from_traceback(os.path.dirname(__file__))
 get_lang = current_lang.get_lang
+warnings.simplefilter("always")
 
 
 def install(lang=None, formatter=None, redirect=None, include="explain", _debug=None):

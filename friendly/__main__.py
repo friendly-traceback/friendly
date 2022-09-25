@@ -13,6 +13,7 @@ import os
 import platform
 import runpy
 import sys
+import warnings
 
 from importlib import import_module
 from pathlib import Path
@@ -185,6 +186,8 @@ def main():
 
         exclude_file_from_traceback(runpy.__file__)
         sys.argv = [args.source, *args.args]
+        if not (sys.flags.interactive or args.i):
+            warnings.simplefilter("ignore")
         try:
             module_dict = runpy.run_path(args.source, run_name="__main__")
             console_defaults.update(module_dict)
