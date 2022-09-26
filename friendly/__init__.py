@@ -21,9 +21,6 @@ have as part of the public API, please let us know.
 """
 import os
 import sys
-import warnings
-
-warnings.simplefilter("always")
 
 valid_version = sys.version_info >= (3, 6, 1)
 
@@ -33,7 +30,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 
 
 # ===========================================
@@ -45,10 +42,12 @@ from .my_gettext import current_lang
 from friendly import rich_formatters, theme, settings
 
 from friendly_traceback import (
+    about_warnings,
     editors_helpers,
     exclude_directory_from_traceback,
     set_stream,
 )
+
 from friendly_traceback import explain_traceback as ft_explain_traceback
 from friendly_traceback import install as ft_install
 from friendly_traceback import set_formatter as ft_set_formatter
@@ -65,10 +64,9 @@ from friendly_traceback import (  # noqa
     set_include,
 )
 
-
+about_warnings.enable_warnings()
 exclude_directory_from_traceback(os.path.dirname(__file__))
 get_lang = current_lang.get_lang
-warnings.simplefilter("always")
 
 
 def install(lang=None, formatter=None, redirect=None, include="explain", _debug=None):
