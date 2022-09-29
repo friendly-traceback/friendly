@@ -297,7 +297,7 @@ def jupyter(
                 text = info[item]
                 text = highlight(text, PythonTracebackLexer(), HtmlFormatter())
                 display(HTML(text))
-            elif item == "message":  # format like last line of traceback
+            elif "message" in item:  # format like last line of traceback
                 content = info[item].split(":")
                 error_name = content[0]
                 message = ":".join(content[1:]) if len(content) > 1 else ""
@@ -419,7 +419,7 @@ def _markdown(
         "header": ("# ", ""),
         "message": ("", ""),
         "suggest": ("", "\n"),
-        "warnings": ("#### ", "\n"),
+        "warning message": ("`", "`\n"),
         "generic": ("", ""),
         "parsing_error": ("", ""),
         "parsing_error_source": ("```python\n", "\n```"),
@@ -433,6 +433,10 @@ def _markdown(
         "simulated_python_traceback": ("```pytb\n", "\n```"),
         "original_python_traceback": ("```pytb\n", "\n```"),
         "shortened_traceback": ("```pytb\n", "\n```"),
+        "warning location header": ("#### ", ""),
+        "warning source": ("```python\n", "\n```"),
+        "warning variables": ("```python\n", "\n```"),
+        "additional variable warning": ("#### ", ""),
     }
 
     items_to_show = select_items(include)  # tb_items_to_show(level=level)
@@ -447,7 +451,12 @@ def _markdown(
             # Rich theme in file friendly_rich.
             content = info[item]
             if item.endswith("header"):
-                content = content.rstrip(":")
+                content = (
+                    content.rstrip(":")
+                    .replace("' ", "'` ")
+                    .replace(" '", " `'")
+                    .replace("'.", "'`.")
+                )
             if item == "message" and rich:
                 # Ensure that the exception name is highlighted.
                 content = content.split(":")

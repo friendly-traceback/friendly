@@ -150,7 +150,7 @@ def formatter(info, include="friendly_tb"):
             elif "header" in item:
                 indentation = spacing[repl_indentation[item]]
                 result.append((indentation + info[item], "stderr"))
-            elif item == "message":  # Highlight error name
+            elif "message" in item:  # Highlight error name
                 parts = info[item].split(":")
                 parts[0] = "`" + parts[0] + "`"
                 _info = {item: ":".join(parts)}
