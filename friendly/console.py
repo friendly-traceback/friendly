@@ -11,7 +11,7 @@ import platform
 
 import friendly_traceback as ft
 
-from friendly_traceback import ft_console
+from friendly_traceback import ft_console, friendly_exec
 from friendly_traceback.config import session
 from friendly.rich_console_helpers import helpers
 from .my_gettext import current_lang
@@ -239,6 +239,7 @@ def start_console(
     if local_vars is not None:
         # Make sure we don't overwrite with our own functions
         helpers.update(local_vars)
+    helpers["friendly_exec"] = friendly_exec
 
     console = FriendlyConsole(
         local_vars=helpers,

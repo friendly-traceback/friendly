@@ -30,7 +30,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.7.7"
+__version__ = "0.7.8"
 
 
 # ===========================================
@@ -39,7 +39,7 @@ import inspect
 from pathlib import Path
 
 from .my_gettext import current_lang
-from friendly import rich_formatters, theme, settings
+from . import rich_formatters, theme, settings
 
 from friendly_traceback import (
     about_warnings,
@@ -53,7 +53,9 @@ from friendly_traceback import install as ft_install
 from friendly_traceback import set_formatter as ft_set_formatter
 from friendly_traceback import set_lang as ft_set_lang
 from friendly_traceback import __version__ as ft_version
+
 from friendly_traceback.config import session
+
 
 # The following are not used here, and simply made available directly for convenience
 from friendly_traceback import (  # noqa
@@ -62,6 +64,7 @@ from friendly_traceback import (  # noqa
     get_output,
     get_stream,
     set_include,
+    friendly_exec,
 )
 
 about_warnings.enable_warnings()
