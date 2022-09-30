@@ -13,7 +13,7 @@ import friendly_traceback  # noqa
 from friendly_traceback.config import session
 from friendly_traceback.console_helpers import *  # noqa
 from friendly_traceback.console_helpers import _nothing_to_show
-from friendly_traceback.console_helpers import helpers, Friendly  # noqa
+from friendly_traceback.console_helpers import History, helpers, Friendly  # noqa
 from friendly_traceback.console_helpers import set_lang  # noqa
 from friendly_traceback.functions_help import add_help_attribute
 
@@ -32,15 +32,22 @@ friendly_traceback.exclude_file_from_traceback(__file__)
 _writer = partial(idle_writer.writer, stream=sys.stdout.shell)
 
 
-def history():
-    """Prints the list of error messages recorded so far."""
-    if not session.recorded_tracebacks:
-        session.write_err(_nothing_to_show() + "\n")
-        return
-    for tb in session.recorded_tracebacks:
-        message = session.formatter(tb.info, include="message")
-        if message:
-            _writer(message[1:])
+class IdleHistory(History):
+    def __call__(self):
+        """Prints a list of recorded tracebacks and warning messages"""
+        if not session.recorded_tracebacks:
+            info = {"suggest": _nothing_to_show() + "\n"}
+            explanation = session.formatter(info, include="hint")
+            session.write_err(explanation)
+            return
+        for index, tb in enumerate(session.recorded_tracebacks):
+            if "message" in tb.info:
+                info = {"message": f"`{index}.` {tb.info['message']}"}
+                explanation = session.formatter(info, include="message")
+                session.write_err(explanation)
+
+
+history = IdleHistory()
 
 
 set_lang.__doc__ = Friendly.set_lang.__doc__
