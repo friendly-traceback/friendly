@@ -30,7 +30,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.7.8"
+__version__ = "0.7.9"
 
 
 # ===========================================
@@ -65,6 +65,7 @@ from friendly_traceback import (  # noqa
     get_stream,
     set_include,
     friendly_exec,
+    hide_secrets,
 )
 
 about_warnings.enable_warnings()
