@@ -21,6 +21,7 @@ from pathlib import Path
 from friendly_traceback import explain_traceback, exclude_file_from_traceback, install
 from friendly_traceback import __version__ as ft_version
 from friendly_traceback import debug_helper
+from friendly_traceback.config import session
 
 from friendly import console, __version__
 from .my_gettext import current_lang
@@ -143,6 +144,13 @@ parser.add_argument(
     "-i", help="""Starts the console after executing a source""", action="store_true"
 )
 
+parser.add_argument(
+    "-x",
+    help="""Starts the console after executing a source only
+    if an exception has been raised""",
+    action="store_true",
+)
+
 
 def main():
     _ = current_lang.translate
@@ -156,7 +164,7 @@ def main():
     include = "friendly_tb"
     if args.include:  # pragma: no cover
         include = args.include
-    elif args.source and not (sys.flags.interactive or args.i):
+    elif args.source and not (sys.flags.interactive or args.i or args.x):
         include = "explain"
     if args.debug:  # pragma: no cover
         debug_helper.DEBUG = True
@@ -186,14 +194,16 @@ def main():
 
         exclude_file_from_traceback(runpy.__file__)
         sys.argv = [args.source, *args.args]
-        if not (sys.flags.interactive or args.i):
-            warnings.simplefilter("ignore")
+        if sys.flags.interactive or args.i or args.x:
+            warnings.simplefilter("always")
         try:
             module_dict = runpy.run_path(args.source, run_name="__main__")
             console_defaults.update(module_dict)
         except Exception:  # noqa
             explain_traceback()
-        if sys.flags.interactive or args.i:  # pragma: no cover
+        if (
+            sys.flags.interactive or args.i or (args.x and session.recorded_tracebacks)
+        ):  # pragma: no cover
             console.start_console(
                 local_vars=console_defaults,
                 background=args.background,
