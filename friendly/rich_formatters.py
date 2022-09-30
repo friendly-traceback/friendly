@@ -419,7 +419,7 @@ def _markdown(
         "header": ("# ", ""),
         "message": ("", ""),
         "suggest": ("", "\n"),
-        "warning message": ("`", "`\n"),
+        "warning message": ("", "\n"),
         "generic": ("", ""),
         "parsing_error": ("", ""),
         "parsing_error_source": ("```python\n", "\n```"),
