@@ -17,25 +17,12 @@ from friendly.theme import colours
 from friendly import set_formatter
 
 _ = current_lang.translate
-old_history = history  # noqa
 
-
-def history():
-    session.rich_add_vspace = False
-    old_history()
-    session.rich_add_vspace = True
-
-
-history.__doc__ = old_history.__doc__
 set_lang.__doc__ = old_set_lang.__doc__
-helpers["history"] = history
 helpers["set_formatter"] = set_formatter
 helpers["set_lang"] = set_lang
-add_help_attribute(
-    {"set_formatter": set_formatter, "history": history, "set_lang": set_lang}
-)
+add_help_attribute({"set_formatter": set_formatter, "set_lang": set_lang})
 
-Friendly.add_helper(history)
 Friendly.add_helper(set_formatter)
 Friendly.add_helper(set_lang)
 # =================================
