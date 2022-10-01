@@ -99,7 +99,11 @@ def format_text(info, item, indentation):
                 if index == 0:
                     new_lines.append((indentation + fragment, "stdout"))
                 elif index % 2:
-                    if "Error" in fragment:
+                    if (
+                        "Error" in fragment
+                        or "Warning" in fragment
+                        or "Exception" in fragment
+                    ) and " " not in fragment.strip():
                         new_lines.append((fragment, "stderr"))
                     else:
                         new_lines.append((fragment, "default"))
