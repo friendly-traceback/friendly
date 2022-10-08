@@ -160,6 +160,8 @@ def formatter(info, include="friendly_tb"):
                 _info = {item: ":".join(parts)}
                 indentation = spacing[repl_indentation[item]]
                 result.extend(format_text(_info, item, indentation))
+            elif item == "exception_notes":
+                result.extend([note + "\n" for note in info[item]])
             else:
                 indentation = spacing[repl_indentation[item]]
                 result.extend(format_text(info, item, indentation))
