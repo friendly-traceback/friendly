@@ -105,6 +105,7 @@ def start_console(
         # Make sure we don't overwrite with our own functions
         helpers.update(local_vars)
     helpers["friendly_exec"] = friendly_exec
+    helpers["toggle_prompt"] = ft_console.toggle_prompt
 
     console = FriendlyConsole(
         local_vars=helpers,

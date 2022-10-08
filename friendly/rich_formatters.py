@@ -419,7 +419,9 @@ def _markdown(
         "header": ("# ", ""),
         "message": ("", ""),
         "suggest": ("", "\n"),
-        "warning message": ("", "\n"),
+        "warning_message": ("", "\n"),
+        "exception_notes_intro": ("#### ", ""),
+        "exception_notes": ("", ""),
         "generic": ("", ""),
         "parsing_error": ("", ""),
         "parsing_error_source": ("```python\n", "\n```"),
@@ -433,10 +435,10 @@ def _markdown(
         "simulated_python_traceback": ("```pytb\n", "\n```"),
         "original_python_traceback": ("```pytb\n", "\n```"),
         "shortened_traceback": ("```pytb\n", "\n```"),
-        "warning location header": ("#### ", ""),
-        "warning source": ("```python\n", "\n```"),
-        "warning variables": ("```python\n", "\n```"),
-        "additional variable warning": ("#### ", ""),
+        "warning_location header": ("#### ", ""),
+        "warning_source": ("```python\n", "\n```"),
+        "warning_variables": ("```python\n", "\n```"),
+        "additional_variable warning": ("#### ", ""),
     }
 
     items_to_show = select_items(include)  # tb_items_to_show(level=level)
@@ -444,7 +446,23 @@ def _markdown(
         RICH_HEADER = True  # Skip it here; handled by session.py
     result = [""]
     for item in items_to_show:
-        if item in info and info[item].strip():
+        prefix, suffix = markdown_items[item]
+        if item == "exception_notes":
+            lines = []
+            for note in info[item]:
+                note_lines = note.split("\n")
+                for index, line in enumerate(note_lines):
+                    if index == 0:
+                        note_lines[0] = "* " + note_lines[0]
+                    else:
+                        note_lines[index] = " " + note_lines[index]
+                note_lines.append("\n")
+
+                lines.extend(note_lines)
+            lines.append("\n")
+            content = "".join(lines)
+            result.append(prefix + content + suffix)
+        elif item in info and info[item].strip():
             # With normal Markdown formatting, it does not make sense to have a
             # header end with a colon.
             # However, we style headers differently with Rich; see
@@ -469,7 +487,6 @@ def _markdown(
             if item == "parsing_error" and "[" in content:
                 content = content.replace("[", "`[").replace("]", "]`")
 
-            prefix, suffix = markdown_items[item]
             if documentation and prefix.startswith("#"):
                 prefix = "##" + prefix
             result.append(prefix + content + suffix)
