@@ -47,6 +47,8 @@ RICH_HEADER = False  # not a constant
 WIDE_OUTPUT = False  # not a constant
 COUNT = 0  # not a constant
 
+_ = current_lang.translate
+
 
 def jupyter_interactive(
     info: Info, include: InclusionChoice = "friendly_tb"
@@ -60,7 +62,6 @@ def jupyter_interactive(
         rich_writer(text)
         return
     COUNT += 1
-    _ = current_lang.translate
     session.rich_add_vspace = False
     add_message(info, count=COUNT)
     if "detailed_tb" in info:
@@ -109,7 +110,6 @@ def add_friendly_tb(info: Info, count: int = -1) -> None:
 def add_interactive_item(info: Info, name: InclusionChoice, count: int = -1) -> None:
     """Adds interactive items (what/why/where) with buttons to toggle
     their visibility."""
-    _ = current_lang.translate
     old_jupyter_html_format = rich_jupyter.JUPYTER_HTML_FORMAT
 
     content = """<script type="text/Javascript"> function toggle_{name}{count}(){{
@@ -150,7 +150,6 @@ def add_interactive_item(info: Info, name: InclusionChoice, count: int = -1) -> 
 
 def add_control(count: int = -1, add_detailed_tb: bool = False) -> None:
     """Adds a single button to control the visibility of all other elements."""
-    _ = current_lang.translate
     if add_detailed_tb:
         btn_detailed_tb = """;var btn_detailed_tb =
         document.getElementById('friendly-tb-btn-show-detailed_tb{count}');""".format(
@@ -281,7 +280,6 @@ def jupyter(
     However, some information shown may be less than optimal
     when it comes to visibility/contrast.
     """
-    _ = current_lang.translate
     css = HtmlFormatter().get_style_defs(".highlight")
     display(HTML(f"<style>{css}</style>"))  # noqa
     items_to_show = select_items(include)
@@ -435,10 +433,10 @@ def _markdown(
         "simulated_python_traceback": ("```pytb\n", "\n```"),
         "original_python_traceback": ("```pytb\n", "\n```"),
         "shortened_traceback": ("```pytb\n", "\n```"),
-        "warning_location header": ("#### ", ""),
+        "warning_location_header": ("#### ", ""),
         "warning_source": ("```python\n", "\n```"),
         "warning_variables": ("```python\n", "\n```"),
-        "additional_variable warning": ("#### ", ""),
+        "additional_variable_warning": ("#### ", ""),
     }
 
     items_to_show = select_items(include)  # tb_items_to_show(level=level)
@@ -446,8 +444,17 @@ def _markdown(
         RICH_HEADER = True  # Skip it here; handled by session.py
     result = [""]
     for item in items_to_show:
+        if item not in markdown_items:
+            print(
+                _(
+                    "Inconsistent values: {item} is not present in markdown_items.\n"
+                    "Are you using the latest versions of friendly and friendly_traceback?\n"
+                    "If not, upgrade both packages, otherwise, please report the issue.\n"
+                ).format(item=item)
+            )
+            continue
         prefix, suffix = markdown_items[item]
-        if item == "exception_notes":
+        if item == "exception_notes" and item in info:
             lines = []
             for note in info[item]:
                 note_lines = note.split("\n")
