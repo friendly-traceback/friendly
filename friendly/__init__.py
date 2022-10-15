@@ -30,7 +30,7 @@ if not valid_version:  # pragma: no cover
     sys.exit()
 
 del valid_version
-__version__ = "0.7.16"
+__version__ = "0.7.17"
 
 
 # ===========================================
@@ -51,7 +51,7 @@ from friendly_traceback import (
 from friendly_traceback import explain_traceback as ft_explain_traceback
 from friendly_traceback import install as ft_install
 from friendly_traceback import set_formatter as ft_set_formatter
-from friendly_traceback import set_lang as ft_set_lang
+from friendly_traceback import set_lang
 from friendly_traceback import __version__ as ft_version
 
 from friendly_traceback.config import session
@@ -66,6 +66,7 @@ from friendly_traceback import (  # noqa
     set_include,
     friendly_exec,
     hide_secrets,
+    add_other_set_lang,
 )
 
 about_warnings.enable_warnings()
@@ -185,7 +186,6 @@ def run(
             return
 
     session.install(lang=lang, include=include, redirect=redirect)
-    set_lang(lang)
     session.set_formatter(formatter)
 
     module_globals = editors_helpers.exec_code(
@@ -309,13 +309,13 @@ def start_console(  # pragma: no cover
     )
 
 
-def set_lang(lang):
+def friendly_set_lang(lang):
     """Sets the language to be used."""
-    ft_set_lang(lang)
     settings.write(option="lang", value=lang, environment="common")
     current_lang.install(lang)
 
 
+add_other_set_lang(friendly_set_lang)
 set_lang(get_lang())
 
 

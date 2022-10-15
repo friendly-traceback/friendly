@@ -14,7 +14,6 @@ from friendly_traceback.config import session
 from friendly_traceback.console_helpers import *  # noqa
 from friendly_traceback.console_helpers import _nothing_to_show
 from friendly_traceback.console_helpers import History, helpers, Friendly  # noqa
-from friendly_traceback.console_helpers import set_lang  # noqa
 from friendly_traceback.functions_help import add_help_attribute
 
 from friendly import get_lang
@@ -26,7 +25,7 @@ from .get_syntax import get_syntax_error
 
 
 settings.ENVIRONMENT = "IDLE"
-set_lang(get_lang())
+friendly_traceback.set_lang(get_lang())
 
 friendly_traceback.exclude_file_from_traceback(__file__)
 _writer = partial(idle_writer.writer, stream=sys.stdout.shell)
@@ -48,12 +47,7 @@ class IdleHistory(History):
 
 
 history = IdleHistory()
-
-
-set_lang.__doc__ = Friendly.set_lang.__doc__
-
-add_help_attribute({"history": history, "set_lang": set_lang})
-Friendly.add_helper(set_lang)
+add_help_attribute({"history": history})
 Friendly.add_helper(history)
 _old_displayhook = sys.displayhook
 

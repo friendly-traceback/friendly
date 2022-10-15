@@ -6,25 +6,19 @@ from friendly_traceback.console_helpers import Friendly, helpers
 from friendly_traceback.functions_help import add_help_attribute, short_description
 from friendly_traceback.config import session
 
-old_set_lang = set_lang  # noqa
-
 from friendly.my_gettext import current_lang
-from friendly import set_lang, _print_settings
+from friendly import _print_settings
 from friendly.settings import _remove_environment
 from friendly.theme import colours
 
 # The following is different from the one imported via the import * above
 from friendly import set_formatter
 
-_ = current_lang.translate
-
-set_lang.__doc__ = old_set_lang.__doc__
 helpers["set_formatter"] = set_formatter
-helpers["set_lang"] = set_lang
-add_help_attribute({"set_formatter": set_formatter, "set_lang": set_lang})
-
+add_help_attribute({"set_formatter": set_formatter})
 Friendly.add_helper(set_formatter)
-Friendly.add_helper(set_lang)
+
+_ = current_lang.translate
 # =================================
 # Additional rich-specific helpers
 # =================================

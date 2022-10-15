@@ -91,12 +91,12 @@ def start_console(
         banner = BANNER + ft.ft_console.type_friendly() + "\n"
     if formatter is None:
         formatter = friendly.settings.read(option="formatter")
-        if formatter is None:
-            formatter = "dark"
+    if formatter is None:
+        formatter = "dark"
     if background is None:
         background = friendly.settings.read(option="background")
 
-    friendly.set_lang(lang)
+    ft.set_lang(lang)
 
     if not ft.is_installed():
         ft.install(include=include, lang=lang)
