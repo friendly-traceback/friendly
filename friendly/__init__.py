@@ -71,7 +71,7 @@ from friendly_traceback import (  # noqa
 
 about_warnings.enable_warnings()
 exclude_directory_from_traceback(os.path.dirname(__file__))
-get_lang = current_lang.get_lang
+get_lang = settings.get_lang
 
 
 def install(lang=None, formatter=None, redirect=None, include="explain", _debug=None):

@@ -1,6 +1,7 @@
 """Settings file exclusively for friendly -- not for friendly-traceback"""
 
 import configparser
+import locale
 import os
 import sys
 
@@ -143,3 +144,10 @@ def print_settings():
     print("Current environment: ", ENVIRONMENT)
     config.read(FILENAME)
     config.write(sys.stdout)
+
+
+def get_lang() -> str:
+    lang = read(option="lang", environment="common")
+    if lang is None:
+        lang = locale.getdefaultlocale()[0]
+    return lang

@@ -21,7 +21,6 @@ gettext.translation() is the class-based API for gettext.
 """
 
 import gettext
-import locale
 import os
 
 from . import settings
@@ -35,10 +34,7 @@ class LangState:
 
     def get_lang(self):
         """Gets the current saved language"""
-        lang = settings.read(option="lang", environment="common")
-        if lang is None:
-            lang = locale.getdefaultlocale()[0]
-        return lang
+        return settings.get_lang()
 
     def install(self, lang=None):
         """Sets the language to be used for translations"""
