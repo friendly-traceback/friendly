@@ -289,7 +289,7 @@ def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
     Heading.__rich_console__ = _patch_heading
 
     def _patch_code_block(self, *_args):
-        if self.lexer_name == "default":
+        if self.lexer_name != "pytb":
             self.lexer_name = "python"
 
         code = str(self.text).rstrip()
