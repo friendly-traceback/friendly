@@ -281,7 +281,11 @@ def init_console(theme=friendly_dark, color_system="auto", force_jupyter=None):
         """
         text = self.text
         text.justify = "left"
-        if self.level == 3:
+        # Older version of Rich uses 'level' as an attribute.
+        # Maintaining compatibility for now.
+        if (hasattr(self, "level") and self.level == 3) or (
+            hasattr(self, "tag") and self.tag == "h3"
+        ):
             yield Text("    ") + text
         else:
             yield text
