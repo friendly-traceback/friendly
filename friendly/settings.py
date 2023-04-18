@@ -149,5 +149,5 @@ def print_settings():
 def get_lang() -> str:
     lang = read(option="lang", environment="common")
     if lang is None:
-        lang = locale.getdefaultlocale()[0]
+        lang = locale.getlocale()[0]
     return lang
